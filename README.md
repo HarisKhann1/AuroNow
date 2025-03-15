@@ -1,89 +1,141 @@
 # AuroNow - Salon & Barber Shop Booking Platform
 
-## 🚀 Project Overview
+AuroNow is a **web-based booking platform** for salons and barber shops. It allows **shop owners** to manage their business, services, and bookings, while **customers** can book appointments, leave reviews, and ask queries.
 
-AuroNow is a web-based platform designed to streamline salon and barber shop bookings, providing real-time scheduling, personalized recommendations, and business analytics for shop owners.
+---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```
-AuroNow/
+AuroNow/                     # Root project directory
 │── manage.py                # Django management script
-│── requirements.txt         # Dependencies
-│── .gitignore               # Files to ignore in Git
+│── requirements.txt         # Dependencies (Django, etc.)
+│── db.sqlite3               # SQLite Database
 │── README.md                # Project documentation
+│── .gitignore               # Git ignored files
+│── env/                     # Virtual environment (excluded from Git)
 │
-├── AuroNow/                 # Main project configuration
-│   ├── settings.py          # Project settings
-│   ├── urls.py              # Main URL routing
+├── AuroNow/                 # Main Django project settings
+│   │── __init__.py          
+│   │── settings.py          # Project settings
+│   │── urls.py              # Main URL routing
+│   │── asgi.py              
+│   │── wsgi.py              
 │
-├── authentication/          # User authentication
-├── shops/                   # Salon & barber shop management
-├── bookings/                # Appointment system
-├── reviews/                 # Ratings & reviews
-├── dashboard/               # Shop owner analytics (if added)
+├── shop/                     # Shop Owner Side
+│   │── __init__.py      
+│   │── models.py             # Models for shop owner, services, bookings, staff
+│   │── views.py              # Views for managing shop operations
+│   │── urls.py               # URL routing for shop owner features
+│   │── admin.py              # Admin configurations
+│   │── tests.py              
+│   └── migrations/           # Database migrations for shop
 │
-├── static/                  # CSS, JS, images
-├── templates/               # HTML templates
-├── media/                   # User-uploaded files
+├── user/                     # Customer Side
+│   │── __init__.py      
+│   │── models.py             # Models for customers, queries, reviews, booking
+│   │── views.py              # Views for user operations
+│   │── urls.py               # URL routing for users
+│   │── admin.py              # Admin configurations
+│   │── tests.py              
+│   └── migrations/           # Database migrations for user
+│
+├── static/                   # Static files (CSS, JS, images)
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│
+├── templates/                # HTML templates for rendering pages
+│   ├── base.html             # Base template
+│   ├── shop_dashboard.html   # Owner Dashboard
+│   ├── user_home.html        # Customer Frontend
+│   ├── booking.html          # Booking Page
+│   ├── reviews.html          # Reviews Page
+│
+└── media/                    # User-uploaded media (e.g., shop images)
 ```
 
 ---
 
-## 🛠 Installation Guide
+## 📌 Database Structure
 
-Follow these steps to set up AuroNow on your local machine.
+### 📍 `shop` (Owner Side)
+- **ShopOwner** → Stores shop owner details  
+- **ServiceCategory** → Defines categories of services  
+- **Service** → Lists available services with price & duration  
+- **ShopImage** → Stores up to 5 shop images  
+- **Staff** → Keeps staff details  
+- **Slot** → Defines time slots for booking appointments  
+- **FAQ** → Stores frequently asked questions  
+- **Advertisement** → Manages shop promotions & payment  
 
-### **1️⃣ Clone the Repository**
+### 📍 `user` (Customer Side)
+- **User** → Stores customer details  
+- **BookAppointment** → Handles customer bookings  
+- **RatingAndReviews** → Stores customer ratings & feedback  
+- **Queries** → Tracks and answers customer queries  
 
+---
+## 📌 Features
+
+✅ **For Shop Owners**
+- Manage shop details  
+- Add services, categories & pricing  
+- Upload shop images  
+- Set available slots for appointments  
+- Manage staff  
+- Respond to customer queries  
+- Run advertisements & promotions  
+
+✅ **For Customers**
+- Book appointments  
+- Search & filter services  
+- Rate & review shops  
+- Ask queries to shop owners  
+- Manage past & upcoming bookings
+---
+
+## 🚀 Installation & Setup
+
+### 1️⃣ Clone the Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/your-username/AuroNow.git
 cd AuroNow
 ```
 
-### **2️⃣ Create a Virtual Environment**
-
+### 2️⃣ Create & Activate Virtual Environment
 ```bash
 python -m venv env
+env\Scripts\activate  # Windows
+source env/bin/activate  # macOS/Linux
 ```
 
-### **3️⃣ Activate the Virtual Environment**
-
-- **Windows**:
-  ```bash
-  env\Scripts\activate
-  ```
-- **Mac/Linux**:
-  ```bash
-  source env/bin/activate
-  ```
-
-### **4️⃣ Install Dependencies**
-
+### 3️⃣ Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### **5️⃣ Run Migrations**
-
+### 4️⃣ Apply Migrations
 ```bash
-python manage.py makemigrations
+python manage.py makemigrations shop
+python manage.py makemigrations user
 python manage.py migrate
 ```
 
-### **6️⃣ Create a Superuser (Optional, for Admin Panel)**
-
+### 5️⃣ Create Superuser
 ```bash
 python manage.py createsuperuser
 ```
+Follow the prompts to enter:
+- Username
+- Email
+- Password
 
-### **7️⃣ Run the Server**
-
+### 6️⃣ Run the Server
 ```bash
 python manage.py runserver
 ```
-
-Access the site at [**http://127.0.0.1:8000/**](http://127.0.0.1:8000/)
+Go to **http://127.0.0.1:8000/** in your browser.
 
 ---
 
@@ -155,6 +207,5 @@ git push origin feature-branch-name
 
 - Always pull the latest changes before starting new work.
 - Use branches for new features to avoid conflicts.
-
-Happy Coding! 🚀
-
+  
+---
