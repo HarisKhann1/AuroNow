@@ -42,6 +42,16 @@ INSTALLED_APPS = [
     # custom apps
     'shops',
     'auroUser',
+    # Third party apps (django-tailwind 3.8)
+    'tailwind',
+    'theme',
+    'django_browser_reload',
+]
+
+# Tailwind settings
+TAILWIND_APP_NAME = 'theme'  # This is the name of the app that will be used to generate the tailwind files
+INTERNAL_IPS = [
+    "127.0.0.1",
 ]
 
 MIDDLEWARE = [
@@ -52,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = 'AuroNow.urls'
@@ -134,6 +145,8 @@ MEDIA_ROOT = [os.path.join(BASE_DIR, 'media')]
 # For collecting static files in production
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# it is for the djando-tailwind package
+NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 # LOGIN_REDIRECT_URL = 'shops:home'
 # LOGOUT_REDIRECT_URL = 'shops:home'
 
