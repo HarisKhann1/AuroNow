@@ -9,27 +9,15 @@
     {% tailwind_css %}
 </head>
 <body>
-    <div class="container mx-auto">
-        <section class="flex items-center justify-center h-screen bg-gray-500">
-            <h1 class="text-5xl">Django + Tailwind = ❤️</h1>
-        </section>
-        <div class="">
-            <h1 class="bg-red bg-blue font-3xl">Dashboard</h1>
-        </div>
-    </div>
-    <aside>
-        <nav>
-            <ul>
-                <li><a href="">Dashboard</a></li>
-                <li><a href="">Profile</a></li>
-                <li><a href="">Logout</a></li>
-            </ul>
-        </nav>
-    </aside>
-    <main>
-    {% block content %}
-    {% endblock %}
-    </main>
-    <footer></footer>
+
+    <!-- header -->
+    {% include "aside.html" %}
+
+    <!-- main section -->
+    {% block main %}{% endblock main %}
+
+    {% comment %} js file {% endcomment %}
+    <script src="{% static 'js/dashboard/dashboard.js' %}"></script>
+
 </body>
 </html>
