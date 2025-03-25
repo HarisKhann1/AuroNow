@@ -19,7 +19,7 @@ class ShopOwnerManager(BaseUserManager):
 
 # Shop Owner Model
 class ShopOwner(AbstractBaseUser):
-    email = models.EmailField(primary_key=True, max_length=255, unique=True)
+    email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
@@ -51,7 +51,7 @@ class Service(models.Model):
 
 # Staff Members
 class Staff(models.Model):
-    phone = models.CharField(primary_key=True, max_length=20)
+    phone = models.CharField(max_length=20, unique=True)
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='staff')
     name = models.CharField(max_length=255)
     role = models.CharField(max_length=100)

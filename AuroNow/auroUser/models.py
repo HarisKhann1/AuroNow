@@ -20,7 +20,7 @@ class CustomerManager(BaseUserManager):
 
 # Customer Model
 class User(AbstractBaseUser):
-    email = models.EmailField(primary_key=True, max_length=255, unique=True)
+    email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
