@@ -51,10 +51,13 @@ class Service(models.Model):
 
 # Staff Members
 class Staff(models.Model):
-    phone = models.CharField(max_length=20, unique=True)
+    phone = models.CharField(max_length=20)
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='staff')
     name = models.CharField(max_length=255)
     role = models.CharField(max_length=100)
+
+    class Meta:
+        unique_together = ('phone', 'shop')
 
 # Appointment Slots
 class Slot(models.Model):
