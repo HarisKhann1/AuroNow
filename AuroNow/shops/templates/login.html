@@ -22,15 +22,15 @@
                     <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center underline">Login</h2>
 
                     {% if messages %}
-                        {% for message in messages %}
-                            {% if message.tags == 'error' %}
-                                <div class="mb-4 p-3 bg-red-200 text-red-800 rounded">
-                            {% elif message.tags == 'success' %}
-                                <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
-                            {% endif %}
-                                {{ message }}
-                            </div>
-                        {% endfor %}
+                        <div id="messages-container">
+                            {% for message in messages %}
+                                <div class="toast-message mb-4 p-3 rounded
+                                    {% if message.tags == 'error' %} bg-red-200 text-red-800 {% elif message.tags == 'success' %} bg-green-100 text-green-800 {% endif %}"
+                                    data-timeout="5000">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
                     {% endif %}
                     
                     <form method="POST" action="">

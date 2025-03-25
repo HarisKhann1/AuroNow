@@ -31,8 +31,10 @@ def dashboard_login_view(request):
                 return redirect('dashboard_home')
             else:
                 messages.error(request, 'Invalid email or password')
+                return redirect('dashboard_login')  # Redirect back to login page
         except ShopOwner.DoesNotExist:
             messages.error(request, 'Invalid email or password')
+            return redirect('dashboard_login')  # Redirect back to login page
     return render(request, 'login.html')   
 
 def dashboard_home(request):
