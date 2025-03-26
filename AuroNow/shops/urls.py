@@ -10,4 +10,5 @@ urlpatterns = [
     path('reset-password/<uuid:token>/', views.reset_password, name='reset_password'),
     # dshboard routes
     path('', views.dashboard_home, name='dashboard_home'),
+    path('te/', views.temp, name='dashboard_products'),
 ]

@@ -96,6 +96,8 @@ def reset_password(request, token):
         messages.error(request, 'Invalid token')
         return redirect('dashboard_login')
 
+def temp(request):
+    return render(request, 'resetPass.html')
 def dashboard_home(request):
     try:
         return render(request, 'base_dashboard.html')
