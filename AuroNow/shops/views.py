@@ -54,7 +54,7 @@ def forgot_password(request):
             user = ShopOwner.objects.get(email=email)
             token = PasswordResetToken.objects.create(user=user)
             
-            reset_link = f"{request.scheme}://{request.get_host()}/reset-password/{token.token}"
+            reset_link = f"{request.scheme}://{request.get_host()}/dashboard/reset-password/{token.token}"
             send_mail(
                 'Password Reset',
                 f'Click the link to reset your password: {reset_link}',
@@ -68,6 +68,33 @@ def forgot_password(request):
             messages.error(request, 'Email not found')
     
     return render(request, 'forgot_password.html')
+
+def reset_password(request, token):
+    try:
+        token_obj = PasswordResetToken.objects.get(token=token)
+        
+        if not token_obj.is_valid():
+            messages.error(request, 'Token expired')
+            return redirect('dashboard_login')
+        
+        if request.method == 'POST':
+            password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
+            
+            if password != confirm_password:
+                messages.error(request, 'Passwords do not match')
+            else:
+                user = token_obj.user
+                user.set_password(password)
+                user.save()
+                token_obj.delete()
+                messages.success(request, 'Password reset successful')
+                return redirect('dashboard_login')
+        
+        return render(request, 'resetPass.html')
+    except PasswordResetToken.DoesNotExist:
+        messages.error(request, 'Invalid token')
+        return redirect('dashboard_login')
 
 def dashboard_home(request):
     try:
