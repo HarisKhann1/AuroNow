@@ -70,7 +70,10 @@ ROOT_URLCONF = 'AuroNow.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),  # Global templates
+            os.path.join(BASE_DIR, 'auroUser', 'templates'),  # Include auroUser templates
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -134,7 +137,11 @@ USE_TZ = True
 # URL to use when referring to static files located in STATICFILES_DIRS
 STATIC_URL = '/static/'
 # If you want to specify additional directories to look for static files
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+                    os.path.join(BASE_DIR, 'static'),
+                    os.path.join(BASE_DIR, 'auroUser', 'static'),  # Add this
+                    ]
+
 
 
 # URL for accessing uploaded files

@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary-color: #f09245;
+  --primary-hover-color: #E0894F;
+  --secondary-color: #233038;
+  --secondary-hover-color: #2D3C46;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  
+}

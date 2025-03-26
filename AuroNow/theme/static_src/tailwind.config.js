@@ -42,7 +42,17 @@ module.exports = {
         // '../../**/*.py'
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                'primary-color': 'var(--primary-color)',
+                'primary-hover-color': 'var(--primary-hover-color)',
+                'secondary-color': 'var(--secondary-color)',
+                'secondary-hover-color': 'var(--secondary-hover-color)',
+            },
+            fontFamily: {
+                'font-style':'var(--font-mono)',
+            },
+          },
     },
     plugins: [
         /**

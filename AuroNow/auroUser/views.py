@@ -2,5 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 # Create your views here.
-def home(request):
-    return HttpResponse("Hello, to the Home Page of AuroNow!")
+def dashboard_view(request):
+    return render(request, 'dashboard.html')  # Ensure the correct path
+ 

@@ -1,0 +1,27 @@
+{% extends 'base_auroUser.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <!-- Background Container -->
+  <div class="relative min-h-screen">
+    <!-- Responsive Background Image -->
+    <div class="absolute inset-0 -z-10">
+      <img src="{% static 'images/HeroImage.jpg' %}" 
+           alt="Background"
+           class="w-full h-full object-top object-cover" />
+    </div>
+    <!-- Content Area -->
+    <div class="relative pt-32 flex-1 overflow-y-auto">
+      <div class="container mx-auto px-6 py-8">
+        <h1 class="text-3xl md:text-4xl font-bold my-8 text-center text-yellow-500">
+          Dashboard
+        </h1>
+        <!-- Scrollable Content -->
+        <div class="space-y-8 px-4">
+          <!-- Content blocks -->
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

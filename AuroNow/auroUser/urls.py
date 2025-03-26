@@ -1,6 +1,7 @@
 from django.urls import path
-from auroUser import views
+from .views import dashboard_view
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', dashboard_view, name='dashboard'),  # URL for the dashboard
+
 ]
