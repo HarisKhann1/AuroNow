@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
+import datetime
+import uuid
 # Custom Manager for Shop Owners
 class ShopOwnerManager(BaseUserManager):
     def create_user(self, email, name, password=None, **extra_fields):
@@ -35,6 +36,15 @@ class ShopOwner(AbstractBaseUser):
     
     def __str__(self):
         return f"{self.shop_name} ({self.email})"
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(ShopOwner, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def is_valid(self):
+        # Token valid for 24 hours
+        return (datetime.datetime.now().timestamp() - self.created_at.timestamp()) < 86400
+
 
 # Service Categories
 class ServiceCategory(models.Model):
