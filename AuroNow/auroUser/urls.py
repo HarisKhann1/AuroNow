@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  dashboard_view, search_view
+from .views import dashboard_view, search_view
 
 urlpatterns = [
     path('', dashboard_view, name='dashboard'),  # URL for the dashboard
