@@ -45,7 +45,7 @@ module.exports = {
         extend: {
             colors: {
               'primary': '#233038',  // Primary color (charcol color)
-              'primary_hover': '#6B7280', // Primary hover color (dark charcol color)
+              'primary_hover': '#2c3e50', // Primary hover color (dark charcol color)
             },
         },
     },

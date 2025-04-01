@@ -1,8 +1,11 @@
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from shops import views
 import uuid
 
 urlpatterns = [
+    # logout route
+    path('logout/', auth_views.LogoutView.as_view(next_page='dashboard_login'), name='logout'),
     # auth routes
     path('signup/', views.dashboard_signup_view, name='dashboard_signup'),
     path('login/', views.dashboard_login_view, name='dashboard_login'),
@@ -10,5 +13,7 @@ urlpatterns = [
     path('reset-password/<uuid:token>/', views.reset_password, name='reset_password'),
     # dshboard routes
     path('', views.dashboard_home, name='dashboard_home'),
-    path('te/', views.temp, name='dashboard_products'),
+    path('service/', views.dashboard_service_view, name='dashboard_service'),
+    path('add-category/', views.add_service_category_view, name='dashboard_add_category'),
+    path('add-service/', views.add_service_view, name='dashboard_add_service'),
 ]

@@ -162,7 +162,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+AUTH_USER_MODEL = 'shops.ShopOwner'
 # URL to use when referring to static files located in STATICFILES_DIRS
 STATIC_URL = '/static/'
 # If you want to specify additional directories to look for static files
@@ -179,8 +179,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # it is for the djando-tailwind package
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
-# LOGIN_REDIRECT_URL = 'shops:home'
-# LOGOUT_REDIRECT_URL = 'shops:home'
+
+# settings.py
+# LOGIN_REDIRECT_URL = 'dashboard_home'
+# LOGOUT_REDIRECT_URL = 'dashboard_login'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

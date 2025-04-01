@@ -1,0 +1,217 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% block main %}
+<section id='services' class='container mx-auto px-4 py-12'>
+    {% comment %} numbers {% endcomment %}
+    <div class='flex flex-row gap-2'>
+        <div class='w-full bg-[#d3dbdd] p-4 rounded-xl text-center'>
+            <h2 class='text-gray-700 md:text-lg md:font-medium'>Total Category</h2>
+            <h3 class='text-xl md:text-2xl font-semibold'>3</h3>
+        </div>
+        <div class='w-full bg-[#d3dbdd] p-4 rounded-xl text-center'>
+            <h2 class='text-gray-700 md:text-lg md:font-medium'>Total Services</h2>
+            <h3 class='text-xl md:text-2xl font-semibold'>12</h3>
+        </div>
+    </div>
+
+    {% comment %} add and show category {% endcomment %}
+    <div class='bg-[#eeeeee] p-4 rounded-xl mt-8 flex flex-col gap-4'>
+        <h2 class='md:px-4 pt-6 text-xl md:text-2xl font-semibold text-gray-700'>Add Category</h2>
+        <div class='md:w-1/2 md:px-4'>
+            <form id="add-category-form" action='{% url "dashboard_add_category" %}' method='post' class='flex flex-col gap-4'>
+                {% csrf_token %}
+                <div class='flex flex-col gap-1'>
+                    <label for='category' class='text-gray-700 md:text-lg md:font-medium'>Category Name</label>
+                    <input type='text' id='category' name='category' placeholder='Enter Category Name' class='shadow p-2 md:p-3 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'>
+                    <p id='add-category-alert' class='hidden font-medium'></p>
+                </div>
+                <button type='submit' class='bg-primary hover:bg-primary_hover text-gray-200 p-2 md:p-3 shadow rounded-lg'>Add Category</button>
+            </form>
+        </div>
+
+        {% comment %} divider line {% endcomment %}
+        <div class="mt-2 w-full border-t-2 border-gray-300"></div>
+
+        {% comment %} show category {% endcomment %}
+        <div class='bg-[#eeeeee] p-4 rounded-xl flex flex-col gap-4'>
+            <h2 class='text-xl md:text-2xl font-semibold text-gray-700'>Show Category</h2>
+            {% comment %} search input for category {% endcomment %}
+            <div>
+                <label for="table-search" class="sr-only">Search</label>
+                <div class="relative mt-1">
+                    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        </svg>
+                    </div>
+                    <input type="text" id="table-search" class="max-w-56 shadow block pt-2 ps-10 text-sm text-black border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-primary focus:border-primary" placeholder="Search for items">
+                </div>
+            </div>
+            {% comment %} table start {% endcomment %}
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs uppercase bg-primary text-gray-200">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                SNO
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Category
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Only one row remains -->
+                        <tr>
+                            <td class="px-6 py-4">
+                                1
+                            </td>
+                            <th scope="row" class="px-6 py-1 font-medium text-black whitespace-nowrap">
+                                <input class='bg-[#eeeeee] outline-none border-none' disabled='true' id='table-category-input' type="text" name="category_id" value="add value here">
+                            </th>
+                            <td class="px-6 py-4 flex flex-row gap-2 flex-wrap">
+                                <form action={% url "dashboard_add_service" %} method="post">
+                                    {% csrf_token %}
+                                    <button 
+                                        id="edit-category"
+                                        type="submit"
+                                    >
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2854C5"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+                                    </button>
+                                </form>
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <button 
+                                        type="submit"
+                                    >
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BB271A"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% comment %} table end {% endcomment %}
+    </div>
+    
+    {% comment %} add and show services {% endcomment %}
+    <div class='bg-[#eeeeee] p-4 rounded-xl mt-12 flex flex-col gap-4'>
+        <h2 class='md:px-4 pt-8 text-xl md:text-2xl font-semibold text-gray-700'>Add Service</h2>
+        <div class='md:w-1/2 md:px-4'>
+            <form id='serviceForm' action='{% url "dashboard_add_service" %}' method='post' class='flex flex-col gap-4'>
+                {% csrf_token %}
+                <div class='flex flex-col gap-1'>
+                    <label for='service-name' class='text-gray-700 md:text-lg md:font-medium'>Service Name</label>
+                    <input type='text' id='service-name' name='service-name' placeholder='Enter service name' class='p-2 md:p-3 rounded-lg shadow border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'>
+                    <p id='serviceNameAlert' class='hidden font-medium'></p>
+                </div>
+                <div class='flex flex-col gap-1'>
+                    <label for='service-price' class='text-gray-700 md:text-lg md:font-medium'>Service Price</label>
+                    <input min='1' type='number' id='service-price' name='service-price' placeholder='Enter service price' class='p-2 md:p-3 rounded-lg shadow border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'>
+                    <p id='servicePriceAlert' class='hidden font-medium'></p>
+                </div>
+                {% comment %} Time {% endcomment %}
+                <div class='flex flex-col gap-1'>
+                    <label for='service-duration' class='text-gray-700 md:text-lg md:font-medium'>Service Duration</label>
+                    <input min='1' type='number' id='service-duration' name='service-duration' placeholder='Enter service duration' class='p-2 md:p-3 rounded-lg shadow border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'>
+                    <p id='serviceDurationAlert' class='hidden font-medium'></p>
+                </div>
+                {% comment %} Category {% endcomment %}
+                <div class='flex flex-col gap-1'>
+                    <label for='service-category' class='text-gray-700 md:text-lg md:font-medium'>Service Category</label>
+                    <select name="service-category" id="service-category" class='p-2 md:p-3 rounded-lg shadow border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'>
+                        <option value="">--select category</option>
+                        {% for category in categories %}
+                            <option class='bg-primary text-white rounded-lg' value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p id='serviceCategoryAlert' class='hidden font-medium'></p>
+                </div>
+                <div class='flex flex-col gap-1'>
+                    <label for='service-description' class='text-gray-700 md:text-lg md:font-medium'>Service Description</label>
+                    <textarea id='service-description' name='service-description' placeholder='Enter service description' class='p-2 md:p-3 rounded-lg shadow border border-[#eeeeee] bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'></textarea>
+                    <p id='serviceDescriptionAlert' class='hidden font-medium'></p>
+                </div>
+                <p id='serviceSuccessAlert' class='mt-1 hidden font-medium'></p>
+                <button type='submit' class='md:p-3 rounded-lg shadow bg-primary hover:bg-primary_hover text-gray-200 p-2'>Add Category</button>
+            </form>
+        </div>
+
+        {% comment %} divider line {% endcomment %}
+        <div class="mt-2 w-full border-t-2 border-gray-300"></div>
+
+        {% comment %} show category {% endcomment %}
+        <div class='bg-[#eeeeee] p-4 rounded-xl flex flex-col gap-4'>
+            <h2 class='text-xl md:text-2xl font-semibold text-gray-700'>Show Category</h2>
+            {% comment %} search input for category {% endcomment %}
+            <div>
+                <label for="table-search" class="sr-only">Search</label>
+                <div class="relative mt-1">
+                    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        </svg>
+                    </div>
+                    <input type="text" id="table-search" class="max-w-56 block pt-2 ps-10 text-sm text-black border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-primary focus:border-primary" placeholder="Search for items">
+                </div>
+            </div>
+            {% comment %} table start {% endcomment %}
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-center text-xs uppercase bg-primary text-gray-200">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                SNO
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Category
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Only one row remains -->
+                        <tr class="hover:bg-gray-50 text-center">
+                            <td class="px-6 py-4">
+                                1
+                            </td>
+                            <th scope="row" class="px-6 py-4 font-medium text-black whitespace-nowrap">
+                                Hair cutting
+                            </th>
+                            <td class="px-6 py-4 flex flex-row gap-2 justify-center items-center flex-wrap">
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <button 
+                                        type="submit"
+                                        class="sm:font-medium text-gray-200 bg-indigo-500 hover:bg-indigo-700 px-2 md:px-5 py-1 rounded"
+                                    >
+                                        Edit
+                                    </button>
+                                </form>
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <button 
+                                        type="submit"
+                                        class="sm:font-medium text-gray-200 bg-red-600 hover:bg-red-700 px-2 md:px-5 py-1 rounded"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% comment %} table end {% endcomment %}
+    </div>
+</section>
+<script src="{% static 'js/dashboard/addService.js' %}"></script>
+{% endblock %}

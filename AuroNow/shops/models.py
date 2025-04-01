@@ -51,18 +51,22 @@ class ServiceCategory(models.Model):
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='categories')
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+    
 # Services
 class Service(models.Model):
-    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='services')
+    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='services')
     category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, related_name='services', null=True, blank=True)
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField(default='')
     duration = models.IntegerField(help_text="Duration in minutes")
 
 # Staff Members
 class Staff(models.Model):
     phone = models.CharField(max_length=20)
-    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='staff')
+    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='staff')
     name = models.CharField(max_length=255)
     role = models.CharField(max_length=100)
 
@@ -71,7 +75,7 @@ class Staff(models.Model):
 
 # Appointment Slots
 class Slot(models.Model):
-    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='slots')
+    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='slots')
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -79,18 +83,18 @@ class Slot(models.Model):
 
 # FAQs for Shops
 class FAQ(models.Model):
-    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='faqs')
+    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,related_name='faqs')
     question = models.TextField()
     answer = models.TextField()
 
 # Advertisements
 class Advertisement(models.Model):
-    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='advertisements')
+    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='advertisements')
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     start_date = models.DateField()
     end_date = models.DateField()
 
 # Shop Images
 class ShopImage(models.Model):
-    shop_email = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='images')
+    shop_email = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='images')
     image_url = models.URLField()
