@@ -4,7 +4,7 @@
   class="bg-transparent text-white border shadow-md rounded-lg lg:rounded-full px-4 py-2 w-full max-w-3xl mx-auto"
 >
   <!-- Laptop/Desktop Layout -->
-  <div class="hidden lg:flex lg:items-center lg:gap-0">
+  <div id='desltop' class="hidden lg:flex lg:items-center lg:gap-0">
     <select name="category" class="bg-transparent border-none focus:outline-none appearance-none w-auto">
       <option value="" class="text-black">Category</option>
       {% for cat in categories %}
@@ -47,7 +47,7 @@
   </div>
 
   <!-- Tablet Layout -->
-  <div class="hidden md:flex md:flex-col lg:hidden gap-3">
+  <div id='tablet' class="hidden md:flex md:flex-col lg:hidden gap-3">
     <div class="grid grid-cols-2 gap-3">
       <select name="category" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full">
         <option value="" class="text-black">Category</option>
@@ -86,7 +86,7 @@
   </div>
 
   <!-- Mobile Layout -->
-  <div class="flex flex-col gap-2 md:hidden">
+  <div id='mobile' class="flex flex-col gap-2 md:hidden">
     <select name="category" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2">
       <option value="" class="text-black">Category</option>
       {% for cat in categories %}
@@ -126,13 +126,12 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     function updateFormInputs() {
-      // Get all form layouts
-      const desktopForm = document.querySelector(".lg\\:flex");
-      const tabletForm = document.querySelector(".md\\:flex.lg\\:hidden");
-      const mobileForm = document.querySelector(".md\\:hidden");
+      const desktopForm = document.querySelector("#desktop");
+      const tabletForm = document.querySelector("#tablet");
+      const mobileForm = document.querySelector("#mobile");
   
-      // Detect active layout
-      let activeForm;
+      let activeForm = null;
+  
       if (window.innerWidth >= 1024) {
         activeForm = desktopForm;
       } else if (window.innerWidth >= 768) {
@@ -141,21 +140,20 @@
         activeForm = mobileForm;
       }
   
-      // Enable only the active form's inputs and disable others
+      if (!activeForm) return; // 🛑 Stop if no active form is found
+  
       document.querySelectorAll("select, input").forEach((el) => {
         if (activeForm.contains(el)) {
           el.removeAttribute("disabled");
         } else {
           el.setAttribute("disabled", "true");
         }
+        console.log("Active Form:", activeForm);
       });
     }
   
-    // Run on page load
     updateFormInputs();
-  
-    // Run on window resize
     window.addEventListener("resize", updateFormInputs);
   });
-  
+
 </script>
