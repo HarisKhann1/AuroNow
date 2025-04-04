@@ -16,4 +16,6 @@ urlpatterns = [
     path('service/', views.dashboard_service_view, name='dashboard_service'),
     path('add-category/', views.add_service_category_view, name='dashboard_add_category'),
     path('add-service/', views.add_service_view, name='dashboard_add_service'),
+    path('edit-category/<int:id>/', views.edit_category_view, name='dashboard_edit_category'),
+    path('delete-category/<int:id>/', views.delete_category_view, name='dashboard_delete_category'),
 ]

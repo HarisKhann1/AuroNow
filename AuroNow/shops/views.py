@@ -11,6 +11,7 @@ from .models import PasswordResetToken
 from django.conf import settings
 import environ
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 # -------------- authentication start --------------------------------------
 def dashboard_signup_view(request):
@@ -109,10 +110,29 @@ def dashboard_home(request):
 # services page view
 def dashboard_service_view(request):
     user = request.user
-   
-    categories = ServiceCategory.objects.filter(shop=user)
+    # get categories 
+    categories = ServiceCategory.objects.filter(shop=user).order_by('name')
+    pagination = Paginator(categories, 5)  # Show 5 categories per page 
+    
+    # search for categories
+    if request.method == 'GET':
+        # get all services for the selected category
+            search_term = request.GET.get('categorySearch')
+            if search_term:
+                services = ServiceCategory.objects.filter(shop=user, name__icontains=search_term).order_by('name')
+                print(services, 'I am hit')
+                pagination = Paginator(services, 5)
+
+    page_number = request.GET.get('table-page', 1)  # Default to page 1 if not provided
+    page_obj = pagination.get_page(page_number)
+    total_page = page_obj.paginator.num_pages
+
+    # get all categories
+    total_categories = ServiceCategory.objects.filter(shop=user)
     context = {
-        'categories': categories,
+        'page_obj': page_obj,
+        'totalPageList': [i+1 for i in range(total_page)], # Create a list of page numbers for categories data
+        'total_categories': total_categories,
     }
     return render(request, 'dashboard/services.html', context)
 
@@ -149,6 +169,24 @@ def add_service_view(request):
                 duration=int(service_duration)
             ).save()
             return redirect('dashboard_service')
+    return redirect('dashboard_service')  # Redirect to services page
+
+def edit_category_view(request, id):
+    if request.method == 'POST':
+        user = request.user
+        category_name = request.POST.get('categoryName')
+        category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
+        category_instance.name = category_name
+        category_instance.save()
+        return redirect('dashboard_service')
+    return redirect('dashboard_service')  # Redirect to services page
+
+def delete_category_view(request, id):
+    if request.method == 'POST':
+        user = request.user
+        category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
+        category_instance.delete()
+        return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
 # -------------- add service page end --------------------------------------

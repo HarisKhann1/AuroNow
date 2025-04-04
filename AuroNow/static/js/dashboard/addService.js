@@ -44,27 +44,6 @@ if (categoryStatus === 'true') {
     }, 5000); // 5 seconds delay
 }
 
-
-// toggle add category button in edit category form
-const addCategoryButton = document.getElementById('edit-category');
-let flag = true;
-addCategoryButton.addEventListener('submit', (e) => {
-    if (flag) {
-        e.preventDefault();
-        addCategoryButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2854C5"><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"/></svg>`;
-        const categoryInput = document.getElementById('table-category-input');
-        categoryInput.setAttribute('disabled', 'false');
-        categoryInput.removeAttribute('disabled');
-        categoryInput.classList.remove('outline-none', 'border-none', 'bg-[#eeeeee]');
-        categoryInput.classList.add('border-2', 'border-primary', 'rounded-lg', 'px-4');
-        flag = false;
-    } else {
-        // Store the scroll position in sessionStorage before form submission
-        sessionStorage.setItem('scrollPositionEditCategory', window.scrollY);
-        flag = true;
-    }
-});
-
 // Listen for form submission of serviceForm
 const serviceForm = document.getElementById('serviceForm');
 serviceForm.addEventListener('submit', (e) => {
