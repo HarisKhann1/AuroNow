@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import dashboard_view, search_view
+from .views import base_layout, search_results
 
 urlpatterns = [
-    path('', dashboard_view, name='dashboard'),  # URL for the dashboard
-    path('search-results/', search_view, name='search_results'),
+    path('', base_layout, name='base_layout'),  # URL for the base_layout
+    path('search-results/', search_results, name='search_results'),
 
 ]

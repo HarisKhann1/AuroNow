@@ -1,10 +1,9 @@
 from django.shortcuts import render
-from shops.models import ShopOwner, ServiceCategory, Service
+from shops.models import ShopOwner, ServiceCategory
 
-def dashboard_view(request):
+def base_layout(request):
     categories = ServiceCategory.objects.values_list('name', flat=True).distinct()
     addresses = ShopOwner.objects.values_list('address', flat=True).distinct()
-    # categories = Service.objects.values_list('category__name', flat=True).distinct()
     price_ranges = ["0-50", "51-100", "101-200", "200+"]
 
     context = {
@@ -12,15 +11,13 @@ def dashboard_view(request):
         'addresses': addresses,
         'price_ranges': price_ranges
     }
-    return render(request, 'dashboard.html', context)
+    return render(request, 'base_layout.html', context)
 
-def search_view(request):
+def search_results(request):
     category = request.GET.get('category', '').strip()
     shop_name = request.GET.get('shop_name', '').strip().lower()
     address = request.GET.get('address', '').strip().lower()
     price_range = request.GET.get('price', '').strip()
-
-    print(f"User Inputs - Category: {category}, Shop Name: {shop_name}, Address: {address}, Price: {price_range}")
 
     # Get all shops
     shops = ShopOwner.objects.all()

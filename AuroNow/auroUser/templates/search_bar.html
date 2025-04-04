@@ -1,12 +1,12 @@
 <form
   action="{% url 'search_results' %}"
   method="GET"
-  class="bg-transparent text-white border shadow-md rounded-lg lg:rounded-full px-4 py-2 w-full max-w-3xl mx-auto"
+  class="bg-transparent text-white border shadow-md rounded-lg lg:rounded-full px-4 py-1 w-full max-w-3xl mx-auto"
 >
   <!-- Laptop/Desktop Layout -->
-  <div id='desltop' class="hidden lg:flex lg:items-center lg:gap-0">
+  <div id='desktop' class="hidden lg:flex lg:items-center lg:gap-0">
     <select name="category" class="bg-transparent border-none focus:outline-none appearance-none w-auto">
-      <option value="" class="text-black">Category</option>
+      <option value="">Category</option>
       {% for cat in categories %}
       <option class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
         {{ cat }}
@@ -21,10 +21,10 @@
 
     <span class="text-gray-500">|</span>
 
-    <select name="address" class="bg-transparent focus:bg-cyan-400 outline-none text-medium border-none appearance-none w-auto">
+    <select name="address" class="bg-transparent outline-none text-medium border-none appearance-none w-auto">
       <option value="">Location</option>
       {% for address in addresses %}
-      <option value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
+      <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
         {{ address }}
       </option>
       {% endfor %}
@@ -32,10 +32,10 @@
 
     <span class="text-gray-500">|</span>
 
-    <select name="price" class="bg-transparent focus:bg-cyan-400 outline-none text-medium border-none appearance-none w-auto">
+    <select name="price" class="bg-transparent outline-none text-medium border-none appearance-none w-auto">
       <option value="">Price</option>
       {% for price in price_ranges %}
-      <option value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
+      <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
         {{ price }}
       </option>
       {% endfor %}
@@ -64,7 +64,7 @@
       <select name="address" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full">
         <option value="">Location</option>
         {% for address in addresses %}
-        <option value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
+        <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
           {{ address }}
         </option>
         {% endfor %}
@@ -73,7 +73,7 @@
       <select name="price" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full">
         <option value="">Price</option>
         {% for price in price_ranges %}
-        <option value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
+        <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
           {{ price }}
         </option>
         {% endfor %}
@@ -88,9 +88,9 @@
   <!-- Mobile Layout -->
   <div id='mobile' class="flex flex-col gap-2 md:hidden">
     <select name="category" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2">
-      <option value="" class="text-black">Category</option>
+      <option value="" >Category</option>
       {% for cat in categories %}
-      <option class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
+      <option  class="text-black" class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
         {{ cat }}
       </option>
       {% endfor %}
@@ -102,7 +102,7 @@
     <select name="address" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2">
       <option value="">Location</option>
       {% for address in addresses %}
-      <option value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
+      <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
         {{ address }}
       </option>
       {% endfor %}
@@ -111,7 +111,7 @@
     <select name="price" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2">
       <option value="">Price</option>
       {% for price in price_ranges %}
-      <option value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
+      <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
         {{ price }}
       </option>
       {% endfor %}
