@@ -110,29 +110,50 @@ def dashboard_home(request):
 # services page view
 def dashboard_service_view(request):
     user = request.user
-    # get categories 
+
+    # get categories for pagination
     categories = ServiceCategory.objects.filter(shop=user).order_by('name')
     pagination = Paginator(categories, 5)  # Show 5 categories per page 
     
-    # search for categories
+    # get services for pagination
+    services = Service.objects.filter(shop=user).order_by('name')
+    service_pagination = Paginator(services, 2)  # Show 5 services per page
+
+    # search for categories and services
     if request.method == 'GET':
-        # get all services for the selected category
+            # search and pagination for categories
             search_term = request.GET.get('categorySearch')
             if search_term:
                 services = ServiceCategory.objects.filter(shop=user, name__icontains=search_term).order_by('name')
-                print(services, 'I am hit')
                 pagination = Paginator(services, 5)
 
-    page_number = request.GET.get('table-page', 1)  # Default to page 1 if not provided
-    page_obj = pagination.get_page(page_number)
-    total_page = page_obj.paginator.num_pages
+            page_number = request.GET.get('table-page', 1)  # Default to page 1 if not provided
+            page_obj = pagination.get_page(page_number)
+            total_page = page_obj.paginator.num_pages
+            
+            # search and pagination for services
+            service_search_term = request.GET.get('serviceSearch')
+            if service_search_term:
+                services = Service.objects.filter(shop=user, name__icontains=service_search_term).order_by('name')
+                service_pagination = Paginator(services, 5)
+            
+            service_page_number = request.GET.get('service-page', 1)  # Default to page 1 if not provided
+            service_page_obj = service_pagination.get_page(service_page_number)
+            service_total_page = service_page_obj.paginator.num_pages
 
-    # get all categories
+    # get all categories for the service select option form
     total_categories = ServiceCategory.objects.filter(shop=user)
+
+    services_count = Service.objects.filter(shop=user).count()
+    categories_count = ServiceCategory.objects.filter(shop=user).count()
     context = {
-        'page_obj': page_obj,
+        'page_obj': page_obj, # Categories pagination object
         'totalPageList': [i+1 for i in range(total_page)], # Create a list of page numbers for categories data
-        'total_categories': total_categories,
+        'total_categories': total_categories, # Total categories for service select option form
+        'service_page_obj': service_page_obj, # Services pagination object
+        'service_totalPageList': [i+1 for i in range(service_total_page)], # Create a list of page numbers for services data
+        'services_count': services_count, # Total services count
+        'categories_count': categories_count, # Total categories count
     }
     return render(request, 'dashboard/services.html', context)
 
@@ -145,6 +166,26 @@ def add_service_category_view(request):
         if service_category:
             ServiceCategory.objects.create(name=service_category, shop=user).save()
             return redirect('dashboard_service')
+    return redirect('dashboard_service')  # Redirect to services page
+
+# edit service category view
+def edit_category_view(request, id):
+    if request.method == 'POST':
+        user = request.user
+        category_name = request.POST.get('categoryName')
+        category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
+        category_instance.name = category_name
+        category_instance.save()
+        return redirect('dashboard_service')
+    return redirect('dashboard_service')  # Redirect to services page
+
+# delete service category view
+def delete_category_view(request, id):
+    if request.method == 'POST':
+        user = request.user
+        category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
+        category_instance.delete()
+        return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
 # add service view
@@ -171,21 +212,32 @@ def add_service_view(request):
             return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
-def edit_category_view(request, id):
+def edit_service_view(request, id):
     if request.method == 'POST':
         user = request.user
-        category_name = request.POST.get('categoryName')
-        category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
-        category_instance.name = category_name
-        category_instance.save()
-        return redirect('dashboard_service')
+        service_name = request.POST.get('service-name')
+        service_category = request.POST.get('service-category')
+        service_price = request.POST.get('service-price')
+        service_duration = request.POST.get('service-duration')
+        service_description = request.POST.get('service-description')
+
+        if service_name and service_category and service_price and service_duration and service_description:
+            category_instance = ServiceCategory.objects.get(shop=user, id=int(service_category))
+            Service.objects.filter(shop=user, id=int(id)).update(
+                category=category_instance,
+                name=service_name,
+                price=float(service_price),
+                description=service_description,
+                duration=int(service_duration)
+            )
+            return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
-def delete_category_view(request, id):
+def delete_service_view(request, id):
     if request.method == 'POST':
         user = request.user
-        category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
-        category_instance.delete()
+        service_instance = Service.objects.get(shop=user, id=int(id))
+        service_instance.delete()
         return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
