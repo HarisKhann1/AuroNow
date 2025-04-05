@@ -14,8 +14,8 @@ class ServiceAdmin(admin.ModelAdmin):
     search_fields = ('shop', 'name')
 
 class ShopImageAdmin(admin.ModelAdmin):
-    list_display = ('shop_email', 'image_url')
-    search_fields = ('shop_url', 'image_url')
+    list_display = ('shop_email', 'image')
+    search_fields = ('shop_url', 'image')
 
 class StaffAdmin(admin.ModelAdmin):
     list_display = ('phone', 'shop', 'name', 'role')

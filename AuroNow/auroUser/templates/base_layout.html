@@ -1,6 +1,6 @@
 {% extends 'base_auroUser.html' %}
 {% load static %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}AuroNow{% endblock %}
 
 {% block content %}
   <!-- Background Container -->
@@ -25,5 +25,8 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="bg-green-300" >
+    {% include 'recommeded.html' %}
   </div>
 {% endblock %}

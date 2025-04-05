@@ -83,4 +83,4 @@ class Advertisement(models.Model):
 # Shop Images
 class ShopImage(models.Model):
     shop_email = models.ForeignKey(ShopOwner, on_delete=models.CASCADE,to_field='email', related_name='images')
-    image_url = models.URLField()
+    image = models.ImageField(upload_to='shop_images/')

@@ -1,0 +1,73 @@
+{% comment %} {% if shops %} {% endcomment %}
+<div class="min-w-full container mx-auto px-2 py-4 border-2 ">
+    <h1 class="text-left font-bold text-2xl mb-2">Recommended</h1>
+    <div class="relative ">
+        <button id="prev-btn" class="absolute left-4 top-1/2 -translate-y-1/2 bg-gray-400 text-gray-800 rounded-full p-2 shadow-lg z-10">
+            <i class="bx bx-chevron-left text-3xl w-9"></i>
+        </button>
+        <button id="next-btn" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10">
+            <i class="bx bx-chevron-right text-3xl w-9"></i>
+        </button>
+
+        <div class="overflow-hidden">
+            <div id="carousel" class="carousel-container flex gap-6 overflow-x-auto py-8 px-2 scroll-smooth">
+                {% for images in shop_images %}
+                <div class="shop-card flex-none w-72 bg-gray-800 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:-translate-y-2">
+                    <div class="relative">
+                        {% comment %} for dynamic image {% endcomment %}
+                        <p>Debug: {{ images }}</p>
+
+                        {% comment %} {% if shop.images %} {% endcomment %}
+                            <img id="shop_image" src="{{ images }}" alt="shop image" class="w-full h-48 object-cover">
+                        {% comment %} {% else %} {% endcomment %}
+                            {% comment %} <img src="https://via.placeholder.com/300" alt="No image available" class="w-full h-48 object-cover"> {% endcomment %}
+                         {% comment %} {% endif %} {% endcomment %}
+                            {% comment %} <img src="./static/images/hero1.jpg" alt=""> {% endcomment %}
+                             <div class="absolute top-2 right-2 flex gap-2">
+                          {% comment %} icon btn  <button class="icon-btn bg-white text-gray-900 rounded-full py-2 px-3 shadow-lg hover:scale-110 hover:bg-indigo-600 hover:text-white transition-transform"> {% endcomment %}
+                                <i class="bx bx-heart text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% comment %} <div class="p-4"> {% endcomment %}
+                        {% comment %} <a href="#" class="text-lg font-semibold">{{ shop.name }}</a> {% endcomment %}
+                        {% comment %} <p class="text-gray-400 text-sm">{{ shop.address }}</p> {% endcomment %}
+                        {% comment %} <div class="mt-2"> {% endcomment %}
+                            {% comment %} {% for service in shop.services|slice:":3" %} {% endcomment %}
+                                {% comment %} <p class="text-sm text-gray-300">{{ service.name }} - ${{ service.price }}</p> {% endcomment %}
+                            {% comment %} {% endfor %} {% endcomment %}
+                        {% comment %} </div> {% endcomment %}
+                    {% comment %} </div> {% endcomment %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% comment %} {% endif %} {% endcomment %}
+
+<script>
+    const carousel = document.getElementById('carousel');
+    let index = 0;  
+    const totalCards = document.querySelectorAll('.shop-card').length;
+
+    function slide(direction) {
+    // Dynamically calculate width + gap on each slide
+        const firstCard = document.querySelector('.shop-card');
+        const cardWidth = firstCard.offsetWidth + 24; // 24px for gap-6
+
+        index += direction;
+        if (index >= totalCards) index = 0;
+        if (index < 0) index = totalCards - 1;
+
+        carousel.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+    }
+    
+    const prevBtn = document.getElementById('prev-btn');
+    prevBtn.addEventListener('click', () => slide(-1));
+    document.getElementById('next-btn').addEventListener('click', () => slide(1));
+    setInterval(() => slide(1), 3000); // Auto-scroll every 3 seconds
+</script>
+
+
+
