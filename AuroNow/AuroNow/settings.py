@@ -172,7 +172,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # URL for accessing uploaded files
 MEDIA_URL = '/media/'
 # Directory where uploaded files will be stored
-MEDIA_ROOT = [os.path.join(BASE_DIR, 'media')]
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # For collecting static files in production
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

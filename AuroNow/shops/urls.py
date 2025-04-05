@@ -11,7 +11,7 @@ urlpatterns = [
     path('login/', views.dashboard_login_view, name='dashboard_login'),
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('reset-password/<uuid:token>/', views.reset_password, name='reset_password'),
-    # dshboard service routes
+    # dshboard:: add catgory and services routes
     path('', views.dashboard_home, name='dashboard_home'),
     path('service/', views.dashboard_service_view, name='dashboard_service'),
     path('add-category/', views.add_service_category_view, name='dashboard_add_category'),
@@ -20,4 +20,8 @@ urlpatterns = [
     path('delete-category/<int:id>/', views.delete_category_view, name='dashboard_delete_category'),
     path('edit-service/<int:id>/', views.edit_service_view, name='dashboard_edit_service'),
     path('delete-service/<int:id>/', views.delete_service_view, name='dashboard_delete_service'),
+    # dashboard:: upload shop images route
+    path('upload-images/', views.dashboard_images_upload_view, name='dashboard_upload_images'),
+    path('delete-image/<int:id>/', views.delete_shop_image_view, name='dashboard_delete_image'),
+    path('edit-image/<int:id>/', views.edit_shop_image_view, name='dashboard_edit_image'),
 ]

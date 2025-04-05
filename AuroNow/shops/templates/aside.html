@@ -85,9 +85,11 @@
                             ></path>
                           </svg>
                         </div>
-                        <p class="text-black text-sm font-medium leading-normal">Queries</p>
+                        <p class="text-black text-sm font-medium leading-normal">FAQs & Queries</p>
                       </a>
-                      <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#EEEEEE] transition-colors" data-page="faqs">
+                      <a href="#" 
+                        onclick="window.location.href='{% url 'dashboard_upload_images' %}'; return false;"
+                        class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#EEEEEE] transition-colors" data-page="faqs">
                         <div class="text-black" data-icon="Question" data-size="24px" data-weight="regular">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                             <path
@@ -95,9 +97,10 @@
                             ></path>
                           </svg>
                         </div>
-                        <p class="text-black text-sm font-medium leading-normal">FAQs</p>
+                        <p class="text-black text-sm font-medium leading-normal">Upload Images</p>
                       </a>
-                      <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#EEEEEE] transition-colors" data-page="ads">
+                      <a href="#" 
+                        class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#EEEEEE] transition-colors" data-page="ads">
                         <div class="text-black" data-icon="Megaphone" data-size="24px" data-weight="regular">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                             <path

@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import login
 from django.core.mail import send_mail
 from .forms import ShopOwnerSignUpForm
-from .models import ShopOwner, ServiceCategory, Service
+from .models import ShopOwner, ServiceCategory, Service, ShopImage
 from .models import PasswordResetToken
 from django.conf import settings
 import environ
@@ -200,7 +200,6 @@ def add_service_view(request):
 
         if service_name and service_category and service_price and service_duration and service_description:
             category_instance = ServiceCategory.objects.get(shop=user, id=int(service_category))
-            print(service_category, 'I am hit');
             Service.objects.create(
                 shop=user,
                 category=category_instance,
@@ -242,3 +241,54 @@ def delete_service_view(request, id):
     return redirect('dashboard_service')  # Redirect to services page
 
 # -------------- add service page end --------------------------------------
+
+# -------------- add shop images start --------------------------------------
+# add shop images view
+@login_required(login_url='dashboard_login')
+def dashboard_images_upload_view(request):
+    user = request.user
+    MAX_ALLOWED_IMAGES = 3
+    
+    # Get current image count
+    images_count = ShopImage.objects.filter(shop=user).count()
+    shop_images = ShopImage.objects.filter(shop=user)
+        
+    if request.method == 'POST':
+        images = request.FILES.getlist('shop-images')
+
+        # Check if total would exceed limit
+        if images_count + len(images) > MAX_ALLOWED_IMAGES:
+            messages.error(request, f'Maximum {MAX_ALLOWED_IMAGES} images allowed. You already have {images_count}.')
+            return redirect('dashboard_upload_images')
+        else:
+            # Create image objects
+            for image in images:
+                ShopImage.objects.create(shop=user, shop_image=image)
+            messages.success(request, 'Images uploaded successfully!')
+            return redirect('dashboard_upload_images')
+    context = {
+        'shop_images': shop_images,
+        'images_count': images_count,
+        'max_allowed_images': MAX_ALLOWED_IMAGES,
+    }
+    return render(request, 'dashboard/addShopImages.html', context)
+
+def delete_shop_image_view(request, id):
+    if request.method == 'POST':
+        user = request.user
+        image_instance = ShopImage.objects.get(shop=user, id=int(id))
+        image_instance.delete()
+        return redirect('dashboard_upload_images')
+    return redirect('dashboard_upload_images')  # Redirect to images upload page
+
+def edit_shop_image_view(request, id):
+    if request.method == 'POST':
+        user = request.user
+        image_instance = ShopImage.objects.get(shop=user, id=int(id))
+        new_image = request.FILES.get('shop-image')
+        if new_image:
+            image_instance.shop_image = new_image
+            image_instance.save()
+            return redirect('dashboard_upload_images')
+    return redirect('dashboard_upload_images')  # Redirect to images upload page
+

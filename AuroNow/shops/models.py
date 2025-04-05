@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import datetime
 import uuid
 
@@ -25,9 +25,23 @@ class ShopOwnerManager(BaseUserManager):
         shop_owner.set_password(password)
         shop_owner.save(using=self._db)
         return shop_owner
+    
+    def create_superuser(self, email, name, shop_name, password=None, **extra_fields):
+        # Set admin privileges for superuser
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        
+        return self.create_user(
+            email=email,
+            name=name,
+            shop_name=shop_name,
+            password=password,
+            **extra_fields
+        )
 
 # Shop Owner Model
-class ShopOwner(AbstractBaseUser):
+class ShopOwner(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
@@ -36,6 +50,11 @@ class ShopOwner(AbstractBaseUser):
     address = models.TextField()
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    
+    # Admin-related fields - default to False for regular salon owners
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)  # False by default - no admin access
+    is_superuser = models.BooleanField(default=False)  # False by default - no admin privileges
     
     objects = ShopOwnerManager()
     
@@ -105,4 +124,4 @@ class Advertisement(models.Model):
 # Shop Images
 class ShopImage(models.Model):
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='images')
-    shop_image = models.ImageField(upload_to='shop_images/', default='')
+    shop_image = models.ImageField(upload_to='shop_images/', blank=True, null=True)
