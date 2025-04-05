@@ -2,6 +2,14 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 import datetime
 import uuid
+
+'''
+This module defines the models for the shop owners and their services in the AuroNow application.
+It includes the ShopOwner model, which is the custom user model for shop owners, and other related models such as ServiceCategory, Service, Staff, Slot, FAQ, Advertisement, and ShopImage.
+These models are used to manage shop owners, their services, staff members, appointment slots, FAQs, advertisements, and shop images.
+note: shop attribute each model store shop id
+'''
+
 # Custom Manager for Shop Owners
 class ShopOwnerManager(BaseUserManager):
     def create_user(self, email, name, password=None, **extra_fields):
@@ -96,5 +104,5 @@ class Advertisement(models.Model):
 
 # Shop Images
 class ShopImage(models.Model):
-    shop_email = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='images')
-    image_url = models.URLField()
+    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='images')
+    shop_image = models.ImageField(upload_to='shop_images/', default='')
