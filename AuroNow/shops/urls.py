@@ -24,4 +24,9 @@ urlpatterns = [
     path('upload-images/', views.dashboard_images_upload_view, name='dashboard_upload_images'),
     path('delete-image/<int:id>/', views.delete_shop_image_view, name='dashboard_delete_image'),
     path('edit-image/<int:id>/', views.edit_shop_image_view, name='dashboard_edit_image'),
+    # dashboard:: add staff routes
+    path('staff/', views.dashboard_add_staff_view, name='dashboard_staff'),
+    path('edit-staff/<int:id>/', views.dashboard_edit_staff_view, name='dashboard_edit-staff'),
+    path('delete-staff/<int:id>/', views.dashboard_delete_staff_view, name='dashboard_delete-staff'),
+
 ]

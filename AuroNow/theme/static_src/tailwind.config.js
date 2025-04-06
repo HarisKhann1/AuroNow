@@ -47,6 +47,7 @@ module.exports = {
               'primary': '#233038',  // Primary color (charcol color)
               'primary_hover': '#2c3e50', // Primary hover color (dark charcol color)
               'off-white-google': '#eeeeee',
+              'table-background': '#37404f', // Table background color (dark gray)
             },
         },
     },

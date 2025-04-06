@@ -6,12 +6,13 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import login
 from django.core.mail import send_mail
 from .forms import ShopOwnerSignUpForm
-from .models import ShopOwner, ServiceCategory, Service, ShopImage
+from .models import ShopOwner, ServiceCategory, Service, ShopImage, Staff
 from .models import PasswordResetToken
 from django.conf import settings
 import environ
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db import IntegrityError
 
 # -------------- authentication start --------------------------------------
 def dashboard_signup_view(request):
@@ -112,29 +113,29 @@ def dashboard_service_view(request):
     user = request.user
 
     # get categories for pagination
-    categories = ServiceCategory.objects.filter(shop=user).order_by('name')
+    categories = ServiceCategory.objects.filter(shop=user).order_by('name').reverse()
     pagination = Paginator(categories, 5)  # Show 5 categories per page 
     
     # get services for pagination
-    services = Service.objects.filter(shop=user).order_by('name')
-    service_pagination = Paginator(services, 2)  # Show 5 services per page
+    services = Service.objects.filter(shop=user).order_by('name').reverse()
+    service_pagination = Paginator(services, 5)  # Show 5 services per page
 
     # search for categories and services
     if request.method == 'GET':
             # search and pagination for categories
             search_term = request.GET.get('categorySearch')
             if search_term:
-                services = ServiceCategory.objects.filter(shop=user, name__icontains=search_term).order_by('name')
+                services = ServiceCategory.objects.filter(shop=user, name__icontains=search_term).order_by('name').reverse()
                 pagination = Paginator(services, 5)
 
             page_number = request.GET.get('table-page', 1)  # Default to page 1 if not provided
-            page_obj = pagination.get_page(page_number)
+            page_obj = pagination.get_page(page_number) #this variable hold data according to the page number
             total_page = page_obj.paginator.num_pages
             
             # search and pagination for services
             service_search_term = request.GET.get('serviceSearch')
             if service_search_term:
-                services = Service.objects.filter(shop=user, name__icontains=service_search_term).order_by('name')
+                services = Service.objects.filter(shop=user, name__icontains=service_search_term).order_by('name').reverse()
                 service_pagination = Paginator(services, 5)
             
             service_page_number = request.GET.get('service-page', 1)  # Default to page 1 if not provided
@@ -289,4 +290,82 @@ def edit_shop_image_view(request, id):
             image_instance.save()
             return redirect('dashboard_upload_images')
     return redirect('dashboard_upload_images')  # Redirect to images upload page
+# -------------- add shop images end --------------------------------------
+
+# -------------- dashboard add staff start --------------------------------------
+def dashboard_add_staff_view(request):
+    user = request.user
+    staff_list = Staff.objects.filter(shop=user).order_by('id').reverse()
+    staff_count = Staff.objects.filter(shop=user).count()
+
+    # search and pagination
+    pagination = Paginator(staff_list, 5)  # Show 5 categories per page 
+
+    # search for staff, with pagination
+    if request.method == 'GET':
+            search_term = request.GET.get('staffSearch')
+            if search_term:
+                staff_list = Staff.objects.filter(shop=user, name__icontains=search_term).order_by('name').reverse()
+                pagination = Paginator(staff_list, 5)
+
+            page_number = request.GET.get('staff-table-page', 1)  # Default to page 1 if not provided
+            page_obj = pagination.get_page(page_number) #this variable hold data according to the page number
+            total_page = page_obj.paginator.num_pages
+
+    # add staff
+    if request.method == 'POST':
+        staff_name = request.POST.get('staff-name')
+        staff_phone = request.POST.get('staff-phone-no')
+        staff_role = request.POST.get('staff-role')
+        try:
+            if staff_name and staff_phone and staff_role:
+                Staff.objects.create(phone=staff_phone, shop=user, name=staff_name, role=staff_role).save()
+                messages.success(request, 'Staff added successfully!')
+                return redirect('dashboard_staff')
+        except IntegrityError:
+            messages.error(request, 'A staff member with this information already exists')
+            return redirect('dashboard_staff')
+        
+    context = {
+        'staff_count': staff_count,
+        'page_obj': page_obj, #this variable hold data according to the page number
+        'totalPageList': [i+1 for i in range(total_page)], # Create a list of page numbers for categories data
+    }
+    return render(request, 'dashboard/addStaff.html', context)
+
+def dashboard_edit_staff_view(request, id):
+    user = request.user
+
+    if request.method == 'POST':
+        staff_name = request.POST.get('staff-name')
+        staff_phone = request.POST.get('staff-phone-no')
+        staff_role = request.POST.get('staff-role')
+        
+        try:
+            if staff_name and staff_phone and staff_role:
+                staff_instance = Staff.objects.get(shop=user, id=int(id))
+                staff_instance.phone = staff_phone
+                staff_instance.shop = user
+                staff_instance.name = staff_name
+                staff_instance.role = staff_role
+                staff_instance.save()
+                return redirect('dashboard_staff')
+        except IntegrityError:
+            messages.error(request, 'A staff member with this information already exists')
+            return redirect('dashboard_staff')
+    else:
+        return redirect('dashboard_staff')
+    
+def dashboard_delete_staff_view(request, id):
+    user = request.user
+
+    if request.method == 'POST':
+        staff_instance = Staff.objects.get(shop=user, id=int(id))
+        staff_instance.delete()
+        return redirect('dashboard_staff')
+    return redirect('dashboard_staff')
+    
+        
+
+# -------------- dashboard add staff end --------------------------------------
 
