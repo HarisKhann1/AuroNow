@@ -267,9 +267,7 @@ def dashboard_images_upload_view(request):
             messages.success(request, 'Images uploaded successfully!')
             return redirect('dashboard_upload_images')
     context = {
-        'shop_images': shop_images,
-        'images_count': images_count,
-        'max_allowed_images': MAX_ALLOWED_IMAGES,
+        'shop_images': shop_images, # All images of the shop
     }
     return render(request, 'dashboard/addShopImages.html', context)
 

@@ -22,11 +22,11 @@
                 <form method="POST" enctype="multipart/form-data" class="space-y-6 md:px-4" mu>
                     {% csrf_token %}
                     
-                    <div class="space-y-4">
+                    <div class="space-y-2">
                         <label for="shop-images" class="block text-lg font-medium text-gray-700">Select Shop Images</label>
                         <input type="file" name="shop-images" id="shop-images" multiple required
                             class="w-full md:w-1/2 border border-gray-300 p-3 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-                        <p class="text-gray-500 text-sm mt-2">You can upload multiple images at once.</p>
+                        <p class="text-gray-500 text-sm mt-2">You can upload multiple images at once. (A maximum of three shop images is allowed.)</p>
                     </div>
         
                     <!-- Submit Button -->
@@ -42,7 +42,7 @@
         {% comment %} show images {% endcomment %}
         <div class='bg-off-white-google px-4 py-8 rounded-xl'>
             <h2 class='mb-4 text-xl md:text-3xl font-semibold text-gray-700'>Shop Images</h2>
-            <div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+            <div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8'>
                 {% if shop_images|length > 0 %}
                     {% for image in shop_images %}
                         <div class="max-w-sm bg-[#EEEEEE] hover:bg-white border border-gray-200 rounded-lg shadow-md">
