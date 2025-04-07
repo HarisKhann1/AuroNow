@@ -52,6 +52,7 @@ module.exports = {
             fontFamily: {
                 'font-style':'var(--font-mono)',
             },
+            
           },
     },
     plugins: [

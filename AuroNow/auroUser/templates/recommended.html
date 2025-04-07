@@ -1,73 +1,135 @@
-{% comment %} {% if shops %} {% endcomment %}
-<div class="min-w-full container mx-auto px-2 py-4 border-2 ">
-    <h1 class="text-left font-bold text-2xl mb-2">Recommended</h1>
-    <div class="relative ">
-        <button id="prev-btn" class="absolute left-4 top-1/2 -translate-y-1/2 bg-gray-400 text-gray-800 rounded-full p-2 shadow-lg z-10">
-            <i class="bx bx-chevron-left text-3xl w-9"></i>
-        </button>
-        <button id="next-btn" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10">
-            <i class="bx bx-chevron-right text-3xl w-9"></i>
+{% if shops %}
+<div class="min-w-full container mx-auto px-2 py-4">
+    <h1 class="text-left font-bold text-2xl mb-4">Recommended</h1>
+    <div class="relative">
+        <!-- Previous Button -->
+        <button id="prev-btn" class="absolute left-5 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 w-10 h-10 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 hover:scale-105">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
         </button>
 
-        <div class="overflow-hidden">
-            <div id="carousel" class="carousel-container flex gap-6 overflow-x-auto py-8 px-2 scroll-smooth">
-                {% for images in shop_images %}
-                <div class="shop-card flex-none w-72 bg-gray-800 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:-translate-y-2">
+        <!-- Next Button -->
+        <button id="next-btn" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 w-10 h-10 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 hover:scale-105">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+
+        <div class="overflow-hidden px-4 sm:px-8 group">
+            <div id="carousel" class="carousel-container flex gap-6 py-2 px-5 scroll-smooth pr-4" style="overflow-x: auto; scrollbar-width: none;">
+                {% for shop in shops %}
+                <div class="shop-card flex-none w-[calc(100%-16px)] sm:w-[calc(50%-16px)] md:w-[calc(33.33%-16px)] lg:w-[calc(25%-16px)] bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in">
                     <div class="relative">
-                        {% comment %} for dynamic image {% endcomment %}
-                        <p>Debug: {{ images }}</p>
-
-                        {% comment %} {% if shop.images %} {% endcomment %}
-                            <img id="shop_image" src="{{ images }}" alt="shop image" class="w-full h-48 object-cover">
-                        {% comment %} {% else %} {% endcomment %}
-                            {% comment %} <img src="https://via.placeholder.com/300" alt="No image available" class="w-full h-48 object-cover"> {% endcomment %}
-                         {% comment %} {% endif %} {% endcomment %}
-                            {% comment %} <img src="./static/images/hero1.jpg" alt=""> {% endcomment %}
-                             <div class="absolute top-2 right-2 flex gap-2">
-                          {% comment %} icon btn  <button class="icon-btn bg-white text-gray-900 rounded-full py-2 px-3 shadow-lg hover:scale-110 hover:bg-indigo-600 hover:text-white transition-transform"> {% endcomment %}
-                                <i class="bx bx-heart text-xl"></i>
-                            </button>
+                        {% if shop.images %}
+                            <img id="shop_image" src="{{ shop.images.0 }}" alt="shop image" class="w-full h-40 object-cover">
+                        {% else %}
+                            <img src="https://via.placeholder.com/300" alt="No image available" class="w-full h-40 object-cover">
+                        {% endif %}
+                    </div>
+                    <div class="p-3">
+                        <div class="flex justify-between items-start">
+                            <a href="#" class="text-md font-semibold line-clamp-1">{{ shop.name }}</a>
+                            <div class="flex items-center bg-gray-100 px-1 rounded">
+                                <span class="text-xs font-bold text-gray-800">{{ shop.rating|default:"5.0" }} </span>
+                                <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
+                        {% for category in shop.services %} 
+                        <div class="mt-2">
+                            <span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
+                        </div>
+                        {% endfor %}
+                        <div class="flex justify-between mt-2 text-xs text-gray-600">
+                            <span>{{ shop.reviews|default:"20" }} reviews</span>
                         </div>
                     </div>
-                    {% comment %} <div class="p-4"> {% endcomment %}
-                        {% comment %} <a href="#" class="text-lg font-semibold">{{ shop.name }}</a> {% endcomment %}
-                        {% comment %} <p class="text-gray-400 text-sm">{{ shop.address }}</p> {% endcomment %}
-                        {% comment %} <div class="mt-2"> {% endcomment %}
-                            {% comment %} {% for service in shop.services|slice:":3" %} {% endcomment %}
-                                {% comment %} <p class="text-sm text-gray-300">{{ service.name }} - ${{ service.price }}</p> {% endcomment %}
-                            {% comment %} {% endfor %} {% endcomment %}
-                        {% comment %} </div> {% endcomment %}
-                    {% comment %} </div> {% endcomment %}
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 </div>
-{% comment %} {% endif %} {% endcomment %}
+
+<!-- Add Tailwind custom animation -->
+<style>
+@layer utilities {
+    @keyframes fade-in {
+        from { opacity: 0 }
+        to { opacity: 1 }
+    }
+    .animate-fade-in {
+        animation: fade-in 0.5s ease forwards;
+    }
+}
+</style>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
     const carousel = document.getElementById('carousel');
-    let index = 0;  
-    const totalCards = document.querySelectorAll('.shop-card').length;
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const container = carousel.parentElement;
+    let cardWidth = 0;
+    let visibleCards = 0;
+
+    function initCarousel() {
+        const firstCard = document.querySelector('.shop-card');
+        if (!firstCard) return;
+
+        // Get the width of the first card plus gap
+        cardWidth = firstCard.offsetWidth + 16; // 16 = gap-4
+        
+        // Determine how many cards to scroll based on screen size
+        if (window.innerWidth >= 1024) {
+            visibleCards = 4; // Desktop - scroll 4 cards
+        } else if (window.innerWidth >= 768) {
+            visibleCards = 2; // Tablet - scroll 2 cards
+        } else {
+            visibleCards = 1; // Mobile - scroll 1 card
+        }
+        
+        updateButtonVisibility();
+    }
 
     function slide(direction) {
-    // Dynamically calculate width + gap on each slide
-        const firstCard = document.querySelector('.shop-card');
-        const cardWidth = firstCard.offsetWidth + 24; // 24px for gap-6
-
-        index += direction;
-        if (index >= totalCards) index = 0;
-        if (index < 0) index = totalCards - 1;
-
-        carousel.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+        const scrollAmount = direction * visibleCards * cardWidth;
+        carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
-    
-    const prevBtn = document.getElementById('prev-btn');
+
+    function updateButtonVisibility() {
+        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+
+        if (carousel.scrollLeft <= 0) {
+            prevBtn.classList.add('opacity-0', 'pointer-events-none');
+        } else {
+            prevBtn.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        if (carousel.scrollLeft >= maxScroll - 5) {
+            nextBtn.classList.add('opacity-0', 'pointer-events-none');
+        } else {
+            nextBtn.classList.remove('opacity-0', 'pointer-events-none');
+        }
+    }
+
+    // Event listeners
     prevBtn.addEventListener('click', () => slide(-1));
-    document.getElementById('next-btn').addEventListener('click', () => slide(1));
-    setInterval(() => slide(1), 3000); // Auto-scroll every 3 seconds
+    nextBtn.addEventListener('click', () => slide(1));
+
+    // Show buttons on hover
+    container.addEventListener('mouseenter', updateButtonVisibility);
+    container.addEventListener('mouseleave', updateButtonVisibility);
+
+    // Handle scroll update
+    carousel.addEventListener('scroll', updateButtonVisibility);
+
+    // Resize
+    window.addEventListener('resize', initCarousel);
+
+    // Init
+    initCarousel();
+});
 </script>
-
-
-
+{% endif %}
