@@ -28,5 +28,8 @@ urlpatterns = [
     path('staff/', views.dashboard_add_staff_view, name='dashboard_staff'),
     path('edit-staff/<int:id>/', views.dashboard_edit_staff_view, name='dashboard_edit-staff'),
     path('delete-staff/<int:id>/', views.dashboard_delete_staff_view, name='dashboard_delete-staff'),
-
+    # dashboard:: add FAQs routes
+    path('faq/', views.dashboard_faqs_view, name='dashboard_faq'),
+    path('edit-faq/<int:id>', views.dashboard_edit_faq_view, name='dashboard_edit_faq'),
+    path('delete-faq/<int:id>', views.dashboard_delete_faq_view, name='dashboard_delete_faq'),
 ]

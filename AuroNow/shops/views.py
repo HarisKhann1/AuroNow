@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import login
 from django.core.mail import send_mail
 from .forms import ShopOwnerSignUpForm
-from .models import ShopOwner, ServiceCategory, Service, ShopImage, Staff
+from .models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, FAQ
 from .models import PasswordResetToken
 from django.conf import settings
 import environ
@@ -364,8 +364,76 @@ def dashboard_delete_staff_view(request, id):
         staff_instance.delete()
         return redirect('dashboard_staff')
     return redirect('dashboard_staff')
-    
-        
 
 # -------------- dashboard add staff end --------------------------------------
 
+# -------------- dashboard add FAQs --------------------------------------
+def dashboard_faqs_view(request):
+    user = request.user
+    faqs = FAQ.objects.filter(shop=user).order_by('id').reverse()
+    faqs_count = FAQ.objects.filter(shop=user).count()
+
+    # search and pagination
+    pagination = Paginator(faqs, 5)  # Show 5 categories per page 
+
+    # search for faqs, with pagination
+    if request.method == 'GET':
+            search_term = request.GET.get('faqSearch')
+            if search_term:
+                faqs = FAQ.objects.filter(shop=user, question__icontains=search_term).order_by('question').reverse()
+                pagination = Paginator(faqs, 5)
+
+            page_number = request.GET.get('faq-table-page', 5)  # Default to page 5 if not provided
+            page_obj = pagination.get_page(page_number) #this variable hold data according to the page number
+            total_page = page_obj.paginator.num_pages
+
+    # add faq
+    if request.method == 'POST':
+        faq_question = request.POST.get('faq-question')
+        faq_answer = request.POST.get('faq-answer')
+        try:
+            if faq_question and faq_answer:
+                FAQ.objects.create(shop=user, question=faq_question, answer=faq_answer).save()
+                messages.success(request, 'FAQ added successfully!')
+                return redirect('dashboard_faq')
+        except IntegrityError:
+            messages.error(request, 'FAQ cannot be added')
+            return redirect('dashboard_faq')
+    
+    context = {
+        'faqs_count': faqs_count,
+        'page_obj': page_obj, #this variable hold data according to the page number
+        'totalPageList': [i+1 for i in range(total_page)], # Create a list of page numbers for categories data
+    }
+    return render(request, 'dashboard/addFAQs.html', context)
+
+# dashboard edit faq view
+def dashboard_edit_faq_view(request, id):
+    user = request.user
+
+    if request.method == 'POST':
+        faq_question = request.POST.get('faq-question')
+        faq_answer = request.POST.get('faq-answer')
+        
+        try:
+            if faq_question and faq_answer:
+                faq_instance = FAQ.objects.get(shop=user, id=int(id))
+                faq_instance.question = faq_question
+                faq_instance.answer = faq_answer
+                faq_instance.save()
+                return redirect('dashboard_faq')
+        except Exception:
+            messages.error(request, 'FAQ cannot be updated, something went wrong!')
+            return redirect('dashboard_faq')
+    else:
+        return redirect('dashboard_faq')
+    
+# dashboard delete faq view
+def dashboard_delete_faq_view(request, id):
+    user = request.user
+
+    if request.method == 'POST':
+        faq_instance = FAQ.objects.get(shop=user, id=int(id))
+        faq_instance.delete()
+        return redirect('dashboard_faq')
+    return redirect('dashboard_faq')
