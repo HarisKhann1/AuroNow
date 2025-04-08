@@ -7,6 +7,7 @@ from django.contrib.auth import login
 from django.core.mail import send_mail
 from .forms import ShopOwnerSignUpForm
 from .models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, FAQ
+from auroUser.models import Queries
 from .models import PasswordResetToken
 from django.conf import settings
 import environ
@@ -293,6 +294,7 @@ def edit_shop_image_view(request, id):
 # -------------- add shop images end --------------------------------------
 
 # -------------- dashboard add staff start --------------------------------------
+@login_required(login_url='dashboard_login')
 def dashboard_add_staff_view(request):
     user = request.user
     staff_list = Staff.objects.filter(shop=user).order_by('id').reverse()
@@ -368,6 +370,7 @@ def dashboard_delete_staff_view(request, id):
 # -------------- dashboard add staff end --------------------------------------
 
 # -------------- dashboard add FAQs --------------------------------------
+@login_required(login_url='dashboard_login')
 def dashboard_faqs_view(request):
     user = request.user
     faqs = FAQ.objects.filter(shop=user).order_by('id').reverse()
@@ -437,3 +440,59 @@ def dashboard_delete_faq_view(request, id):
         faq_instance.delete()
         return redirect('dashboard_faq')
     return redirect('dashboard_faq')
+
+# -------------- dashboard add FAQs ends --------------------------------------
+
+# -------------- dashboard Answer Queries start --------------------------------------
+@login_required(login_url='dashboard_login')
+def dashboard_queries_view(request):
+    user = request.user
+    queries = Queries.objects.filter(shop=user).order_by('id').reverse()
+    queries_count = Queries.objects.filter(shop=user, response='').count()
+
+    # search and pagination
+    pagination = Paginator(queries, 10)  # Show 10 categories per page 
+
+    # search for queries, with pagination
+    if request.method == 'GET':
+            search_term = request.GET.get('querySearch')
+            if search_term:
+                queries = Queries.objects.filter(shop=user, question__icontains=search_term).order_by('id').reverse()
+                pagination = Paginator(queries, 1)
+
+            page_number = request.GET.get('query-table-page', 10)  # Default to page 1 if not provided
+            page_obj = pagination.get_page(page_number) #this variable hold data according to the page number
+            total_page = page_obj.paginator.num_pages
+     
+    context = {
+        'queries_count': queries_count,
+        'page_obj': page_obj, #this variable hold data according to the page number
+        'totalPageList': [i+1 for i in range(total_page)], # Create a list of page numbers for categories data
+    }
+    return render(request, 'dashboard/answerQueries.html', context)
+
+# dashboard answer queries view
+def dahboard_answer_queries_view(request, id):
+    user = request.user
+
+    # respond to query
+    if request.method == 'POST':
+        query_response = request.POST.get('query-response')
+        if query_response:
+            query_instance = Queries.objects.get(shop=user, id=int(id))
+            query_instance.response = query_response
+            query_instance.save()
+            messages.success(request, 'Response added successfully!')
+            return redirect('dashboard_queries')
+        
+# dashboard delete query view
+def dashboard_delete_query_view(request, id):
+    user = request.user
+
+    if request.method == 'POST':
+        query_instance = Queries.objects.get(shop=user, id=int(id))
+        query_instance.delete()
+        return redirect('dashboard_queries')
+    return redirect('dashboard_queries')
+
+# -------------- dashboard Answer Queries end --------------------------------------

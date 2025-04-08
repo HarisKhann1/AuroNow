@@ -125,3 +125,13 @@ class Advertisement(models.Model):
 class ShopImage(models.Model):
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='images')
     shop_image = models.ImageField(upload_to='shop_images/', blank=True, null=True)
+
+# class ShopOwner(models.Model):
+#     name = models.CharField(max_length=255)
+#     # Other fields for the salon
+
+#     # Add opening and closing times
+#     opening_time = models.TimeField()  # Time salon opens
+#     closing_time = models.TimeField()  # Time salon closes
+#     is_24hr = models.BooleanField(default=False)  # If the salon is open 24/7
+

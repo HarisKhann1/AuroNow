@@ -108,7 +108,7 @@
                         </div>
                         <p class="text-black text-sm font-medium leading-normal">Ads</p>
                       </a>
-                      <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#EEEEEE] transition-colors" data-page="settings">
+                      <a href="{% url "dashboard_queries" %}" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#EEEEEE] transition-colors" data-page="settings">
                         <div class="text-black" data-icon="Gear" data-size="24px" data-weight="regular">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                             <path
@@ -116,7 +116,7 @@
                             ></path>
                           </svg>
                         </div>
-                        <p class="text-black text-sm font-medium leading-normal">Settings</p>
+                        <p class="text-black text-sm font-medium leading-normal">Queries</p>
                       </a>
 
                       {% if user.is_authenticated %}

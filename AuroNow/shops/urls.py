@@ -32,4 +32,8 @@ urlpatterns = [
     path('faq/', views.dashboard_faqs_view, name='dashboard_faq'),
     path('edit-faq/<int:id>', views.dashboard_edit_faq_view, name='dashboard_edit_faq'),
     path('delete-faq/<int:id>', views.dashboard_delete_faq_view, name='dashboard_delete_faq'),
+    # dashboard:: answer queries routes
+    path('queries/', views.dashboard_queries_view, name='dashboard_queries'),
+    path('answer-queries/<int:id>', views.dahboard_answer_queries_view, name='dashboard_answer_queries'),
+    path('delete-query/<int:id>', views.dashboard_delete_query_view, name='dashboard_delete_query'),
 ]
