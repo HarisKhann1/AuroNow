@@ -1,6 +1,6 @@
 <header class="fixed top-0 left-0 w-full z-50">
   <!-- Navbar Container -->
-    <nav>
+    <nav class="mx-4">
       <div
         class="bg-slate-100 w-full max-w-4xl mx-auto h-auto mt-10 px-4 py-3 flex items-center justify-between sticky top-0 rounded-full shadow-md "
       >
@@ -17,14 +17,14 @@
   
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center gap-6 ">
-          <ul class="list-none flex gap-6">
+          {% comment %} <ul class="list-none flex gap-3 lg:gap-6">
             <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Home</a></li>
             <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Services</a></li>
             <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Booking</a></li>
             <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Profile</a></li>
-          </ul>
+          </ul> {% endcomment %}
           {% comment %} login and professional button {% endcomment %}
-          <div class='flex gap-1'>
+          <div class='flex gap-3'>
             <a
               href="#"
               class="bg-primary-color text-gray-700 font-medium px-6 py-2 rounded-full hover:bg-primary-hover-color transition duration-300"
@@ -46,20 +46,19 @@
       <div
         class="md:hidden hidden flex-col items-center bg-slate-100 rounded-2xl border border-black mt-1 p-4 shadow-md"
         id="mobile-menu">
-        <ul class="list-none flex flex-col mt-0 gap-3 ">
+        {% comment %} <ul class="list-none flex flex-col mt-0 gap-0.5 ">
           <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Home</a></li>
           <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Services</a></li>
           <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Booking</a></li>
           <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Profile</a></li>
-        </ul>
-        <div class='flex flex-col gap-2 sm:flex-row'>
+        </ul> {% endcomment %}
+        <div class='flex flex-col mt-2 gap-2 sm:flex-row text-start text-white'>
           <a href="#"
-            class="w-fit bg-primary-color text-gray-700 font-medium px-3 py-2 mt-3 rounded-full hover:bg-primary-hover-color transition duration-300 ">
-
+            class="w-fit bg-primary-color px-6 py-1.5 text-xs font-medium rounded-lg ">
             Login
           </a>
           <a href="#"
-            class="w-fit bg-secondary-color text-white font-medium px-3 py-2 rounded-full hover:bg-secondary-hover-color transition duration-300">
+            class="w-fit bg-secondary-color text-xs font-medium px-3 py-2 rounded-lg ">
             For Professional
           </a>
         </div>

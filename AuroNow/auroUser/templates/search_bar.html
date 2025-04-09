@@ -5,35 +5,42 @@
 >
   <!-- Laptop/Desktop Layout -->
   <div id='desktop' class="hidden lg:flex lg:items-center lg:gap-0">
-    <select name="category" class="bg-transparent border-none focus:outline-none appearance-none w-auto">
-      <option value="">Category</option>
+  
+    <!--categories  -->
+    <select name="category" class="bg-transparent border-none focus:outline-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
+      <option class="text-black " value="">Category</option>
       {% for cat in categories %}
-      <option class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
+      <option class="text-black " value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
         {{ cat }}
       </option>
       {% endfor %}
     </select>
-    
     <span class="text-gray-500">|</span>
 
-    <input type="text" name="shop_name" placeholder="Name" value="{{ request.GET.shop_name }}"
-      class="bg-transparent placeholder:text-white outline-none border-none text-medium flex-grow" />
-
+    <!--Name Input  -->
+    <input 
+  type="text" 
+  name="shop_name" 
+  placeholder="Name" 
+  value="{{ request.GET.shop_name }}"
+  class="bg-transparent placeholder:text-white outline-none border-none text-medium flex-grow focus:ring-0 text-white
+         [&:-webkit-autofill]:bg-transparent [&:-webkit-autofill]:text-white"/>
     <span class="text-gray-500">|</span>
 
-    <select name="address" class="bg-transparent outline-none text-medium border-none appearance-none w-auto">
-      <option value="">Location</option>
+    <!-- Location -->
+    <select name="address" class="bg-transparent  outline-none text-medium border-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
+      <option  class="text-black" value="">Location</option>
       {% for address in addresses %}
-      <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
+      <option  class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
         {{ address }}
       </option>
       {% endfor %}
     </select>
-
     <span class="text-gray-500">|</span>
-
-    <select name="price" class="bg-transparent outline-none text-medium border-none appearance-none w-auto">
-      <option value="">Price</option>
+  
+    <!--Price -->
+    <select name="price" class="bg-transparent outline-none text-medium border-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
+      <option  class="text-black" value="">Price</option>
       {% for price in price_ranges %}
       <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
         {{ price }}
@@ -41,7 +48,8 @@
       {% endfor %}
     </select>
 
-    <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-full hover:bg-primary-hover-color min-w-[100px]">
+    <!-- search button -->
+   <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-full hover:bg-primary-hover-color min-w-[100px]">
       Search
     </button>
   </div>
@@ -49,7 +57,8 @@
   <!-- Tablet Layout -->
   <div id='tablet' class="hidden md:flex md:flex-col lg:hidden gap-3">
     <div class="grid grid-cols-2 gap-3">
-      <select name="category" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full">
+      <!--categories  -->
+      <select name="category" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
         <option value="" class="text-black">Category</option>
         {% for cat in categories %}
         <option class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
@@ -57,12 +66,14 @@
         </option>
         {% endfor %}
       </select>
-
+        
+      <!--Name Input  -->
       <input type="text" name="shop_name" placeholder="Name" value="{{ request.GET.shop_name }}"
-        class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full" />
-
-      <select name="address" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full">
-        <option value="">Location</option>
+        class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full  focus:ring-0" />
+      
+        <!-- Location -->
+      <select name="address" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
+        <option  class="text-black" value="">Location</option>
         {% for address in addresses %}
         <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
           {{ address }}
@@ -70,8 +81,9 @@
         {% endfor %}
       </select>
 
-      <select name="price" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full">
-        <option value="">Price</option>
+      <!--Price -->
+      <select name="price" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
+        <option class="text-black" value="">Price</option>
         {% for price in price_ranges %}
         <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
           {{ price }}
@@ -79,6 +91,7 @@
         {% endfor %}
       </select>
     </div>
+    <!-- search button -->
 
     <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-lg hover:bg-primary-hover-color w-full md:w-1/2 mx-auto">
       Search
@@ -87,8 +100,10 @@
 
   <!-- Mobile Layout -->
   <div id='mobile' class="flex flex-col gap-2 md:hidden">
-    <select name="category" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2">
-      <option value="" >Category</option>
+    
+    <!--categories  -->
+    <select name="category" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
+      <option class="text-black" value="" >Category</option>
       {% for cat in categories %}
       <option  class="text-black" class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
         {{ cat }}
@@ -96,11 +111,13 @@
       {% endfor %}
     </select>
 
+    <!--Name Input  -->
     <input type="text" name="shop_name" placeholder="Name" value="{{ request.GET.shop_name }}"
-      class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full" />
+      class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full focus:ring-0" />
 
-    <select name="address" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2">
-      <option value="">Location</option>
+    <!-- Location -->
+    <select name="address" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
+      <option class="text-black" value="">Location</option>
       {% for address in addresses %}
       <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
         {{ address }}
@@ -108,8 +125,9 @@
       {% endfor %}
     </select>
 
-    <select name="price" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2">
-      <option value="">Price</option>
+    <!--Price -->
+    <select name="price" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
+      <option class="text-black" value="">Price</option>
       {% for price in price_ranges %}
       <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
         {{ price }}
@@ -117,7 +135,8 @@
       {% endfor %}
     </select>
 
-    <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-lg hover:bg-primary-hover-color w-full mt-2">
+    <!-- search button -->
+    <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-lg hover:bg-primary-hover-color w-full mt-2 focus:ring-0 hover:text-gray-200">
       Search
     </button>
   </div>
@@ -156,3 +175,4 @@
   });
 
 </script>
+

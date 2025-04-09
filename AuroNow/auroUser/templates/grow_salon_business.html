@@ -1,0 +1,94 @@
+{% load static %}
+<div class="bg-[#f0f6fc]">
+  <div
+    class="lg:mx-20 px-8 py-12 mt-8 grid grid-cols-1 lg:grid-cols-2 items-center gap-12"
+  >
+    <!-- Left Side: Images -->
+    <div class="space-y-2">
+      <!-- Top row: Two equal images -->
+      <div class="grid grid-cols-2 gap-x-2">
+        <img
+          src="{% static 'images/hero.png' %}"
+          alt="Salon Chair"
+          class="rounded-xl object-cover h-40 w-full"
+        />
+        <img
+          src="{% static 'images/hero1.jpg' %}"
+          alt="Barber & Customer"
+          class="rounded-xl object-cover h-40 w-full"
+        />
+      </div>
+
+      <!-- Bottom row: Uneven width -->
+      <div class="flex gap-x-2">
+        <img
+          src="{% static 'images/HeroImage.jpg' %}"
+          alt="Interior 2"
+          class="rounded-xl object-cover h-60 w-2/5"
+        />
+        <img
+          src="{% static 'images/hero3.jpeg' %}"
+          alt="Interior 1"
+          class="rounded-xl object-cover h-60 w-3/5"
+        />
+      </div>
+    </div>
+
+    <!-- Right Side: Content -->
+    <div>
+      <h2 class="text-4xl font-semibold text-gray-800 mb-4">
+        GROW <span class="font-bold">YOUR SALON BUSINESS</span>
+      </h2>
+      <p class="text-gray-600 mb-6">
+        Join AuroNow to manage your appointments, attract new customers, and
+        grow your business effortlessly.
+      </p>
+
+      <ul class="space-y-4 text-gray-700">
+        <li class="flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 mr-2"
+            viewBox="0 0 512 512"
+          >
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+            />
+          </svg>
+          Manage Bookings Easily
+        </li>
+        <li class="flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 mr-2"
+            viewBox="0 0 512 512"
+          >
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+            />
+          </svg>
+          Promote Your Services
+        </li>
+        <li class="flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 mr-2"
+            viewBox="0 0 512 512"
+          >
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+            />
+          </svg>
+          Track Performance
+        </li>
+      </ul>
+
+      <a
+        href="#"
+        class="mt-6 inline-block bg-primary-color text-white py-2 px-6 rounded-lg shadow hover:bg-primary-hover-color transition"
+      >
+        Join Now
+      </a>
+    </div>
+  </div>
+</div>

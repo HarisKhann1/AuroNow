@@ -8,12 +8,14 @@
     {% tailwind_css %}
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   </head>
-  <body class="flex flex-col min-h-screen font-font-style">
+  <body class="flex flex-col min-h-screen">
     
     {% include 'header/header.html' %}
 
     <main class="flex-grow relative">
-        {% block content %}{% endblock content %}
+        {% block main %}
+        
+        {% endblock main %}
     </main>
 
     {% include 'footer/footer.html' %}

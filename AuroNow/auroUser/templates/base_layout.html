@@ -1,8 +1,9 @@
+
 {% extends 'base_auroUser.html' %}
 {% load static %}
 {% block title %}AuroNow{% endblock %}
 
-{% block content %}
+{% block main %}
   <!-- Background Container -->
   <div class="relative min-h-screen">
     <!-- Responsive Background Image -->
@@ -13,20 +14,29 @@
     </div>
     <!-- Content Area -->
     <div class="relative pt-32 flex-1 overflow-y-auto">
-      <div class="container mt-32 mx-auto px-6 py-8 flex flex-col gap-24 ">
-       {% comment %} testig for animation start  {% endcomment %}
+      <div class="container mt-28 mx-auto px-6 py-8 flex flex-col gap-24 ">
+       <!--  Main Heading -->
        <h1 class="text-2xl font-bold text-center text-blue-400 drop-shadow-[0_0_10px_rgba(212,175,55,01)]">
         Your Perfect Salon Experience is just a Click Away
       </h1>
-        <!-- Scrollable Content -->
+      <!-- search bar blocks -->
         <div class="space-y-8 px-4">
-          <!-- Content blocks -->
           {% include 'search_bar.html' %}
         </div>
       </div>
     </div>
   </div>
-  <div class="bg-green-300" >
+  
+  <div class="bg-green-300">
+    {% include 'recently_views.html' %}
+  </div>
+  <div >
     {% include 'recommended.html' %}
+  </div>
+  <div>
+    {% include 'how_it_work.html' %}
+  </div>
+  <div>
+    {% include 'grow_salon_business.html' %}
   </div>
 {% endblock %}
