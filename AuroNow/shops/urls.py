@@ -20,6 +20,9 @@ urlpatterns = [
     path('delete-category/<int:id>/', views.delete_category_view, name='dashboard_delete_category'),
     path('edit-service/<int:id>/', views.edit_service_view, name='dashboard_edit_service'),
     path('delete-service/<int:id>/', views.delete_service_view, name='dashboard_delete_service'),
+    path('add-shop-timing/', views.add_shop_timing, name='dashboard_add_shop_timing'),
+    path('edit-shop-timing/<int:id>/', views.edit_shop_timing, name='dashboard_edit_shop_timing'),
+    path('delete-shop-timing/<int:id>/', views.delete_shop_timing, name='dashboard_delete_shop_timing'),
     # dashboard:: upload shop images route
     path('upload-images/', views.dashboard_images_upload_view, name='dashboard_upload_images'),
     path('delete-image/<int:id>/', views.delete_shop_image_view, name='dashboard_delete_image'),

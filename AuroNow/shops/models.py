@@ -126,12 +126,26 @@ class ShopImage(models.Model):
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='images')
     shop_image = models.ImageField(upload_to='shop_images/', blank=True, null=True)
 
-# class ShopOwner(models.Model):
-#     name = models.CharField(max_length=255)
-#     # Other fields for the salon
+class ShopTiming(models.Model):
+    DAYS_OF_WEEK = [
+        ('mon', 'Monday'),
+        ('tue', 'Tuesday'),
+        ('wed', 'Wednesday'),
+        ('thu', 'Thursday'),
+        ('fri', 'Friday'),
+        ('sat', 'Saturday'),
+        ('sun', 'Sunday'),
+    ]
 
-#     # Add opening and closing times
-#     opening_time = models.TimeField()  # Time salon opens
-#     closing_time = models.TimeField()  # Time salon closes
-#     is_24hr = models.BooleanField(default=False)  # If the salon is open 24/7
+    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='timings')
+    day = models.CharField(max_length=3, choices=DAYS_OF_WEEK)
+    opening_time = models.TimeField(blank=True, null=True)
+    closing_time = models.TimeField(blank=True, null=True)
+    # is_open = models.BooleanField(default=True)  # Open/Close status
+    is_closed = models.BooleanField(default=False)  # Sunday off etc.
 
+    class Meta:
+        unique_together = ('shop', 'day')  # Avoid duplicate day entries
+
+    def __str__(self):
+        return f"{self.shop.name} - {self.get_day_display()}"

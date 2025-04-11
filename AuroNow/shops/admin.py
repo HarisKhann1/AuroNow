@@ -1,5 +1,5 @@
 from django.contrib import admin
-from shops.models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, Slot, FAQ, Advertisement
+from shops.models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, Slot, FAQ, Advertisement, ShopTiming, PasswordResetToken
 
 
 class ShopOwnerAdmin(admin.ModelAdmin):
@@ -41,3 +41,5 @@ admin.site.register(Slot, SlotAdmin)
 admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Advertisement, AdvertisementAdmin)
 admin.site.register(ServiceCategory, ServiceCategoryAdmin)
+admin.site.register(ShopTiming)
+admin.site.register(PasswordResetToken)

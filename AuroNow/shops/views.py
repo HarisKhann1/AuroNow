@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import login
 from django.core.mail import send_mail
 from .forms import ShopOwnerSignUpForm
-from .models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, FAQ
+from .models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, FAQ, ShopTiming
 from auroUser.models import Queries
 from .models import PasswordResetToken
 from django.conf import settings
@@ -114,19 +114,28 @@ def dashboard_service_view(request):
     user = request.user
 
     # get categories for pagination
-    categories = ServiceCategory.objects.filter(shop=user).order_by('name').reverse()
+    shop_timing = ShopTiming.objects.filter(shop=user).order_by('id').reverse()
+
+    # get categories for pagination
+    categories = ServiceCategory.objects.filter(shop=user).order_by('id').reverse()
     pagination = Paginator(categories, 5)  # Show 5 categories per page 
     
     # get services for pagination
-    services = Service.objects.filter(shop=user).order_by('name').reverse()
+    services = Service.objects.filter(shop=user).order_by('id').reverse()
     service_pagination = Paginator(services, 5)  # Show 5 services per page
 
-    # search for categories and services
+    # search for categories and services and show shop timing
     if request.method == 'GET':
+            # search for shop timings
+            shop_time_search_term = request.GET.get('shopTimeSearch')
+            if shop_time_search_term:
+                shop_timing = ShopTiming.objects.filter(shop=user, day__icontains=shop_time_search_term).order_by('id').reverse()
+            
+
             # search and pagination for categories
             search_term = request.GET.get('categorySearch')
             if search_term:
-                services = ServiceCategory.objects.filter(shop=user, name__icontains=search_term).order_by('name').reverse()
+                categories = ServiceCategory.objects.filter(shop=user, name__icontains=search_term).order_by('id').reverse()
                 pagination = Paginator(services, 5)
 
             page_number = request.GET.get('table-page', 1)  # Default to page 1 if not provided
@@ -136,7 +145,7 @@ def dashboard_service_view(request):
             # search and pagination for services
             service_search_term = request.GET.get('serviceSearch')
             if service_search_term:
-                services = Service.objects.filter(shop=user, name__icontains=service_search_term).order_by('name').reverse()
+                services = Service.objects.filter(shop=user, name__icontains=service_search_term).order_by('id').reverse()
                 service_pagination = Paginator(services, 5)
             
             service_page_number = request.GET.get('service-page', 1)  # Default to page 1 if not provided
@@ -152,10 +161,16 @@ def dashboard_service_view(request):
         'page_obj': page_obj, # Categories pagination object
         'totalPageList': [i+1 for i in range(total_page)], # Create a list of page numbers for categories data
         'total_categories': total_categories, # Total categories for service select option form
+        
         'service_page_obj': service_page_obj, # Services pagination object
         'service_totalPageList': [i+1 for i in range(service_total_page)], # Create a list of page numbers for services data
+        
+        'shop_timing': shop_timing, # Shop timings
+
         'services_count': services_count, # Total services count
         'categories_count': categories_count, # Total categories count
+
+
     }
     return render(request, 'dashboard/services.html', context)
 
@@ -167,6 +182,7 @@ def add_service_category_view(request):
         service_category = request.POST.get('category')
         if service_category:
             ServiceCategory.objects.create(name=service_category, shop=user).save()
+            messages.success(request, 'Service category added successfully!', extra_tags='shop-category-form')
             return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
@@ -178,6 +194,7 @@ def edit_category_view(request, id):
         category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
         category_instance.name = category_name
         category_instance.save()
+        messages.success(request, 'Service category updated successfully!')
         return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
@@ -242,6 +259,76 @@ def delete_service_view(request, id):
         return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
+def add_shop_timing(request):
+    if request.method == 'POST':
+        shop_opening_time = request.POST.get('opening-timing')
+        shop_closing_time = request.POST.get('closing-timing')
+        day = request.POST.get('day')
+        off_day_bool = request.POST.get('is_closed')
+
+        user = request.user
+        is_timing_exists = ShopTiming.objects.filter(shop=user, day=day).exists()
+
+        if is_timing_exists:
+            messages.error(request, f'Shop timing for {day.upper()} already exists!', extra_tags='shop-timing-form')
+            return redirect('dashboard_service')
+        
+        if shop_opening_time and shop_closing_time and day:
+                ShopTiming.objects.create(
+                    shop=user,
+                    opening_time=shop_opening_time,
+                    closing_time=shop_closing_time,
+                    day=day,
+                    is_closed=off_day_bool == 'on'  # Convert to boolean
+                ).save()
+                messages.success(request, f'{day.upper()} timing added successfully!', extra_tags='shop-timing-form')
+                return redirect('dashboard_service')
+        elif off_day_bool and day:
+            ShopTiming.objects.create(
+                shop=user,
+                day=day,
+                is_closed=off_day_bool == 'on'  # Convert to boolean
+            ).save()
+            messages.success(request, f'{day.upper()} timing added successfully!', extra_tags='shop-timing-form')
+            return redirect('dashboard_service')
+        else:
+            messages.error(request, 'Please fill all the fields', extra_tags='shop-timing-form')
+            return redirect('dashboard_service')
+        
+    return redirect('dashboard_service')  # Redirect to services page
+
+def edit_shop_timing(request, id):
+    if request.method == 'POST':
+        user = request.user
+        shop_opening_time = request.POST.get('opening-timing')
+        shop_closing_time = request.POST.get('closing-timing')
+        day = request.POST.get('day')
+        off_day_bool = request.POST.get('is_closed')
+
+        if shop_opening_time and shop_closing_time and day:
+            try:
+                ShopTiming.objects.filter(shop=user, id=int(id)).update(
+                    opening_time=shop_opening_time,
+                    closing_time=shop_closing_time,
+                    day=day,
+                    is_closed=off_day_bool == 'on'  # Convert to boolean
+                )
+                messages.success(request, f'{day.upper()} timing updated successfully!', extra_tags='shop-timing-form')
+                return redirect('dashboard_service')
+            except IntegrityError:
+               messages.error(request, f'Shop timing for {day.upper()} already exists!', extra_tags='shop-timing-form')
+               return redirect('dashboard_service')
+            
+    return redirect('dashboard_service')  # Redirect to services page
+
+def delete_shop_timing(request, id):
+    if request.method == 'POST':
+        user = request.user
+        shop_timing_instance = ShopTiming.objects.get(shop=user, id=int(id))
+        shop_timing_instance.delete()
+        messages.success(request, f'{shop_timing_instance.day.upper()} timing deleted successfully!', extra_tags='shop-timing-form')
+        return redirect('dashboard_service')
+    return redirect('dashboard_service')  # Redirect to services page
 # -------------- add service page end --------------------------------------
 
 # -------------- add shop images start --------------------------------------
