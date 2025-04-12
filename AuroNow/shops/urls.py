@@ -39,4 +39,7 @@ urlpatterns = [
     path('queries/', views.dashboard_queries_view, name='dashboard_queries'),
     path('answer-queries/<int:id>', views.dahboard_answer_queries_view, name='dashboard_answer_queries'),
     path('delete-query/<int:id>', views.dashboard_delete_query_view, name='dashboard_delete_query'),
+    # dashboard:: appointments routes
+    path('appointments/', views.dashboard_appointments_view, name='dashboard_appointments'),
+    path('confirm-appointment/<int:id>', views.dashboard_appointment_edit_view, name='dashboard_edit_appointment'),
 ]

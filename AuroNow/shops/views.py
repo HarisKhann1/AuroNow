@@ -1,3 +1,4 @@
+from datetime import date
 from django.http import HttpResponse
 from django.template import TemplateDoesNotExist
 from django.shortcuts import render, redirect
@@ -7,7 +8,7 @@ from django.contrib.auth import login
 from django.core.mail import send_mail
 from .forms import ShopOwnerSignUpForm
 from .models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, FAQ, ShopTiming
-from auroUser.models import Queries
+from auroUser.models import Queries, BookAppointment
 from .models import PasswordResetToken
 from django.conf import settings
 import environ
@@ -583,3 +584,43 @@ def dashboard_delete_query_view(request, id):
     return redirect('dashboard_queries')
 
 # -------------- dashboard Answer Queries end --------------------------------------
+
+# -------------- dashboard appointments start --------------------------------------
+@login_required(login_url='dashboard_login')
+def dashboard_appointments_view(request):
+    shop_user = request.user
+    appointments = BookAppointment.objects.filter(shop=shop_user).order_by('id').reverse()
+    appointments_today_count = BookAppointment.objects.filter(shop=shop_user,  appointment_date=date.today()).count()
+    appointments_this_month_count = BookAppointment.objects.filter(shop=shop_user, appointment_date__year=date.today().year, appointment_date__month=date.today().month ).count()
+
+    # search and pagination
+    pagination = Paginator(appointments, 10)
+    if request.method == 'GET':
+            search_term = request.GET.get('appointmentSearch')
+            if search_term:
+                appointments = BookAppointment.objects.filter(shop=shop_user, user__name__icontains=search_term).order_by('id').reverse()
+                pagination = Paginator(appointments, 10)
+
+            page_number = request.GET.get('appointment-table-page', 10) # Default to page 10 if not provided
+            page_obj = pagination.get_page(page_number) #this variable hold data according to the page number
+            total_page = page_obj.paginator.num_pages
+            
+    context = {
+        'appointments_today_count': appointments_today_count,
+        'appointments_this_month_count': appointments_this_month_count,
+        'page_obj': page_obj, #this variable hold data according to the page number
+        'totalPageList': [i+1 for i in range(total_page)], # Create a list of page numbers for categories data
+    }
+    return render(request, 'dashboard/appointments.html', context)
+
+def dashboard_appointment_edit_view(request, id):
+    user = request.user
+
+    if request.method == 'POST':
+        appointment_status = request.POST.get('appointment-status')
+        appointment_instance = BookAppointment.objects.get(shop=user, id=int(id))
+        appointment_instance.status = appointment_status
+        appointment_instance.save()
+        messages.success(request, 'Appointment status updated successfully!')
+        return redirect('dashboard_appointments')
+    return redirect('dashboard_appointments')  # Redirect to appointments page
