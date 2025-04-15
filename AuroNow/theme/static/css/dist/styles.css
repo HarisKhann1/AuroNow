@@ -1081,34 +1081,6 @@ select {
   max-width: 24rem;
 }
 
-.max-w-28 {
-  max-width: 7rem;
-}
-
-.max-w-24 {
-  max-width: 6rem;
-}
-
-.max-w-16 {
-  max-width: 4rem;
-}
-
-.max-w-6 {
-  max-width: 1.5rem;
-}
-
-.max-w-20 {
-  max-width: 5rem;
-}
-
-.max-w-14 {
-  max-width: 3.5rem;
-}
-
-.max-w-10 {
-  max-width: 2.5rem;
-}
-
 .-translate-x-full {
   --tw-translate-x: -100%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -1300,11 +1272,6 @@ select {
 
 .border-transparent {
   border-color: transparent;
-}
-
-.border-red-600 {
-  --tw-border-opacity: 1;
-  border-color: rgb(220 38 38 / var(--tw-border-opacity, 1));
 }
 
 .bg-\[\#233038\] {
@@ -1820,11 +1787,6 @@ select {
 
 .duration-300 {
   transition-duration: 300ms;
-}
-
-.\*\:py-1 > * {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
 }
 
 .hover\:bg-\[\#0b0f12\]:hover {
