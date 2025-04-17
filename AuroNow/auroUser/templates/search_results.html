@@ -10,10 +10,12 @@
         <!-- card-->
             <div class="grid gap-4 grid-cols-2 md:grid-cols-2 md:gap-y-8 lg:grid-cols-4 lg:gap-y-10 ">
                 {% for shop in results %}
-                    <div class="bg-white shadow-lg rounded-lg w-full max-w-xs">
+                    <a href="{% if shop.email %}{% url 'shop_detail' shop.email %}{% else %}#{% endif %}"
+                    class="bg-white shadow-lg rounded-lg w-full max-w-xs duration-300 hover:scale-105">
                         <!-- Show Images Inside Each Shop Block -->
                         {% for img_url in shop.images %}
-                        <img src="{{ img_url }}" alt="shop image" class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-lg">
+                        <img src="{{ img_url }}" alt="shop image" 
+                        class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-lg ">
                         {% endfor %}
                         <div class='px-2 pb-2 md:px-4 md:pb-4 text-xs md:text-lg flex flex-col'>
                             <div class="mt-4 flex justify-between items-start">
@@ -35,7 +37,7 @@
                                 <span>{{ shop.reviews|default:"20" }} reviews</span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 {% endfor %}
             </div>
         {% else %}

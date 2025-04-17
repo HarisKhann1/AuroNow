@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect, get_object_or_404
 from shops.models import ShopOwner, ServiceCategory, ShopImage
 from random import randint, uniform
 
@@ -23,6 +23,7 @@ def get_shop_data():
         average_rating = round(uniform(3.5, 5.0), 1)  # Random rating between 3.5-5.0
         
         shops_data.append({
+            'email': shop.email,
             'name': shop.shop_name,
             'address': shop.address,
             'images': image_urls,
@@ -106,6 +107,7 @@ def search_results(request):
             review_count = randint(5, 50)
             average_rating = round(uniform(3.5, 5.0), 1)
             results.append({
+                'email': shop.email,
                 'name': shop.shop_name,
                 'address': shop.address,
                 'services': filtered_services,
@@ -118,3 +120,14 @@ def search_results(request):
 
 def recntly_views (request, shop_id,):
     return render(request, "recently_views")
+
+
+def shop_detail(request, email):
+    shop = get_object_or_404(ShopOwner, email=email)
+    
+    # Fetch shop images
+    shop_images = ShopImage.objects.filter(shop_email=email)
+    image_urls = [image.image.url for image in shop_images if image.image]
+
+    # Pass images along with shop data to the template
+    return render(request, 'shop_detail.html', {'shop': shop, 'images': image_urls})
