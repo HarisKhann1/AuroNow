@@ -1,49 +1,53 @@
-{% extends 'base_auroUser.html' %}
+{% extends 'base_auroUser.html' %} {% block main %}
 
-{% block main %}
-
-<div class="grid grid-cols-1 place-items-center min-h-screen p-4 pt-32">  <!-- 👈 Added pt-20 here -->
-    <div class="container mx-auto md:px-5 lg:px-10">
-        
-        {% if results %}
-        <h2 class="text-2xl font-bold mb-4">Search Results</h2>
-        <!-- card-->
-            <div class="grid gap-4 grid-cols-2 md:grid-cols-2 md:gap-y-8 lg:grid-cols-4 lg:gap-y-10 ">
-                {% for shop in results %}
-                    <a href="{% if shop.email %}{% url 'shop_detail' shop.email %}{% else %}#{% endif %}"
-                    class="bg-white shadow-lg rounded-lg w-full max-w-xs duration-300 hover:scale-105">
-                        <!-- Show Images Inside Each Shop Block -->
-                        {% for img_url in shop.images %}
-                        <img src="{{ img_url }}" alt="shop image" 
-                        class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-lg ">
-                        {% endfor %}
-                        <div class='px-2 pb-2 md:px-4 md:pb-4 text-xs md:text-lg flex flex-col'>
-                            <div class="mt-4 flex justify-between items-start">
-                                <h1 href="#" class=" font-semibold line-clamp-1">{{ shop.name }}</h1>
-                                <div class="flex items-center bg-gray-100 rounded">
-                                    <span class="text-[10px] font-medium text-gray-800">{{ shop.rating|default:"5.0" }} </span>
-                                    <i class="bx bxs-star text-yellow-400 text-[10px] ml-0.5"></i>
-                                </div>
-                            </div>
-                            
-                            <span class="text-gray-500 ">{{ shop.address }}</span>
-                            
-                            {% for service in shop.services %}
-                                <p class="text-gray-500 ">
-                                {{ service.category }}
-                                </p>
-                            {% endfor %}
-                            <div class="flex justify-between mt-0  text-gray-600">
-                                <span>{{ shop.reviews|default:"20" }} reviews</span>
-                            </div>
-                        </div>
-                    </a>
-                {% endfor %}
+<div class="grid grid-cols-1 place-items-center min-h-screen p-4 pt-32">
+  <!-- 👈 Added pt-20 here -->
+  <div class="container mx-auto md:px-5 lg:px-10">
+    {% if results %}
+    <h2 class="text-2xl font-bold mb-4">Search Results</h2>
+    <!-- card-->
+    <div
+      class="grid gap-4 grid-cols-2 md:grid-cols-2 md:gap-y-8 lg:grid-cols-4 lg:gap-y-10"
+    >
+      {% for shop in results %}
+      <a
+        href="{% if shop.email %}{% url 'shop_detail' shop.email %}{% else %}#{% endif %}"
+        class="bg-white shadow-lg rounded-lg w-full max-w-xs duration-300 hover:scale-105"
+      >
+        <!-- Show Images Inside Each Shop Block -->
+        {% for img_url in shop.images %}
+        <img
+          src="{{ img_url }}"
+          alt="shop image"
+          class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-lg"
+        />
+        {% endfor %}
+        <div class="px-2 pb-2 md:px-4 md:pb-4 text-xs md:text-lg flex flex-col">
+          <div class="mt-4 flex justify-between items-start">
+            <h1 href="#" class="font-semibold line-clamp-1">{{ shop.name }}</h1>
+            <div class="flex items-center bg-gray-100 rounded">
+              <span class="text-[10px] font-medium text-gray-800"
+                >{{ shop.rating|default:"5.0" }}
+              </span>
+              <i class="bx bxs-star text-yellow-400 text-[10px] ml-0.5"></i>
             </div>
-        {% else %}
-            <p class="text-gray-500 text-center">No results found.</p>
-        {% endif %}
-        
+          </div>
+
+          <span class="text-gray-500">{{ shop.address }}</span>
+
+          {% for category in shop.categories %}
+          <p class="text-gray-500">{{ category }}</p>
+          {% endfor %}
+          <div class="flex justify-between mt-0 text-gray-600">
+            <span>{{ shop.reviews|default:"20" }} reviews</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
     </div>
+    {% else %}
+    <p class="text-gray-500 text-center">No results found.</p>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

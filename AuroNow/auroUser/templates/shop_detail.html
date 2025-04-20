@@ -13,6 +13,9 @@
   <p class="text-gray-700 mb-2">Email: {{ shop.email }}</p>
   <p class="text-gray-700 mb-2">Phone: {{ shop.phone }}</p>
   <p class="text-gray-700 mb-2">Address: {{ shop.address }}</p>
+  <p>Categories: {% for category in categories %}{{ category }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+  <p>Reviews: {{ reviews }}</p>
+  <p>Rating: {{ rating }}</p>
 
   <!-- Optionally, loop through all images -->
   {% comment %} {% for image in images %}
@@ -20,4 +23,27 @@
   {% endfor %}
 {% endcomment %}
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const shop = {
+      email: "{{ shop.email|escapejs }}",
+      name: "{{ shop.shop_name|escapejs }}",
+      address: "{{ shop.address|escapejs }}",
+      image: "{% if images.0 %}{{ images.0|escapejs }}{% else %}https://via.placeholder.com/300{% endif %}",
+      categories: [{% for category in categories %}"{{ category }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+      reviews: "{{ reviews }}",
+      rating: "{{ rating }}"
+    };
+
+    let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+    recentlyViewed = recentlyViewed.filter(s => s.email !== shop.email);
+    recentlyViewed = recentlyViewed.filter((s) => s.email.toLowerCase() !== shop.email.toLowerCase());
+    recentlyViewed.unshift(shop);
+    recentlyViewed = recentlyViewed.slice(0, 5);
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+  });
+</script>
+
+
 {% endblock %} 

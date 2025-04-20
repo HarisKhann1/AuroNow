@@ -1,124 +1,117 @@
-{% comment %} 
-<div class="min-w-full container mx-auto px-2 py-4">
-  <h1 class="text-left font-bold text-2xl mb-4">Recently Viewed</h1>
-  <!-- Move the padding to the relative container for easier control -->
+<div
+  id="recently-viewed-container"
+  class="min-w-full container mx-auto px-2 py-4 hidden"
+>
+  <div class="flex justify-between items-center">
+    <h1 class="text-left font-bold text-2xl mb-4">Recently Viewed</h1>
+  </div>
+
   <div class="relative overflow-hidden px-4 sm:px-8 group">
-    <!-- Previous Button -->
-    <button id="prev-btn" class="absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 w-10 h-10 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 hover:scale-105">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+    <!-- Prev Button -->
+    <button
+      id="recent-prev-btn"
+      class="absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 w-10 h-10 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100 group-hover:pointer-events-auto hover:scale-105"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15 19l-7-7 7-7"
+        />
       </svg>
     </button>
 
     <!-- Next Button -->
-    <button id="next-btn" class="absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 w-10 h-10 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 hover:scale-105">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+    <button
+      id="recent-next-btn"
+      class="absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 w-10 h-10 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100 group-hover:pointer-events-auto hover:scale-105"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
       </svg>
     </button>
 
-    <!-- Carousel Container -->
-    <div id="carousel" class="carousel-container flex gap-6 py-2 pr-4 scroll-smooth" style="overflow-x: auto; scrollbar-width: none;">
-      {% for shop in shops %}
-      <div class="shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)] bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in">
-        <div class="relative">
-          {% if shop.images %}
-            <img id="shop_image" src="{{ shop.images.0 }}" alt="shop image" class="w-full h-40 object-cover">
-          {% else %}
-            <img src="https://via.placeholder.com/300" alt="No image available" class="w-full h-40 object-cover">
-          {% endif %}
-        </div>
-        <div class="p-3">
-          <div class="flex justify-between items-start">
-            <a href="#" class="text-md font-semibold line-clamp-1">{{ shop.name }}</a>
-            <div class="flex items-center bg-gray-100 px-1 rounded">
-              <span class="text-xs font-bold text-gray-800">{{ shop.rating|default:"5.0" }}</span>
-              <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
-            </div>
-          </div>
-          <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
-          {% for category in shop.services %} 
-          <div class="mt-2">
-            <span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
-          </div>
-          {% endfor %}
-          <div class="flex justify-between mt-2 text-xs text-gray-600">
-            <span>{{ shop.reviews|default:"20" }} reviews</span>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
+    <div
+      id="recently-viewed-wrapper"
+      class="recently-viewed-carousel flex gap-6 py-2 pr-4 pl-2 scroll-smooth overflow-x-auto"
+      style="scrollbar-width: none"
+    >
+      <!-- Cards injected here -->
     </div>
   </div>
 </div>
 
-<!-- Add Tailwind custom animation -->
-<style>
-@layer utilities {
-  @keyframes fade-in {
-    from { opacity: 0 }
-    to { opacity: 1 }
-  }
-  .animate-fade-in {
-    animation: fade-in 0.5s ease forwards;
-  }
-}
-</style>
-
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const carousel = document.getElementById('carousel');
-  const prevBtn = document.getElementById('prev-btn');
-  const nextBtn = document.getElementById('next-btn');
-  const container = carousel.parentElement;
-  let cardWidth = 0;
-  let visibleCards = 0;
+  document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("recently-viewed-container");
+    const wrapper = document.getElementById("recently-viewed-wrapper");
+    const prevBtn = document.getElementById("recent-prev-btn");
+    const nextBtn = document.getElementById("recent-next-btn");
 
-  function initCarousel() {
-    const firstCard = document.querySelector('.shop-card');
-    if (!firstCard) return;
+    const shops = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
 
-    // Use the card's width and add the gap of 24px (matching Tailwind's gap-6)
-    cardWidth = firstCard.offsetWidth + 24;
-    
-    // Set the number of cards to scroll based on viewport width
-    if (window.innerWidth >= 1024) {
-      visibleCards = 4; // Desktop - scroll 4 cards
-    } else if (window.innerWidth >= 768) {
-      visibleCards = 2; // Tablet - scroll 2 cards
-    } else {
-      visibleCards = 1; // Mobile - scroll 1 card
+    if (shops.length > 0) {
+      container.classList.remove("hidden");
+
+      shops.forEach((shop) => {
+        const card = document.createElement("a");
+        card.href = `/shop/${shop.email}`;
+        card.className = `shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
+          bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in`;
+
+        // Create category tags (use shop.categories instead of shop.services)
+        const categoryTags = (shop.categories && shop.categories.length ? 
+        shop.categories.map(category => `<span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">
+        ${category || "Category"}</span>`).join(" ")
+  : `<span class="text-xs px-2 py-1 text-gray-500 bg-gray-50 rounded-full">No categories</span>`);
+
+          card.innerHTML = `
+          <div class="relative">
+            <img src="${shop.image || 'https://via.placeholder.com/300'}" class="w-full h-40 object-cover" />
+          </div>
+          <div class="p-3">
+            <div class="flex justify-between items-start">
+              <span class="text-md font-semibold line-clamp-1">${shop.name}</span>
+              <div class="flex items-center bg-gray-100 px-1 rounded">
+                <span class="text-xs font-bold text-gray-800">${shop.rating || '5.0'}</span>
+                <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1 line-clamp-2">${shop.address}</p>
+            <div class="mt-2 flex flex-wrap gap-1">${categoryTags}</div>
+            <div class="flex justify-between mt-2 text-xs text-gray-600">
+              <span>${shop.reviews || '20'} reviews</span>
+            </div>
+          </div>
+        `;
+        
+
+        wrapper.appendChild(card);
+      });
+
+      // Carousel scroll logic
+      prevBtn.addEventListener("click", () => {
+        wrapper.scrollBy({ left: -300, behavior: "smooth" });
+      });
+      nextBtn.addEventListener("click", () => {
+        wrapper.scrollBy({ left: 300, behavior: "smooth" });
+      });
     }
-    
-    updateButtonVisibility();
-  }
 
-  function slide(direction) {
-    const scrollAmount = direction * visibleCards * cardWidth;
-    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-
-  function updateButtonVisibility() {
-    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-    if (carousel.scrollLeft <= 0) {
-      prevBtn.classList.add('opacity-0', 'pointer-events-none');
-    } else {
-      prevBtn.classList.remove('opacity-0', 'pointer-events-none');
-    }
-    if (carousel.scrollLeft >= maxScroll - 5) {
-      nextBtn.classList.add('opacity-0', 'pointer-events-none');
-    } else {
-      nextBtn.classList.remove('opacity-0', 'pointer-events-none');
-    }
-  }
-
-  // Event listeners
-  prevBtn.addEventListener('click', () => slide(-1));
-  nextBtn.addEventListener('click', () => slide(1));
-  container.addEventListener('mouseenter', updateButtonVisibility);
-  container.addEventListener('mouseleave', updateButtonVisibility);
-  carousel.addEventListener('scroll', updateButtonVisibility);
-  window.addEventListener('resize', initCarousel);
-  initCarousel();
-});
-</script> {% endcomment %}
+    // Clear button
+  });
+</script>
