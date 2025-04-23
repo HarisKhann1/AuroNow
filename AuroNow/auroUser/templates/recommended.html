@@ -22,7 +22,8 @@
       {% for shop in shops %}
         <a href="{% if shop.email %}{% url 'shop_detail' shop.email %}{% else %}#{% endif %}"
           class="shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
-          bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in">
+          bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in"
+          >
           <div class="relative">
             {% if shop.images %}
               <img id="shop_image" src="{{ shop.images.0 }}" alt="shop image" class="w-full h-40 object-cover">

@@ -1,8 +1,42 @@
 {% extends 'base_auroUser.html' %} {% block main %}
-
 <div class="grid grid-cols-1 place-items-center min-h-screen p-4 pt-32">
   <!-- 👈 Added pt-20 here -->
-  <div class="container mx-auto md:px-5 lg:px-10">
+  <div class="container mx-auto mb-56 md:px-5 lg:px-10">
+     {% comment %} filters bar start {% endcomment %}
+     <form id="filterForm" method="GET" action="{% url 'search_results' %}" class="flex flex-wrap gap-4 mb-6">
+      <div class="flex flex-row gap-4">
+        <div class=''>
+          <label for="category" class="block text-sm font-semibold mb-1">Category:</label>
+          <select name="category" id="category" class="bg-gray-300 truncate outline-none w- md:w-40 pr-4 pl-2 py-2 border-none rounded-md text-xs md:text-sm">
+            <option class="text-xs md:text-sm" value="">All</option>
+            {% for cat in categories %}
+              <option class="text-xs md:text-sm"  value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      
+        <div>
+          <label for="price" class="block text-sm font-semibold mb-1">Price:</label>
+          <select name="price" id="price" class="bg-gray-300 truncate w-20 md:w-40 pr-3 pl-2 py-2 border-none outline-none rounded-md text-xs md:text-sm">
+            <option class="text-xs md:text-sm" value="">All</option>
+            {% for range in price_ranges %}
+              <option class="text-xs md:text-sm" value="{{ range }}" {% if request.GET.price == range %}selected{% endif %}>{{ range }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      
+        <div>
+          <label for="address" class="block text-sm font-semibold mb-1">Location:</label>
+          <select name="address" id="address" class="bg-gray-300 truncate outline-none border-none w-20 md:w-40 pr-3 pl-2 py-2 rounded-md text-xs md:text-sm">
+            <option class="text-xs md:text-sm" value="">All</option>
+            {% for address in addresses %}
+              <option class="text-xs"  value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>{{ address }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </form>    
+       {% comment %} filters bar end {% endcomment %}
     {% if results %}
     <h2 class="text-2xl font-bold mb-4">Search Results</h2>
     <!-- card-->
@@ -50,4 +84,19 @@
     {% endif %}
   </div>
 </div>
+
+
+<script>
+  // Get the form
+  const filterForm = document.getElementById('filterForm');
+
+  // Auto-submit on any dropdown change
+  ['category', 'price', 'address'].forEach(id => {
+    const select = document.getElementById(id);
+    select.addEventListener('change', () => {
+      filterForm.submit();
+    });
+  });
+</script>
+
 {% endblock %}
