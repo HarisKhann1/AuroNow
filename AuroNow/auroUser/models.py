@@ -50,6 +50,8 @@ class BookAppointment(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
+    def __str__(self):
+        return f"Appointment by {self.user.name} at {self.shop.name} on {self.appointment_date}"
 
 # Ratings & Reviews
 class RatingAndReviews(models.Model):

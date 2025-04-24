@@ -1,4 +1,5 @@
-from datetime import date
+import calendar
+from datetime import date, timezone
 from django.http import HttpResponse
 from django.template import TemplateDoesNotExist
 from django.shortcuts import render, redirect
@@ -8,13 +9,18 @@ from django.contrib.auth import login
 from django.core.mail import send_mail
 from .forms import ShopOwnerSignUpForm
 from .models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, FAQ, ShopTiming
-from auroUser.models import Queries, BookAppointment
+from auroUser.models import Queries, BookAppointment, RatingAndReviews
 from .models import PasswordResetToken
 from django.conf import settings
 import environ
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import IntegrityError
+from datetime import datetime
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
+from django.db.models.functions import ExtractMonth
 
 # -------------- authentication start --------------------------------------
 def dashboard_signup_view(request):
@@ -102,10 +108,129 @@ def reset_password(request, token):
 
 # -------------- dashboard start --------------------------------------
 # dahboard home view
+def get_monthly_revenue(user):
+    # Get monthly revenue for confirmed appointments
+    monthly_revenue_list = BookAppointment.objects.filter(shop=user,
+        status='confirmed'
+    ).annotate(
+        month=TruncMonth('appointment_date')
+    ).values(
+        'month'
+    ).annotate(
+        revenue=Sum('service__price')
+    ).order_by('month')
+
+    # Calculate monthly revenue
+    monthly_revenue = 0
+    for revenue in monthly_revenue_list:
+        monthly_revenue += revenue['revenue']
+    # for revenue in monthly_revenue_by_year:
+    #   print(f"Month: {revenue['month'].strftime('%B')}, Revenue: ${revenue['revenue']}")
+
+    # Get monthly revenue for a specific year
+    monthly_revenue_by_year = BookAppointment.objects.filter(shop=user,
+        status='confirmed',
+        appointment_date__year=datetime.now().year
+    ).annotate(
+        month=TruncMonth('appointment_date')
+    ).values(
+        'month'
+    ).annotate(
+        revenue=Sum('service__price')
+    ).order_by('month')
+
+    # Start with all months set to 0
+    full_year_data = {month: 0 for month in calendar.month_name if month}
+
+    # Fill in actual data
+    for revenue in monthly_revenue_by_year:
+        month_name = revenue['month'].strftime('%B')  # e.g., 'Jan'
+        full_year_data[month_name] = float(revenue['revenue'] or 0)
+    # Separate lists for use in Chart.js
+    labels = list(full_year_data.keys())
+    data = list(full_year_data.values())
+
+    return labels, data, monthly_revenue
+
+def get_yearly_appointments_status(user):
+    # current year
+    appointments_by_month = (
+    BookAppointment.objects
+    .filter(shop=user, status='confirmed', appointment_date__year=date.today().year)
+    .annotate(month=ExtractMonth('appointment_date'))
+    .values('month')
+    .annotate(count=Count('id'))
+    .order_by('month')
+    )
+
+    # Convert queryset to a dictionary: {month_number: count}
+    appointments_dict = {entry['month']: entry['count'] for entry in appointments_by_month}
+
+    # Ensure all months are present, even with 0 if not found
+    appointments_per_month = {
+        calendar.month_abbr[month]: appointments_dict.get(month, 0)
+        for month in range(1, 13)
+    }
+
+    appointment_labels = appointments_per_month.keys()
+    appointment_data = appointments_per_month.values()
+    
+    # previous year
+    previous_year_appointments_by_month = (
+    BookAppointment.objects
+    .filter(shop=user, status='confirmed', appointment_date__year=date.today().year - 1)
+    .annotate(month=ExtractMonth('appointment_date'))
+    .values('month')
+    .annotate(count=Count('id'))
+    .order_by('month')
+    )
+
+    # Convert queryset to a dictionary: {month_number: count}
+    previous_year_appointments_dict = {entry['month']: entry['count'] for entry in previous_year_appointments_by_month}
+
+    # Ensure all months are present, even with 0 if not found
+    previous_year_appointments_per_month = {
+        calendar.month_abbr[month]: previous_year_appointments_dict.get(month, 0)
+        for month in range(1, 13)
+    }
+
+    previous_year_appointment_labels = previous_year_appointments_per_month.keys()
+    previous_year_appointment_data = previous_year_appointments_per_month.values()
+
+    return appointment_labels, appointment_data, previous_year_appointment_labels, previous_year_appointment_data
+    
 @login_required(login_url='dashboard_login')
 def dashboard_home(request):
     try:
-        return render(request, 'base_dashboard.html')
+        user = request.user
+        appoitment_labels, appoitment_data, previous_year_appointment_labels, previous_year_appointment_data = get_yearly_appointments_status(user) # Get yearly appointments status
+        labels, data, monthly_revenue = get_monthly_revenue(user) # Get monthly revenue data
+        
+        todays_appointments = BookAppointment.objects.filter(shop=user, appointment_date=datetime.now().date()).count()
+        total_services = Service.objects.filter(shop=user).count()
+        customer_rating_count = RatingAndReviews.objects.filter(shop=user).count()
+        customer_rating_list = RatingAndReviews.objects.filter(shop=user).order_by('id').reverse()
+
+        # Calculate average rating
+        total_rating_for_shop = 0;
+        for customer_rating in customer_rating_list:
+            total_rating_for_shop += customer_rating.rating
+        avg_rating_of_shop = total_rating_for_shop / customer_rating_count
+        
+        context = {
+            'todays_appointments': todays_appointments,
+            'monthly_revenue': monthly_revenue,
+            'total_services': total_services,
+            'custome_rating': avg_rating_of_shop,
+            'customer_rating_list': customer_rating_list,
+            'labels': labels,
+            'data': data,
+            'appoitment_labels': list(appoitment_labels),
+            'appoitment_data': list(appoitment_data),
+            'previous_year_appointment_labels': list(previous_year_appointment_labels),
+            'previous_year_appointment_data': list(previous_year_appointment_data),
+        }
+        return render(request, 'dashboard/home.html', context)
     except TemplateDoesNotExist:
         return HttpResponse("Page not found", status=404)
     
@@ -624,3 +749,4 @@ def dashboard_appointment_edit_view(request, id):
         messages.success(request, 'Appointment status updated successfully!')
         return redirect('dashboard_appointments')
     return redirect('dashboard_appointments')  # Redirect to appointments page
+# -------------- dashboard appointments end --------------------------------------
