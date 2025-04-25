@@ -23,6 +23,11 @@ from django.db.models import Count
 from django.db.models.functions import ExtractMonth
 
 # -------------- authentication start --------------------------------------
+# Importing environment variables
+env = environ.Env()
+environ.Env.read_env()
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+
 def dashboard_signup_view(request):
     if request.method == 'POST':
         form = ShopOwnerSignUpForm(request.POST)
@@ -52,9 +57,6 @@ def dashboard_login_view(request):
     return render(request, 'login.html')
 
 def forgot_password(request):
-    env = environ.Env()
-    environ.Env.read_env()
-    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -740,9 +742,22 @@ def dashboard_appointments_view(request):
 
 def dashboard_appointment_edit_view(request, id):
     user = request.user
-
+    
     if request.method == 'POST':
         appointment_status = request.POST.get('appointment-status')
+        appointment_cacellation_reason = request.POST.get('cacellation-reason')
+        customer_email = request.POST.get('customer-email');
+
+        # sending email if the raason is provided
+        if(appointment_cacellation_reason):
+            send_mail(
+                'AuroNow - Appointment Cancellation Notification',
+                f'Dear Customer,\n\nWe regret to inform you that your appointment has been canceled by {user.shop_name}.\n\nReason for Cancellation:\n{appointment_cacellation_reason}\n\nThank you for understanding.\n\nBest regards,\nAuroNow Team',
+                EMAIL_HOST_USER,
+                [customer_email],
+                fail_silently=False,
+            )
+
         appointment_instance = BookAppointment.objects.get(shop=user, id=int(id))
         appointment_instance.status = appointment_status
         appointment_instance.save()

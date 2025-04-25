@@ -63,8 +63,9 @@
                             <tr>
                                 <th scope="col" class="px-6 py-3">SNO</th>
                                 <th scope="col" class="px-6 py-3">Name</th>
-                                <th scope="col" class="py-3">Service</th>
-                                <th scope="col" class="px-6 py-3">Date</th>
+                                <th scope="col" class="px-6 py-3">Phone</th>
+                                <th scope="col" class="px-3">Service</th>
+                                <th scope="col" class="px-3 py-3">Date</th>
                                 <th scope="col" class="py-3">Start Time</th>
                                 <th scope="col" class="px-3 py-3">End Time</th>
                                 <th scope="col" class="px-6 py-3">Staus</th>
@@ -80,9 +81,12 @@
                                     {{ data.user.name }}
                                 </td>
                                 <td class="px-6 py-1 font-medium text-black whitespace-nowrap">
+                                    {{ data.user.phone }}
+                                </td>
+                                 <td class="px-3 py-1 font-medium text-black whitespace-nowrap">
                                     {{ data.service.name }}
                                 </td>
-                                <td class="px-6 py-1 font-medium text-black whitespace-nowrap">
+                                <td class="px-2 py-1 font-medium text-black whitespace-nowrap">
                                     {{ data.appointment_date }}
                                 </td>
                                 <td class="py-1 font-medium text-black whitespace-nowrap">
@@ -113,12 +117,27 @@
                                             </div>
                                             <form method="post" action="{% url 'dashboard_edit_appointment' data.id %}">
                                                 {% csrf_token %}
-                                                <select name="appointment-status" id="service-category" class='p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full'>
-                                                        <option class='bg-off-white-google text-black rounded-lg' value="confirmed" {% if data.status == 'confiremed' %}selected{% endif %}>Confirmed</option>
-                                                        <option class='bg-off-white-google text-black rounded-lg' value="cancelled" {% if data.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
-                                                        <option class='bg-off-white-google text-black rounded-lg' value="completed" {% if data.status == 'completed' %}selected{% endif %}>Completed</option>
-                                                        <option class='bg-off-white-google text-black rounded-lg' value="pending" {% if data.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <select name="appointment-status"
+                                                        class="bg-off-white-google w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 appointment-status-dropdown"
+                                                        data-id="{{ data.id }}"
+                                                        id="service-category-{{ data.id }}"
+                                                        class='p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full'>
+                                                    <option class='bg-off-white-google text-black rounded-lg' value="confirmed" {% if data.status == 'confiremed' %}selected{% endif %}>Confirmed</option>
+                                                    <option class='bg-off-white-google text-black rounded-lg' value="cancelled" {% if data.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                                    <option class='bg-off-white-google text-black rounded-lg' value="completed" {% if data.status == 'completed' %}selected{% endif %}>Completed</option>
+                                                    <option class='bg-off-white-google text-black rounded-lg' value="pending" {% if data.status == 'pending' %}selected{% endif %}>Pending</option>
                                                 </select>
+
+                                                <textarea 
+                                                    class="mt-4 bg-off-white-google w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 {% if data.status != 'cancelled' %}hidden{% endif %}" 
+                                                    placeholder="Enter Reason of Cancellation"
+                                                    id="cacellation-reason-{{ data.id }}"
+                                                    {% if data.status == 'cancelled' %}required{% endif %}
+                                                    name="cacellation-reason"
+                                                ></textarea>
+
+                                                <input type="hidden" name="customer-email" value="{{ data.user.email }}">
+
                                                 <div class="flex justify-end gap-2 mt-4">
                                                     <button type="button" data-modal-hide="edit-modal-{{ data.id }}"
                                                         class="px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400">Cancel</button>
@@ -163,13 +182,36 @@
     </section>
 
 <script>
-
-        // Hide the message after 3 seconds
-        setTimeout(function () {
-            const message = document.getElementById('appointment-status-message');
-            if (message) {
-                message.classList.add('hidden');
+    document.querySelectorAll('.appointment-status-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('change', function () {
+            const id = this.getAttribute('data-id');
+            const reasonTextarea = document.getElementById(`cacellation-reason-${id}`);
+            
+            if (this.value === 'cancelled') {
+                reasonTextarea.classList.remove('hidden');
+                reasonTextarea.setAttribute('required', true);
+            } else {
+                reasonTextarea.classList.add('hidden');
+                reasonTextarea.removeAttribute('required');
             }
-        }, 5000);
+        });
+
+        // Show/hide the textarea correctly on page load
+        const id = dropdown.getAttribute('data-id');
+        const reasonTextarea = document.getElementById(`cacellation-reason-${id}`);
+        if (dropdown.value === 'cancelled') {
+            reasonTextarea.classList.remove('hidden');
+        } else {
+            reasonTextarea.classList.add('hidden');
+        }
+    });
+
+    // Hide the message after 3 seconds
+    setTimeout(function () {
+        const message = document.getElementById('appointment-status-message');
+        if (message) {
+            message.classList.add('hidden');
+        }
+    }, 5000);
 </script>
 {% endblock %}
