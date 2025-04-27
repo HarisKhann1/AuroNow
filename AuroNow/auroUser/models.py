@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from shops.models import ShopOwner, Service
+from shops.models import ShopOwner, Service, Staff
 
 # Custom Manager for Users
 class CustomerManager(BaseUserManager):
@@ -42,11 +42,13 @@ class BookAppointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name="bookings")
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    staff = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True, related_name="appointments")
     
     appointment_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='confirmed')
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
+
     
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
