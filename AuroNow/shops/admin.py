@@ -1,5 +1,5 @@
 from django.contrib import admin
-from shops.models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, Slot, FAQ, Advertisement
+from shops.models import ShopOwner, ServiceCategory, Service, ShopImage, Staff, Slot, FAQ, Advertisement, ShopTiming, PasswordResetToken
 
 
 class ShopOwnerAdmin(admin.ModelAdmin):
@@ -14,8 +14,8 @@ class ServiceAdmin(admin.ModelAdmin):
     search_fields = ('shop', 'name')
 
 class ShopImageAdmin(admin.ModelAdmin):
-    list_display = ('shop_email', 'image')
-    search_fields = ('shop_url', 'image')
+    list_display = ('shop', 'shop_image')
+    search_fields = ('shop_image',)
 
 class StaffAdmin(admin.ModelAdmin):
     list_display = ('phone', 'shop', 'name', 'role')
@@ -41,3 +41,5 @@ admin.site.register(Slot, SlotAdmin)
 admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Advertisement, AdvertisementAdmin)
 admin.site.register(ServiceCategory, ServiceCategoryAdmin)
+admin.site.register(ShopTiming)
+admin.site.register(PasswordResetToken)

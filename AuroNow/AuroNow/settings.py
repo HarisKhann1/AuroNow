@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import environ
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'theme',
     'django_browser_reload',
 ]
+
 
 # Tailwind settings
 TAILWIND_APP_NAME = 'theme'  # This is the name of the app that will be used to generate the tailwind files
@@ -92,12 +94,42 @@ WSGI_APPLICATION = 'AuroNow.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'auronow',          # Database name
+        'USER': 'root',            # MySQL username
+        'PASSWORD': 'admin',        # MySQL password
+        'HOST': 'localhost',        # Change this to 'localhost' instead of '127.0.0.2'
+        'PORT': '3306',             # Default MySQL port
     }
 }
+
+
+# Manually load the .env file
+from dotenv import load_dotenv
+load_dotenv()
+
+# Initialize the environment variable reading system
+env = environ.Env()
+# reading .env file if exists
+environ.Env.read_env()
+
+
+# # Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # For TLS
+EMAIL_USE_TLS = True  # Use TLS for secure connection
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')  # Your Gmail address
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')  # The app password you generated
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Optional: Default sender email for outgoing mails
 
 
 # Password validation
@@ -133,7 +165,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+AUTH_USER_MODEL = 'shops.ShopOwner'
 # URL to use when referring to static files located in STATICFILES_DIRS
 STATIC_URL = '/static/'
 # If you want to specify additional directories to look for static files
@@ -154,8 +186,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # it is for the djando-tailwind package
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
-# LOGIN_REDIRECT_URL = 'shops:home'
-# LOGOUT_REDIRECT_URL = 'shops:home'
+
+# settings.py
+# LOGIN_REDIRECT_URL = 'dashboard_home'
+# LOGOUT_REDIRECT_URL = 'dashboard_login'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -1,0 +1,94 @@
+<!-- templates/reset_password.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte&Bite - Reset Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="">
+    
+    <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        <div class="bg-[#ebf1f4] shadow-lg rounded-lg overflow-hidden">
+            <div class="md:flex">
+                <!-- Left Side - Reset Password Form -->
+                <div class="md:w-1/2 p-8 md:p-12">
+                    <div class="inline-block rounded-lg px-3 py-1 mb-8 text-sm font-medium text-gray-800 shadow-sm border border-black">
+                        AuroNow
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-gray-900 mb-8">Reset Password</h2>
+
+                    {% if messages %}
+                        <div id="messages-container">
+                            {% for message in messages %}
+                                <div class="toast-message mb-4 p-3 rounded
+                                    {% if message.tags == 'error' %} bg-red-200 text-red-800 {% elif message.tags == 'success' %} bg-green-100 text-green-800 {% endif %}"
+                                    data-timeout="5000">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-6">
+                            <label for="password" class="block text-gray-700 mb-2">New Password:</label>
+                            <div class="relative">
+                                <input type="password" id="password" name="password" required 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+                                       placeholder="Enter new password">
+                                <button type="button" onclick="togglePasswordVisibility('password')" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500">
+                                        <button type="button" onclick="togglePasswordVisibility()" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500">
+                                        <svg id="showPasswordIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        <svg id="hidePasswordIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                        </svg>
+                                    </button>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="confirm_password" class="block text-gray-700 mb-2">Confirm Password:</label>
+                            <div class="relative">
+                                <input type="password" id="confirm_password" name="confirm_password" required 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+                                       placeholder="Confirm new password">
+                                       <button type="button" onclick="togglePasswordVisibility()" 
+                                       class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500">
+                                       <svg id="showPasswordIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                       </svg>
+                                       <svg id="hidePasswordIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                       </svg>
+                                   </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-[#233038] hover:bg-[#0b0f12] text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">
+                            Reset Password
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Right Side - Image -->
+                <div class="hidden md:block md:w-1/2 bg-cover bg-center h-64 md:h-auto" style="background-image: url('{% static 'images/dashboard/dashboard_login.jpg' %}')">
+                </div>
+            </div>
+        </div>
+    </div>
+<script src={% static "js/dashboard/dashboardLogin.js" %}></script>
+    
+</body>
+</html>

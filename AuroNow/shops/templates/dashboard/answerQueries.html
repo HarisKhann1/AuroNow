@@ -1,0 +1,194 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% block main %}
+    <section id='services' class='container mx-auto px-4 py-12 flex flex-col'>
+        {% comment %} numbers {% endcomment %}
+            <div class='w-full md:w-1/2 bg-[#d3dbdd] p-4 rounded-xl text-center'>
+                <h3 class='text-xl md:text-2xl font-semibold'>{{ queries_count }}</h3>
+                <h2 class='text-gray-700 md:font-medium'>Total Unanswered Queries</h2>
+            </div>
+        
+            {% comment %} show FAQ {% endcomment %}
+            <div class='bg-off-white-google py-10 px-4 md:px-8 rounded-xl flex flex-col gap-4 mt-10'>
+                <h2 class='text-xl md:text-3xl font-semibold text-gray-700'>Show Queries</h2>
+                
+                <!-- Success Message -->
+                {% if messages %}
+                <div class="mb-4" id='answer-faq-message'>
+                    {% for message in messages %}
+                    <div class="{% if message.tags == 'success' %}bg-green-100 border border-green-400 text-green-700{% else %}bg-red-100 border border-red-400 text-red-700{% endif %}
+                    px-4 py-3 rounded-md mb-2">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% comment %} search input for FAQ {% endcomment %}
+                <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                    <div class='w-full'>
+                        <form class="max-w-md" action="{% url 'dashboard_faq' %}" method="get">   
+                            <div class="relative">
+                                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                    </svg>
+                                </div>
+                                <input type="search" id="default-search" name='querySearch' class="block w-full p-4 pr-24 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-off-white-google focus:ring-primary_hover focus:border-primary_hover" placeholder="Search for query..." required />
+                                <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-primary hover:bg-primary_hover focus:ring-4 focus:outline-none focus:ring-primary_hover font-medium rounded-lg text-sm px-4 py-2">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% comment %} show all category button {% endcomment %}
+                    <div class='min-w-24 max-w-96'>                
+                        <a href='{% url 'dashboard_faq' %}' class="w-full text-white bg-primary hover:bg-primary_hover focus:ring-4 focus:outline-none focus:ring-primary_hover font-medium rounded-lg text-sm px-4 py-2">Show All</a>
+                    </div>
+                </div>
+                {% comment %} search input end {% endcomment %}
+        
+                {% comment %} table start {% endcomment %}
+                <div class="relative overflow-x-auto shadow-sm sm:rounded-lg">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <thead class="text-xs uppercase bg-table-background text-gray-200">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">SNO</th>
+                                <th scope="col" class="px-6 py-3">Query</th>
+                                <th scope="col" class="px-6 py-3">Answer</th>
+                                <th scope="col" class="px-6 py-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in page_obj %}
+                            <tr class="border-b border-gray-300">
+                                <td class="px-6 py-4">{{ forloop.counter }}</td>
+                
+                                <td class="px-6 py-1 font-medium text-black whitespace-nowrap">
+                                    <textarea readonly rows="2" cols="30" class="text-sm bg-off-white-google text-black outline-none border-none focus:outline-none focus:border-none focus:ring-0 align-top text-start leading-none" id="query-question-{{ data.id }}">{{ data.question }}</textarea>
+                                </td>
+
+                                <td class="px-6 py-1 font-medium text-black whitespace-nowrap">
+                                        {% if data.response == "" %}
+                                            <span class='text-red-600'>No response given to this query.</span>
+                                        {% else %}
+                                            <textarea readonly rows="2" cols="30" class="text-sm bg-off-white-google text-black outline-none border-none focus:outline-none focus:border-none focus:ring-0 align-top text-start leading-none" id="query-response-{{ data.id }}">{{ data.response }}</textarea>
+                                        {% endif %}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-row gap-2 flex-wrap min-w-32">
+                                        <!-- Edit Button -->
+                                        <button type="button" data-modal-target="edit-modal-{{ data.id }}" data-modal-toggle="edit-modal-{{ data.id }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2854C5"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+                                        </button>
+        
+                                        <!-- Delete Button -->
+                                        <button data-modal-target="popup-modal-{{ data.id }}" data-modal-toggle="popup-modal-{{ data.id }}" type="button">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BB271A"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                                        </button>
+                                    </div>
+                                    {% comment %} Delete Alert {% endcomment %}
+                                    <div id="popup-modal-{{ data.id }}" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%)] max-h-full bg-black bg-opacity-50">
+                                        <div class="relative p-4 w-full max-w-md max-h-full">
+                                            <div class="relative rounded-lg shadow-sm bg-[#F9FAFB]">
+                                                <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="popup-modal-{{ data.id }}">
+                                                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                                    </svg>
+                                                    <span class="sr-only">Close modal</span>
+                                                </button>
+                                                <div class="p-4 md:p-5 text-center">
+                                                    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                    </svg>
+                                                    <h3 class="mb-5 text-lg font-normal text-gray-500">Are you sure you want to delete this Query?</h3>
+                                                    <div class="flex justify-center items-center gap-2">
+                                                        <form action="{% url 'dashboard_delete_query' data.id %}" method="post">
+                                                            {% csrf_token %}
+                                                            <button data-modal-hide="popup-modal-{{ data.id }}" type="submit" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                                                                Yes, I'm sure
+                                                            </button>
+                                                        </form>
+                                                        <button data-modal-hide="popup-modal-{{ data.id }}" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-gray-300 rounded-lg border border-gray-200 hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-100">
+                                                            No, cancel
+                                                        </button>
+                                                    </div>  
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% comment %} delete alert end {% endcomment %}
+        
+                                    {% comment %} edit form alert {% endcomment %}
+                                    <div id="edit-modal-{{ data.id }}" tabindex="-1" aria-hidden="true"
+                                        class="hidden fixed inset-0 z-50 bg-black bg-opacity-50">
+                                        <div class="bg-[#F9FAFB] rounded-lg shadow p-6 max-w-md" style="width: calc(100% - 50px);">
+                                            <div class="py-2 mb-4 border-b rounded-t border-gray-600">
+                                                <h3 class="text-xl font-semibold">
+                                                    Answer Query
+                                                </h3>
+                                            </div>
+                                            <form method="post" action="{% url 'dashboard_answer_queries' data.id %}">
+                                                {% csrf_token %}
+                                                <div class='flex flex-col gap-4'>
+                                                    <div class='flex flex-col gap-1'>
+                                                        <label for='query-response' class='text-gray-700 md:font-medium'>Query Answer</label>
+                                                        <textarea required id='query-response' name='query-response' placeholder='Respond to query.' 
+                                                        class='p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                                                        >{{ data.response }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="flex justify-end gap-2 mt-4">
+                                                    <button type="button" data-modal-hide="edit-modal-{{ data.id }}"
+                                                        class="px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400">Cancel</button>
+                                                    <button type="submit"
+                                                        class="px-4 py-2 bg-primary hover:bg-primary_hover text-white rounded-md hover:bg-primary-dark">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    {% comment %} edit form alert end {% endcomment %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% comment %} pagination {% endcomment %}
+                <nav aria-label="Page navigation example flex flex-col mt-4">
+                    <div class="mb-2">
+                        <h2 class="text-gray-700 text-sm md:font-thin">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                        </h2>
+                    </div>
+                    <ol class="inline-flex -space-x-px text-base h-10">
+                        {% for n in totalPageList %}
+                        <li>
+                            <a href="{% url 'dashboard_queries' %}?query-table-page={{n}}" aria-current="page" class="flex items-center justify-center px-4 h-10 text-black border border-gray-300 bg-off-white-google hover:bg-blue-100 hover:text-blue-700">{{n}}</a>
+                        </li>
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                        <li>
+                            <a href="{% url 'dashboard_queries' %}?query-table-page={{ page_obj.paginator.num_pages }}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-off-white-google border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">Last</a>
+                        </li>
+                        {% endif %}
+                    </ol>
+                </nav>
+                    {% comment %} pagination end {% endcomment %}
+            </div>
+            {% comment %} table end {% endcomment %}
+        </div>
+    </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide the message after 3 seconds
+        setTimeout(function () {
+            const message = document.getElementById('answer-faq-message');
+            if (message) {
+                message.classList.add('hidden');
+            }
+        }, 3000);
+
+    });
+</script>
+{% endblock %}

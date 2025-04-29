@@ -1,0 +1,162 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+{% block main %}
+
+    <section id='services' class='container mx-auto px-4 py-12 flex flex-col'>
+        <!-- Welcome Message -->
+        {% if user.is_authenticated %} 
+            <div class="pl-2 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900">Welcome back, <span class='text-indigo-600'>{{ user.name }}</span>!</h2>
+                <p class="text-gray-500">Here's what's happening with your salon today.</p>
+            </div>
+        {% endif %}
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Today's Appointments -->
+            <div class="bg-number-bg rounded-xl p-6 shadow-sm">
+                    <div>
+                        <h3 class='text-xl md:text-2xl font-semibold'>{{ todays_appointments }}</h3>
+                        <h2 class='text-gray-700 md:font-medium'>Today's Appointments</h2>
+                    </div>
+            </div>
+
+
+            <!-- Monthly Revenue -->
+            <div class="bg-number-bg rounded-xl p-6 shadow-sm">
+                <div>
+                    <h3 class='text-xl md:text-2xl font-semibold'><span class='text-gray-600'>Rs.</span> {{ monthly_revenue }}</h3>
+                    <h2 class='text-gray-700 md:font-medium'>Monthly Revenue</h2>
+                </div>
+            </div>
+
+            <!-- Upcoming Bookings -->
+            <div class="bg-number-bg rounded-xl p-6 shadow-sm">
+                <div>
+                    <h3 class='text-xl md:text-2xl font-semibold'>{{ total_services }}</h3>
+                    <h2 class='text-gray-700 md:font-medium'>Total Services</h2>
+                </div>
+            </div>
+
+            <!-- Rating -->
+            <div class="bg-number-bg rounded-xl p-6 shadow-sm">
+                <div>
+                    <div class='flex flex-row gap-1 items-center'>
+                        <h3 class='text-xl md:text-2xl font-semibold'>{{ custome_rating }}</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 text-indigo-500 fill-current" viewBox="0 0 24 24">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                    </div>
+                    <h2 class='text-gray-700 md:font-medium'>Shop Rating</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-4">
+            <div class="bg-off-white-google p-6 rounded-xl shadow-sm">
+                <h3 class="text-lg font-semibold mb-4">Appointments over time</h3>
+                <div class="h-64 flex border-2 border-dashed border-gray-300 rounded-lg">
+                    <div class="w-full h-full flex items-center justify-center">
+                        <canvas id="appointmentsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-off-white-google p-6 rounded-xl shadow-sm">
+                <h3 class="text-lg font-semibold mb-4">Revenue in Each Month</h3>
+                <div class="h-64 border-2 border-dashed border-gray-300 rounded-lg">
+                    <div class="w-full h-full flex items-center justify-center">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Recent Reviews -->
+        <div class="bg-number-bg p-6 rounded-xl shadow-sm">
+            <h3 class="text-lg font-semibold mb-4">Recent Reviews</h3>
+            <div class="space-y-4">
+                {% for customer_review in customer_rating_list|slice:":5" %}
+                    <div class="border-b border-gray-400 pb-4">
+                        <div class="flex items-center space-x-1 mb-1">
+                            {% for i in customer_review.rating|ljust:"5" %}
+                                {% if forloop.counter <= customer_review.rating %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500 fill-current" viewBox="0 0 24 24">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 fill-current" viewBox="0 0 24 24">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p class="text-sm text-gray-600">{{ customer_review.review }}</p>
+                        <p class="text-sm text-gray-500 mt-1">- {{ customer_review.user.name }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = {{ labels|safe }};
+        const data = {{ data|safe }};
+    
+        new Chart(document.getElementById('revenueChart').getContext('2d'), {
+            type: 'bar',
+            data: { 
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Monthly Revenue',
+                    data: data,
+                    backgroundColor: 'rgb(105, 105, 255)', // Indigo color with transparency
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const appointmentsLabels = {{ appoitment_labels|safe }};
+        const appointmentsData = {{ appoitment_data|safe }};
+        const previousYearAppointmentsLabels = {{ previous_year_appointment_labels|safe }};
+        const previousYearAppointmentsData = {{ previous_year_appointment_data|safe }};
+    
+        new Chart(document.getElementById('appointmentsChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: appointmentsLabels,
+                datasets: [{
+                    label: 'Current Year Appointments',
+                    data: appointmentsData,
+                    borderColor: 'rgb(105, 105, 255)', // Vibrant indigo
+                    backgroundColor: 'rgb(105, 105, 255)', // Indigo color with transparency
+                    fill: false, // Don't fill under the line
+                    tension: 0.4 // Smooth the line
+                },
+                {
+                    label: 'Previous Year Appointments',
+                    data: previousYearAppointmentsData,
+                    borderColor: 'rgb(255, 140, 0)', // Vibrant orange
+                    backgroundColor: 'rgba(255, 140, 0, 0.2)', // Orange color with transparency
+                    fill: false, // Don't fill under the line
+                    tension: 0.4, // Smooth the line
+                }
+                ]
+            },
+            
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+    
+{% endblock %}

@@ -42,8 +42,16 @@ class BookAppointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name="bookings")
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    appointment_date = models.DateTimeField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    appointment_date = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='confirmed')
+    start_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(blank=True, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True)
+    def __str__(self):
+        return f"Appointment by {self.user.name} at {self.shop.name} on {self.appointment_date}"
 
 # Ratings & Reviews
 class RatingAndReviews(models.Model):

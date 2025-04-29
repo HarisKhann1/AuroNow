@@ -62,7 +62,7 @@
                         </div>
                         
                         <div class="mb-6 text-right">
-                            <a href="#" class="text-sm text-[#233038] font-medium hover:text-[#0b0f12]">Forgot password?</a>
+                            <a href="{% url "forgot_password" %}" class="text-sm text-[#233038] font-medium hover:text-[#0b0f12]">Forgot password?</a>
                         </div>
                         
                         <button type="submit" class="w-full bg-[#233038] text-white py-2 px-4 rounded hover:bg-[#0b0f12] focus:outline-none">
@@ -83,5 +83,6 @@
     </div>
 
 <script src={% static "js/dashboard/dashboardLogin.js" %}></script>
+
 </body>
 </html>

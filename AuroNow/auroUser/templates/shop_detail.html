@@ -1,29 +1,80 @@
 {% extends 'base_auroUser.html' %}
 {% block main %}
-<div class="container mx-auto mt-32 p-4 bg-white shadow-lg rounded-lg">
+<div class="max-w-7xl mx-auto mt-32 p-4 bg-white text-gray-800 shadow-xl rounded-2xl">
+  <div class="grid lg:grid-cols-2 gap-6">
 
-  {% comment %} <div class="mb-4">
-    <!-- Display the first shop image or fallback -->
-    <img src="{{ images.0|default:'https://via.placeholder.com/300' }}" alt="Shop Image"
-     class="w-full h-auto object-cover rounded-lg">
-  </div> {% endcomment %}
+    <!-- Shop Image Section -->
+    <div>
+      <img src="{{ images.0|default:'https://via.placeholder.com/600x400' }}" 
+           alt="Shop Image" 
+           class="w-full h-[350px] object-cover rounded-xl shadow-md">
+    </div>
 
-  <h1 class="text-2xl font-bold mb-2">{{ shop.shop_name }}</h1>
-  <p class="text-gray-700 mb-2">Owner: {{ shop.name }}</p>
-  <p class="text-gray-700 mb-2">Email: {{ shop.email }}</p>
-  <p class="text-gray-700 mb-2">Phone: {{ shop.phone }}</p>
-  <p class="text-gray-700 mb-2">Address: {{ shop.address }}</p>
-  <p>Categories: {% for category in categories %}{{ category }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-  <p>Reviews: {{ reviews }}</p>
-  <p>Rating: {{ rating }}</p>
+    <!-- Shop Info Section -->
+    <div class="space-y-4">
+      <h1 class="text-3xl font-bold text-gray-900">{{ shop.shop_name }}</h1>
+      <!-- Services Offered -->
+{% if services %}
+<div class="mt-10">
+  <h2 class="text-xl font-semibold mb-4 text-gray-800">Services Offered</h2>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for service in services %}
+      <div class="border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow-md transition">
+        <h3 class="text-lg font-semibold text-gray-700">{{ service.name }}</h3>
+        {% if service.category %}
+          <p class="text-sm text-gray-500 mb-1">Category: {{ service.category.name }}</p>
+        {% endif %}
+        <p class="text-sm text-gray-600">Price: <span class="font-medium text-green-600">₹{{ service.price }}</span></p>
+        <p class="text-sm text-gray-600">Duration: {{ service.duration }} mins</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+  
 
-  <!-- Optionally, loop through all images -->
-  {% comment %} {% for image in images %}
-    <img src="{{ image }}" alt="Shop Image" class="w-full h-64 object-cover rounded-lg mt-4">
-  {% endfor %}
-{% endcomment %}
+      <div>
+        <span class="font-medium">Categories:</span>
+        <div class="flex flex-wrap gap-2 mt-1">
+          {% for category in categories %}
+            <span class=" text-cyan-700 bg-gray-100 px-3 py-1 text-sm rounded-full">{{ category }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="flex items-center gap-6 mt-2">
+        <div>
+          <p class="text-lg font-semibold text-yellow-600">{{ rating }}/5</p>
+          <p class="text-sm text-gray-500">Average Rating</p>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-blue-600">{{ reviews }}</p>
+          <p class="text-sm text-gray-500">Reviews</p>
+        </div>
+      </div>
+
+      <div>
+        <a href="#book-now" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+          Book Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% comment %} <!-- Optionally Show All Images -->
+  {% if images|length > 1 %}
+  <div class="mt-10">
+    <h2 class="text-xl font-semibold mb-2">Gallery</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {% for image in images %}
+        <img src="{{ image }}" alt="Shop Image" class="w-full h-48 object-cover rounded-lg shadow">
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %} {% endcomment %}
 </div>
 
+<!-- Recently Viewed LocalStorage Script -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const shop = {
@@ -37,13 +88,18 @@
     };
 
     let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
-    recentlyViewed = recentlyViewed.filter(s => s.email !== shop.email);
-    recentlyViewed = recentlyViewed.filter((s) => s.email.toLowerCase() !== shop.email.toLowerCase());
+
+    // Remove duplicates by email
+    recentlyViewed = recentlyViewed.filter(s => s.email.toLowerCase() !== shop.email.toLowerCase());
+
+    // Add current shop to beginning
     recentlyViewed.unshift(shop);
+
+    // Limit to 5 entries
     recentlyViewed = recentlyViewed.slice(0, 5);
+
+    // Save back to localStorage
     localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
   });
 </script>
-
-
-{% endblock %} 
+{% endblock %}

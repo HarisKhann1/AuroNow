@@ -45,7 +45,7 @@
     >
       {% for shop in results %}
       <a
-        href="{% if shop.email %}{% url 'shop_detail' shop.email %}{% else %}#{% endif %}"
+        href="{% if shop.id %}{% url 'shop_detail' shop.id %}{% else %}#{% endif %}"
         class="bg-white shadow-lg rounded-lg w-full max-w-xs duration-300 hover:scale-105"
       >
         <!-- Show Images Inside Each Shop Block -->
@@ -58,20 +58,26 @@
         {% endfor %}
         <div class="px-2 pb-2 md:px-4 md:pb-4 text-xs md:text-lg flex flex-col">
           <div class="mt-4 flex justify-between items-start">
+            {% comment %} Show Shop Name {% endcomment %}
             <h1 href="#" class="font-semibold line-clamp-1">{{ shop.name }}</h1>
             <div class="flex items-center bg-gray-100 rounded">
+              {% comment %} Show Shop Rating {% endcomment %}
               <span class="text-[10px] font-medium text-gray-800"
                 >{{ shop.rating|default:"5.0" }}
               </span>
               <i class="bx bxs-star text-yellow-400 text-[10px] ml-0.5"></i>
             </div>
           </div>
-
+          {% comment %} Show Shop Address {% endcomment %}
           <span class="text-gray-500">{{ shop.address }}</span>
-
-          {% for category in shop.categories %}
-          <p class="text-gray-500">{{ category }}</p>
-          {% endfor %}
+          {% comment %} Show Shop Categories {% endcomment %}
+          <div class="flex flex-wrap gap-1 overflow-hidden">
+            {% for category in shop.categories %}
+              <p class="rounded-full text-cyan-700 bg-gray-100 inline-block px-2 truncate" title="{{ category }}">{{ category }}</p>
+            {% endfor %}
+          </div>          
+          
+          
           <div class="flex justify-between mt-0 text-gray-600">
             <span>{{ shop.reviews|default:"20" }} reviews</span>
           </div>

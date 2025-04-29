@@ -33,7 +33,7 @@
             </a>
             
             <a
-              href="#"
+              href="{% url "dashboard_login" %}"
               class="bg-secondary-color text-white px-3 py-2 rounded-full hover:bg-secondary-hover-color transition duration-300"
             >
               For Professional
@@ -57,8 +57,9 @@
             class="w-full border border-primary-color text-gray-600 px-6 py-1.5 text-xs font-semibold rounded-lg ">
             Login
           </a>
-          <a href="#"
-            class="w-full bg-secondary-color text-xs font-medium px-3 py-2 rounded-lg ">
+          <a 
+          href="{% url "dashboard_login" %}"
+          class="w-full bg-secondary-color text-xs font-medium px-3 py-2 rounded-lg ">
             For Professional
           </a>
         </div>

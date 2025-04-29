@@ -1,6 +1,6 @@
 {% if shops %}
 <div class="min-w-full container mx-auto px-2 py-4">
-  <h1 class="text-left font-bold text-2xl mb-4">Recommended</h1>
+  <h1 class="text-left font-bold text-2xl mb-4 pl-10">New to AuroNow</h1>
 
   <div class="relative overflow-hidden px-4 sm:px-8 group">
     <!-- Previous Button -->
@@ -20,7 +20,7 @@
     <!-- Carousel Container -->
     <div id="carousel" class="carousel-container flex gap-6 py-2 pr-4 pl-2 scroll-smooth" style="overflow-x: auto; scrollbar-width: none;">
       {% for shop in shops %}
-        <a href="{% if shop.email %}{% url 'shop_detail' shop.email %}{% else %}#{% endif %}"
+        <a href="{% if shop.email %}{% url 'shop_detail' shop.id %}{% else %}#{% endif %}"
           class="shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
           bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in"
           >
@@ -41,8 +41,8 @@
             </div>
             <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
             {% for category in shop.categories %} 
-              <div class="mt-2">
-                <span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
+              <div class="mt-2 inline-block">
+                <span class="text-xs px-2 py-1  text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
               </div>
             {% endfor %}
             <div class="flex justify-between mt-2 text-xs text-gray-600">
