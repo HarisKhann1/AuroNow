@@ -96,7 +96,10 @@ class Staff(models.Model):
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='staff')
     name = models.CharField(max_length=255)
     role = models.CharField(max_length=100)
-
+    work_start_time = models.TimeField(blank=True, null=True)
+    work_end_time = models.TimeField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    staff_picture = models.ImageField(upload_to='staff_pictures/', blank=True, null=True)
     class Meta:
         unique_together = ('phone', 'shop')
 

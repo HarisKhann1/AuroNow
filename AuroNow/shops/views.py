@@ -1,5 +1,6 @@
 import calendar
 from datetime import date, timezone
+import os
 from django.http import HttpResponse
 from django.template import TemplateDoesNotExist
 from django.shortcuts import render, redirect
@@ -536,9 +537,13 @@ def dashboard_add_staff_view(request):
         staff_name = request.POST.get('staff-name')
         staff_phone = request.POST.get('staff-phone-no')
         staff_role = request.POST.get('staff-role')
+        staff_duty_start_time = request.POST.get('staff-duty-start-time')
+        staff_duty_end_time = request.POST.get('staff-duty-end-time')
+        staff_picture = request.FILES.get('staff-picture')
+
         try:
-            if staff_name and staff_phone and staff_role:
-                Staff.objects.create(phone=staff_phone, shop=user, name=staff_name, role=staff_role).save()
+            if staff_name and staff_phone and staff_role and staff_duty_start_time and staff_duty_end_time:
+                Staff.objects.create(phone=staff_phone, shop=user, name=staff_name, role=staff_role, work_start_time=staff_duty_start_time, work_end_time=staff_duty_end_time, staff_picture=staff_picture).save()
                 messages.success(request, 'Staff added successfully!')
                 return redirect('dashboard_staff')
         except IntegrityError:
@@ -559,16 +564,34 @@ def dashboard_edit_staff_view(request, id):
         staff_name = request.POST.get('staff-name')
         staff_phone = request.POST.get('staff-phone-no')
         staff_role = request.POST.get('staff-role')
+        staff_duty_start_time = request.POST.get('staff-duty-start-time')
+        staff_duty_end_time = request.POST.get('staff-duty-end-time')
+        new_staff_picture = request.FILES.get('staff-picture')
+        is_active_bool = request.POST.get('is-active')
         
         try:
-            if staff_name and staff_phone and staff_role:
-                staff_instance = Staff.objects.get(shop=user, id=int(id))
-                staff_instance.phone = staff_phone
-                staff_instance.shop = user
-                staff_instance.name = staff_name
-                staff_instance.role = staff_role
-                staff_instance.save()
-                return redirect('dashboard_staff')
+            staff_instance = Staff.objects.get(shop=user, id=int(id))
+
+            # Check if staff picture is provided, if not, keep the old one
+            if not new_staff_picture:
+                new_staff_picture = staff_instance.staff_picture
+            else:
+                # If a new picture is uploaded, delete the old one
+                old_picture_path = staff_instance.staff_picture.path  # Full path to old file
+                if os.path.exists(old_picture_path):
+                    os.remove(old_picture_path)  # Delete the old file from media folder
+                
+            staff_instance.phone = staff_phone
+            staff_instance.shop = user
+            staff_instance.name = staff_name
+            staff_instance.role = staff_role
+            staff_instance.work_start_time = staff_duty_start_time
+            staff_instance.work_end_time = staff_duty_end_time
+            staff_instance.is_active = True if is_active_bool == 'on' else False
+            staff_instance.staff_picture = new_staff_picture
+            staff_instance.save()
+            return redirect('dashboard_staff')
+
         except IntegrityError:
             messages.error(request, 'A staff member with this information already exists')
             return redirect('dashboard_staff')

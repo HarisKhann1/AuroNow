@@ -1073,8 +1073,13 @@ select {
   height: 3rem;
 }
 
+<<<<<<< HEAD
 .h-28 {
   height: 7rem;
+=======
+.h-14 {
+  height: 3.5rem;
+>>>>>>> 482c59b716b493627b2895b442c8d00915bf8150
 }
 
 .h-3 {
@@ -1141,24 +1146,34 @@ select {
   min-height: 100vh;
 }
 
+<<<<<<< HEAD
 .w-10 {
   width: 2.5rem;
 }
 
 .w-11\/12 {
   width: 91.666667%;
+=======
+.w-1\/2 {
+  width: 50%;
+>>>>>>> 482c59b716b493627b2895b442c8d00915bf8150
 }
 
 .w-12 {
   width: 3rem;
 }
 
+<<<<<<< HEAD
 .w-2\/5 {
   width: 40%;
 }
 
 .w-20 {
   width: 5rem;
+=======
+.w-14 {
+  width: 3.5rem;
+>>>>>>> 482c59b716b493627b2895b442c8d00915bf8150
 }
 
 .w-3 {
@@ -1423,6 +1438,12 @@ select {
   --tw-space-x-reverse: 0;
   margin-right: calc(0.25rem * var(--tw-space-x-reverse));
   margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.space-y-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
 }
 
 .space-y-2 > :not([hidden]) ~ :not([hidden]) {
@@ -1800,11 +1821,14 @@ select {
   padding-right: 2.5rem;
 }
 
+<<<<<<< HEAD
 .px-16 {
   padding-left: 4rem;
   padding-right: 4rem;
 }
 
+=======
+>>>>>>> 482c59b716b493627b2895b442c8d00915bf8150
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -2130,6 +2154,11 @@ select {
   color: rgb(17 24 39 / var(--tw-text-opacity, 1));
 }
 
+.text-green-500 {
+  --tw-text-opacity: 1;
+  color: rgb(34 197 94 / var(--tw-text-opacity, 1));
+}
+
 .text-green-600 {
   --tw-text-opacity: 1;
   color: rgb(22 163 74 / var(--tw-text-opacity, 1));
@@ -2158,6 +2187,11 @@ select {
 .text-indigo-600 {
   --tw-text-opacity: 1;
   color: rgb(79 70 229 / var(--tw-text-opacity, 1));
+}
+
+.text-primary {
+  --tw-text-opacity: 1;
+  color: rgb(35 48 56 / var(--tw-text-opacity, 1));
 }
 
 .text-red-500 {
@@ -2661,9 +2695,15 @@ input:-webkit-autofill:focus {
     padding-right: 1.5rem;
   }
 
+<<<<<<< HEAD
   .sm\:px-8 {
     padding-left: 2rem;
     padding-right: 2rem;
+=======
+  .sm\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+>>>>>>> 482c59b716b493627b2895b442c8d00915bf8150
   }
 
   .sm\:text-sm {

@@ -27,7 +27,7 @@
 
             {% comment %} add staff start {% endcomment %}
             <div class='md:w-1/2 md:px-4'>
-                <form id="add-staff-form" action='{% url "dashboard_staff" %}' method='post' class='flex flex-col gap-4'>
+                <form id="add-staff-form" action='{% url "dashboard_staff" %}' method='post' enctype="multipart/form-data" class='flex flex-col gap-4'>
                     {% csrf_token %}
                     <div class='flex flex-col gap-4'>
                         <div class='flex flex-col gap-1'>
@@ -51,8 +51,27 @@
                             >
                             <p id='staff-phone-no-alert' class='hidden md:font-medium text-red-600'></p>
                         </div>
+                        <div class='flex flex-col gap-1'>
+                            <label for='staff-duty-start-time' class='text-gray-700 md:font-medium'>Duty Start Timing</label>
+                            <input type='time' id='staff-duty-start-time' name='staff-duty-start-time' placeholder='Enter Staff Duty Start Timing' 
+                            class='p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                            >
+                            <p id='staff-duty-start-time-alert' class='hidden md:font-medium text-red-600'></p>
+                        </div>
+                        <div class='flex flex-col gap-1'>
+                            <label for='staff-duty-end-time' class='text-gray-700 md:font-medium'>Duty End Timing</label>
+                            <input type='time' id='staff-duty-end-time' name='staff-duty-end-time' placeholder='Enter Staff Duty End Timing' 
+                            class='p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                            >
+                            <p id='staff-duty-end-time-alert' class='hidden md:font-medium text-red-600'></p>
+                        </div>
+                        <div class="space-y-1">
+                            <label for="staff-picture" class="block text-lg font-medium text-gray-700">Upload Staff Image</label>
+                            <input type="file" name="staff-picture" id="staff-picture"
+                                class="w-full  border border-gray-300 p-3 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+                        </div>
                     </div>
-                    <button type='submit' class='bg-primary hover:bg-primary_hover text-gray-200 p-2 rounded-lg'>Add Category</button>
+                    <button type='submit' class='bg-primary hover:bg-primary_hover text-gray-200 p-2 rounded-lg'>Add Staff</button>
                 </form>
             </div>
             {% comment %} add category end {% endcomment %}
@@ -60,7 +79,7 @@
 
             {% comment %} show category {% endcomment %}
             <div class='bg-off-white-google py-10 px-4 md:px-8 rounded-xl flex flex-col gap-4 mt-10'>
-                <h2 class='text-xl md:text-3xl font-semibold text-gray-700'>Show Category</h2>
+                <h2 class='text-xl md:text-3xl font-semibold text-gray-700'>Show Staff</h2>
         
                 {% comment %} search input for staff {% endcomment %}
                 <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
@@ -89,31 +108,66 @@
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500">
                         <thead class="text-xs uppercase bg-table-background text-gray-200">
                             <tr>
-                                <th scope="col" class="px-6 py-3">SNO</th>
-                                <th scope="col" class="px-6 py-3">Name</th>
-                                <th scope="col" class="px-6 py-3">Role</th>
-                                <th scope="col" class="px-6 py-3">Phone</th>
-                                <th scope="col" class="px-6 py-3">Action</th>
+                                <th scope="col" class="px-6 py-2">Picture</th>
+                                <th scope="col" class="px-4 py-2">Name</th>
+                                <th scope="col" class="px-4 py-2">Role</th>
+                                <th scope="col" class="px-4 py-2">Start Time</th>
+                                <th scope="col" class="px-4 py-2">End Time</th>
+                                <th scope="col" class="px-4 py-2">Phone</th>
+                                <th scope="col" class="px-4 py-2">Status</th>
+                                <th scope="col" class="px-4 py-2">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for data in page_obj %}
                             <tr class="border-b border-gray-300">
-                                <td class="px-6 py-4">{{ forloop.counter }}</td>
+                                <td class="px-6 py-1">
+                                    {% if data.staff_picture %}
+                                        <img src="{{ data.staff_picture.url }}" alt="Staff Picture" class="w-14 h-14 rounded-full object-cover">
+                                    {% else %}
+                                        No Image
+                                    {% endif %}
+                                </td>
                 
-                                <td class="px-6 py-1 font-medium text-black whitespace-nowrap">
+                                <td class="px-4 py-1 font-medium text-black whitespace-nowrap">
                                     {{ data.name }}
                                 </td>
 
-                                <td class="px-6 py-1 font-medium text-black whitespace-nowrap">
+                                <td class="px-4 py-1 font-medium text-black whitespace-nowrap">
                                     {{ data.role }}
                                 </td>
 
-                                <td class="px-6 py-1 font-medium text-black whitespace-nowrap">
+                                <td class="px-4 py-1 font-medium text-black whitespace-nowrap">
+                                    {{ data.work_start_time }}
+                                </td>
+
+                                <td class="px-4 py-1 font-medium text-black whitespace-nowrap">
+                                    {{ data.work_end_time }}
+                                </td>
+
+                                <td class="px-4 py-1 font-medium text-black whitespace-nowrap">
                                     {{ data.phone }}
                                 </td>
-                
-                                <td class="px-6 py-4">
+
+                                <td class="px-4 py-1 font-medium text-black whitespace-nowrap">
+                                    {% if data.is_active %}
+                                        <span class="text-green-500 font-semibold flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M9 16.2l-4.2-4.2-1.4 1.4 5.6 5.6 12-12-1.4-1.4z"/>
+                                            </svg>
+                                            On Duty
+                                        </span>
+                                    {% else %}
+                                        <span class="text-red-500 font-semibold flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M18.3 5.7c.4.4.4 1 0 1.4L13.4 12l4.9 4.9c.4.4.4 1 0 1.4s-1 .4-1.4 0L12 13.4l-4.9 4.9c-.4.4-1 .4-1.4 0s-.4-1 0-1.4l4.9-4.9-4.9-4.9c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l4.9 4.9 4.9-4.9c.4-.4 1-.4 1.4 0z"/>
+                                            </svg>
+                                            Off Duty
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                    
+                                <td class="px-4 py-4">
                                     <div class="flex flex-row gap-2 flex-wrap min-w-32">
                                         <!-- Edit Button -->
                                         <button type="button" data-modal-target="edit-modal-{{ data.id }}" data-modal-toggle="edit-modal-{{ data.id }}">
@@ -166,27 +220,65 @@
                                                     Edit Category
                                                 </h3>
                                             </div>
-                                            <form method="post" action="{% url 'dashboard_edit-staff' data.id %}">
+                                            <form method="POST" action="{% url 'dashboard_edit-staff' data.id %}" enctype="multipart/form-data">
                                                 {% csrf_token %}
                                                 <div class='flex flex-col gap-4'>
-                                                    <div class='flex flex-col gap-1'>
-                                                        <label for='staff-name' class='text-gray-700 md:font-medium'>Staff Name</label>
-                                                        <input required value='{{ data.name }} 'type='text' id='staff-name' name='staff-name' placeholder='Enter Staff Name' 
-                                                        class='p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-                                                        >
+                                                    <! -- Staff Name and Role -->
+                                                    <div class='flex flex-row gap-3 w-full'>
+                                                        <div class='flex flex-col gap-1 w-1/2'>
+                                                            <label for='staff-duty-end-time' class='text-gray-700 md:font-medium'>Staff Name</label>
+                                                            <input required type='input' value='{{ data.name }}' id='staff-name' name='staff-name' placeholder='Enter Staff Name' 
+                                                            class='w-full text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                                                            >
+                                                            <p id='staff-duty-end-time-alert' class='hidden md:font-medium text-red-600'></p>
+                                                        </div>
+
+                                                        <div class='flex flex-col gap-1 w-1/2'>
+                                                            <label for='staff-duty-end-time' class='text-gray-700 md:font-medium'>Staff Role</label>
+                                                            <input type='input' value='{{ data.role }}' required id='staff-role' name='staff-role' placeholder='Enter Staff Role' 
+                                                            class='w-full text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                                                            >
+                                                            <p id='staff-duty-end-time-alert' class='hidden md:font-medium text-red-600'></p>
+                                                        </div>
                                                     </div>
-                                                    <div class='flex flex-col gap-1'>
-                                                        <label for='staff-role' class='text-gray-700 md:font-medium'>Staff Role</label>
-                                                        <input required value='{{ data.role }}' type='text' id='staff-role' name='staff-role' placeholder='Enter Staff Role' 
-                                                        class='p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-                                                        >
+                                                    
+                                                    <! -- Staff Phone No. and Duty Start Timing -->
+                                                    <div class='flex flex-col md:flex-row gap-2 w-full'>
+                                                        <div class='flex flex-col gap-1 w-full md:w-1/2'>
+                                                            <label for='staff-duty-start-time' class='text-gray-700 md:font-medium'>Duty Start Timing</label>
+                                                            <input required type='time' value='{{ data.work_start_time|date:"H:i" }}' id='staff-duty-start-time' name='staff-duty-start-time' placeholder='Enter Staff Duty Start Timing' 
+                                                            class='w-full text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                                                            >
+                                                            <p id='staff-duty-start-time-alert' class='hidden md:font-medium text-red-600'></p>
+                                                        </div>
+
+                                                        <div class='flex flex-col gap-1 w-full md:w-1/2'>
+                                                            <label for='staff-duty-end-time' class='text-gray-700 md:font-medium'>Duty End Timing</label>
+                                                            <input type='time' value='{{ data.work_end_time|date:"H:i" }}' required id='staff-duty-end-time' name='staff-duty-end-time' placeholder='Enter Staff Duty End Timing' 
+                                                            class='w-full text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                                                            >
+                                                            <p id='staff-duty-end-time-alert' class='hidden md:font-medium text-red-600'></p>
+                                                        </div>
                                                     </div>
+
+                                                    
                                                     <div class='flex flex-col gap-1'>
                                                         <label for='staff-role' class='text-gray-700 md:font-medium'>Staff Phone No.</label>
                                                         <input required value='{{ data.phone }}' type='number' id='staff-phone-no' name='staff-phone-no' placeholder='Enter Staff Phone No.'  
-                                                        class='p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                                                        class='text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
                                                         >
                                                     </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <input type="checkbox" id="is-active" name="is-active" {% if data.is_active %}checked{% endif %} 
+                                                        class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                                                        <label for="is-active" class="text-gray-700 md:font-medium">Work Status</label>
+                                                    </div>
+                                                    <div class="space-y-1">
+                                                        <label for="staff-picture" class="block text-sm sm:text-base text-gray-700">Upload Staff Image</label>
+                                                        <input type="file" name="staff-picture" id="staff-picture" value='{{ data.staff_picture }}'
+                                                            class="text-sm sm:text-base w-full border border-gray-300 p-3 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+                                                    </div>
+                                                    
                                                 </div>
                                                 <div class="flex justify-end gap-2 mt-4">
                                                     <button type="button" data-modal-hide="edit-modal-{{ data.id }}"
@@ -241,6 +333,11 @@
             const staffNameAlert = document.getElementById('staff-name-alert');
             const staffRoleAlert = document.getElementById('staff-role-alert');
             const staffPhoneNoAlert = document.getElementById('staff-phone-no-alert');
+            
+            const staffDutyEndTime = document.getElementById('staff-duty-end-time');
+            const staffDutyStartTime = document.getElementById('staff-duty-start-time');
+            const staffDutyStartTimeAlert = document.getElementById('staff-duty-start-time-alert');
+            const staffDutyEndTimeAlert = document.getElementById('staff-duty-end-time-alert');
 
             let valid = true; // Flag to track validation status
 
@@ -267,6 +364,8 @@
             validateInput(staffNameInput, staffNameAlert, 'Staff Name is required.');
             validateInput(staffRoleInput, staffRoleAlert, 'Staff Role is required.');
             validateInput(staffPhoneNoInput, staffPhoneNoAlert, 'Staff Phone No. is required.');
+            validateInput(staffDutyStartTime, staffDutyStartTimeAlert, 'Staff Duty Start Time is required.');
+            validateInput(staffDutyEndTime, staffDutyEndTimeAlert, 'Staff Duty End Time is required.');
             
             if (!valid) {
                 event.preventDefault(); // Prevent form submission if validation fails
