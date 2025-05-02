@@ -36,8 +36,13 @@ def dashboard_signup_view(request):
             shop_owner = form.save()
             shop_owner.set_password(form.cleaned_data.get('password1'))
             login(request, shop_owner)
-            messages.success(request, 'Account created successfully!')
-            return redirect('dashboard_home')  # Redirect to dashboard
+            user_email = form.cleaned_data.get('email')
+            confirm_new_password = form.cleaned_data.get('password1')
+            user_login = authenticate(request, email=user_email, password=confirm_new_password)
+            if user_login:
+                login(request, user_login)
+                messages.success(request, 'Account created successfully!')
+                return redirect('dashboard_home')  # Redirect to dashboard
     else:
         form = ShopOwnerSignUpForm()
    
@@ -218,7 +223,10 @@ def dashboard_home(request):
         total_rating_for_shop = 0;
         for customer_rating in customer_rating_list:
             total_rating_for_shop += customer_rating.rating
-        avg_rating_of_shop = total_rating_for_shop / customer_rating_count
+        if customer_rating_count > 0:
+            avg_rating_of_shop = total_rating_for_shop / customer_rating_count
+        else:
+            avg_rating_of_shop = 0
         
         context = {
             'todays_appointments': todays_appointments,
@@ -788,3 +796,113 @@ def dashboard_appointment_edit_view(request, id):
         return redirect('dashboard_appointments')
     return redirect('dashboard_appointments')  # Redirect to appointments page
 # -------------- dashboard appointments end --------------------------------------
+
+# -------------- dashboard Profile start -----------------------------------------
+def dashboard_profile(request):
+    # get owner profile data
+    user = request.user.id
+    shop_owner_instance = ShopOwner.objects.get(id=user) # Get the shop owner data using the user ID
+    
+    # get the first image of the shop
+    shop_image = ShopImage.objects.filter(shop=shop_owner_instance).first()
+    if shop_image:
+        shop_image_url = shop_image.shop_image.url  # Get the URL of the first image
+    else:
+        shop_image_url = None  # Default to None if no image is found
+
+    shop_owner_name = shop_owner_instance.name
+    shop_owner_email = shop_owner_instance.email
+    Shop_name = shop_owner_instance.shop_name
+    shop_owner_phone = shop_owner_instance.phone
+    shop_owner_address = shop_owner_instance.address
+    shop_owner_latitude = shop_owner_instance.latitude
+    shop_owner_longitude = shop_owner_instance.longitude
+    is_active = shop_owner_instance.shop_status_bool
+
+
+    context={
+        'shop_owner_name': shop_owner_name,
+        'shop_owner_email': shop_owner_email,
+        'Shop_name': Shop_name,
+        'shop_owner_phone': shop_owner_phone,
+        'shop_owner_address': shop_owner_address,
+        'shop_owner_latitude': shop_owner_latitude,
+        'shop_owner_longitude': shop_owner_longitude,
+        'is_active': is_active,
+        'shop_image_url': shop_image_url,  # Pass the image URL to the template
+    }
+
+    return render(request, 'dashboard/profile.html', context)
+
+def update_profile(request):
+    if request.method == 'POST':
+        user_id = request.user.id
+        shop_owner_instance = ShopOwner.objects.get(id=user_id) # Get the shop owner data using the user ID
+
+        # Get the updated values from the form
+        shop_owner_name = request.POST.get('owner-name')
+        shop_owner_email = request.POST.get('email')
+        Shop_name = request.POST.get('shop-name')
+        shop_owner_phone = request.POST.get('phone-number')
+        shop_owner_address = request.POST.get('address')
+        shop_owner_latitude = request.POST.get('latitdue')
+        shop_owner_longitude = request.POST.get('longitude')
+        is_active_bool = request.POST.get('is_active')
+        print(Shop_name, shop_owner_name, shop_owner_email, shop_owner_phone, shop_owner_address, shop_owner_latitude, shop_owner_longitude, is_active_bool)
+
+
+        # Update the instance with new values
+        shop_owner_instance.name = shop_owner_name
+        shop_owner_instance.email = shop_owner_email
+        shop_owner_instance.shop_name = Shop_name
+        shop_owner_instance.phone = shop_owner_phone
+        shop_owner_instance.address = shop_owner_address
+        shop_owner_instance.latitude = float(shop_owner_latitude)
+        shop_owner_instance.longitude = float(shop_owner_longitude)
+        shop_owner_instance.shop_status_bool = True if is_active_bool == 'on' else False  # Convert to boolean
+
+        # Save the changes to the database
+        try:
+            shop_owner_instance.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('dashboard_profile')
+        except Exception as e:
+            messages.error(request, f'Error updating profile: {str(e)}')
+            return redirect('dashboard_profile')
+
+    return redirect('dashboard_profile')  # Redirect to profile page
+
+def change_password(request):
+    if request.method == 'POST':
+        user = request.user
+        user_email = user.email
+
+        current_password = request.POST.get('current-password')
+        new_password = request.POST.get('new-password')
+        confirm_new_password = request.POST.get('confirm-new-password')
+
+        if new_password == confirm_new_password:
+            if user.check_password(current_password):
+                user.set_password(new_password)
+                user.save()
+                user_login = authenticate(request, email=user_email, password=confirm_new_password)
+                login(request, user_login)
+                messages.success(request, 'Password changed successfully!')
+                return redirect('dashboard_profile')
+            else:
+                messages.error(request, 'Current password is incorrect.')
+                return redirect('dashboard_profile')
+        else:
+            messages.error(request, 'New passwords do not match.')
+            return redirect('dashboard_profile')
+
+    return redirect('dashboard_profile')  # Redirect to profile page
+
+def delete_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        user.delete()
+        messages.success(request, 'Shop deleted successfully!')
+        return redirect('dashboard_login')
+    return redirect('dashboard_profile')  # Redirect to profile page
+# -------------- dashboard Profile end -------------------------------------------
