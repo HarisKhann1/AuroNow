@@ -125,7 +125,9 @@
                                     {% if data.staff_picture %}
                                         <img src="{{ data.staff_picture.url }}" alt="Staff Picture" class="w-14 h-14 rounded-full object-cover">
                                     {% else %}
-                                        No Image
+                                        <p class="text-[10px] w-14 h-14 rounded-full flex items-center justify-center text-gray-500 bg-slate-300">
+                                            No Image
+                                        </p>
                                     {% endif %}
                                 </td>
                 

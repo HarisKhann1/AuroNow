@@ -252,10 +252,6 @@ def dashboard_service_view(request):
 
     # get categories for pagination
     shop_timing = ShopTiming.objects.filter(shop=user).order_by('id').reverse()
-
-    # get categories for pagination
-    categories = ServiceCategory.objects.filter(shop=user).order_by('id').reverse()
-    pagination = Paginator(categories, 5)  # Show 5 categories per page 
     
     # get services for pagination
     services = Service.objects.filter(shop=user).order_by('id').reverse()
@@ -268,17 +264,6 @@ def dashboard_service_view(request):
             if shop_time_search_term:
                 shop_timing = ShopTiming.objects.filter(shop=user, day__icontains=shop_time_search_term).order_by('id').reverse()
             
-
-            # search and pagination for categories
-            search_term = request.GET.get('categorySearch')
-            if search_term:
-                categories = ServiceCategory.objects.filter(shop=user, name__icontains=search_term).order_by('id').reverse()
-                pagination = Paginator(services, 5)
-
-            page_number = request.GET.get('table-page', 1)  # Default to page 1 if not provided
-            page_obj = pagination.get_page(page_number) #this variable hold data according to the page number
-            total_page = page_obj.paginator.num_pages
-            
             # search and pagination for services
             service_search_term = request.GET.get('serviceSearch')
             if service_search_term:
@@ -290,59 +275,16 @@ def dashboard_service_view(request):
             service_total_page = service_page_obj.paginator.num_pages
 
     # get all categories for the service select option form
-    total_categories = ServiceCategory.objects.filter(shop=user)
-
     services_count = Service.objects.filter(shop=user).count()
-    categories_count = ServiceCategory.objects.filter(shop=user).count()
+    total_categories = ServiceCategory.objects.all().order_by('id').reverse()
     context = {
-        'page_obj': page_obj, # Categories pagination object
-        'totalPageList': [i+1 for i in range(total_page)], # Create a list of page numbers for categories data
-        'total_categories': total_categories, # Total categories for service select option form
-        
         'service_page_obj': service_page_obj, # Services pagination object
         'service_totalPageList': [i+1 for i in range(service_total_page)], # Create a list of page numbers for services data
-        
         'shop_timing': shop_timing, # Shop timings
-
         'services_count': services_count, # Total services count
-        'categories_count': categories_count, # Total categories count
-
-
+        'total_categories': total_categories, # All categories for the service select option form
     }
     return render(request, 'dashboard/services.html', context)
-
-# add service category view
-def add_service_category_view(request):
-
-    if request.method == 'POST':
-        user = request.user
-        service_category = request.POST.get('category')
-        if service_category:
-            ServiceCategory.objects.create(name=service_category, shop=user).save()
-            messages.success(request, 'Service category added successfully!', extra_tags='shop-category-form')
-            return redirect('dashboard_service')
-    return redirect('dashboard_service')  # Redirect to services page
-
-# edit service category view
-def edit_category_view(request, id):
-    if request.method == 'POST':
-        user = request.user
-        category_name = request.POST.get('categoryName')
-        category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
-        category_instance.name = category_name
-        category_instance.save()
-        messages.success(request, 'Service category updated successfully!')
-        return redirect('dashboard_service')
-    return redirect('dashboard_service')  # Redirect to services page
-
-# delete service category view
-def delete_category_view(request, id):
-    if request.method == 'POST':
-        user = request.user
-        category_instance = ServiceCategory.objects.get(shop=user, id=int(id))
-        category_instance.delete()
-        return redirect('dashboard_service')
-    return redirect('dashboard_service')  # Redirect to services page
 
 # add service view
 def add_service_view(request):
@@ -353,6 +295,7 @@ def add_service_view(request):
         service_price = request.POST.get('service-price')
         service_duration = request.POST.get('service-duration')
         service_description = request.POST.get('service-description')
+        service_image = request.FILES.get('service-image')
 
         if service_name and service_category and service_price and service_duration and service_description:
             category_instance = ServiceCategory.objects.get(shop=user, id=int(service_category))
@@ -362,7 +305,8 @@ def add_service_view(request):
                 name=service_name,
                 price=float(service_price),
                 description=service_description,
-                duration=int(service_duration)
+                duration=int(service_duration),
+                service_image=service_image
             ).save()
             return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
@@ -375,24 +319,44 @@ def edit_service_view(request, id):
         service_price = request.POST.get('service-price')
         service_duration = request.POST.get('service-duration')
         service_description = request.POST.get('service-description')
+        service_image = request.FILES.get('service-image')
+        print(service_image)
 
+        # handling new and existing image
+        image_instance = Service.objects.get(shop=user, id=int(id))
+        
+        # Check if staff picture is provided, if not, keep the old one
+        if not service_image:
+            service_image = image_instance.service_image
+        else:
+            # If a new picture is uploaded, delete the old one
+            old_picture_path = image_instance.service_image.path  # Full path to old file
+            if os.path.exists(old_picture_path):
+                os.remove(old_picture_path)  # Delete the old file from media folder
+        
         if service_name and service_category and service_price and service_duration and service_description:
-            category_instance = ServiceCategory.objects.get(shop=user, id=int(service_category))
-            Service.objects.filter(shop=user, id=int(id)).update(
-                category=category_instance,
-                name=service_name,
-                price=float(service_price),
-                description=service_description,
-                duration=int(service_duration)
-            )
+            try:
+                category_instance = ServiceCategory.objects.get(id=int(service_category))
+                image_instance.name = service_name
+                image_instance.category = category_instance
+                image_instance.price = float(service_price) 
+                image_instance.duration = int(service_duration)
+                image_instance.description = service_description
+                image_instance.service_image = service_image
+                image_instance.save()
+            except ServiceCategory.DoesNotExist:
+                messages.error(request, 'Selected service category does not exist.')
+                return redirect('dashboard_service')
+
+            messages.success(request, 'Service updated successfully!')
             return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
 def delete_service_view(request, id):
     if request.method == 'POST':
         user = request.user
-        service_instance = Service.objects.get(shop=user, id=int(id))
-        service_instance.delete()
+        image_instance = Service.objects.get(shop=user, id=int(id))
+        image_instance.delete()
         return redirect('dashboard_service')
     return redirect('dashboard_service')  # Redirect to services page
 
@@ -510,6 +474,12 @@ def edit_shop_image_view(request, id):
         user = request.user
         image_instance = ShopImage.objects.get(shop=user, id=int(id))
         new_image = request.FILES.get('shop-image')
+
+        # If a new picture is uploaded, delete the old one
+        old_picture_path = image_instance.shop_image.path  # Full path to old file
+        if os.path.exists(old_picture_path):
+            os.remove(old_picture_path)  # Delete the old file from media folder
+        
         if new_image:
             image_instance.shop_image = new_image
             image_instance.save()

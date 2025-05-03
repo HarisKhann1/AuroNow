@@ -76,7 +76,6 @@ class PasswordResetToken(models.Model):
 
 # Service Categories
 class ServiceCategory(models.Model):
-    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='categories')
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -90,6 +89,7 @@ class Service(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(default='')
     duration = models.IntegerField(help_text="Duration in minutes")
+    service_image = models.ImageField(upload_to='service_images/', blank=True, null=True)
 
 # Staff Members
 class Staff(models.Model):
