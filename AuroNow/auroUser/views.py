@@ -1,6 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from shops.models import ShopOwner, ServiceCategory, ShopImage
 from random import randint, uniform
+from django.utils import timezone
+from django.db.models import Avg
+from datetime import datetime
+from auroUser.models import  RatingAndReviews
+
+
+# from .models import ShopOwner, ShopImage, Service, Staff, ShopTiming, RatingAndReviews
 
 # Helper function to get random shops data
 def get_shop_data(limit=5):
@@ -48,7 +55,6 @@ def search_results(request):
         'price_range': request.GET.get('price', '').strip(),
     }
 
-    print("Received Query Parameters:", query)
 
     # Start with all shops
     shops = ShopOwner.objects.all()
@@ -86,9 +92,7 @@ def search_results(request):
         # Only add the shop if it has services matching the price filter
         if services.exists():
             filtered_shops.append(shop)
-        else:
-            print(f"Shop '{shop.shop_name}' skipped due to no matching service prices.")
-
+       
     # Build final results
     results = []
 
@@ -107,8 +111,6 @@ def search_results(request):
             'rating': str(round(uniform(3.5, 5.0), 1)),
         })
 
-    print("Total Results:", len(results))
-
     # Render the search results page
     return render(request, 'search_results.html', {
         'results': results,
@@ -117,22 +119,60 @@ def search_results(request):
         'price_ranges': ["0-50", "51-100", "101-200", "200+"],
     })
 
-# View for individual shop detail
+
 def shop_detail(request, id):
-    # Fetch the shop or return 404 if not found
-    shop = get_object_or_404(ShopOwner, id=id)
-
-    # Get all service categories
-    categories = list(shop.categories.values_list('name', flat=True))
-
-    # Get shop images
-    shop_images = ShopImage.objects.filter(shop=shop)
+    # Fetch the shop with optimized queries
+    shop = get_object_or_404(
+        ShopOwner.objects.prefetch_related(
+            'categories',
+            'services',
+            'staff',
+            'timings',
+            'images',
+        ),
+        id=id
+    )
+    
+    # Get all shop images
+    shop_images = shop.images.all()
     image_urls = [img.shop_image.url for img in shop_images if img.shop_image]
-
-    return render(request, 'shop_detail.html', {
+    
+    # Get current day for highlighting in opening hours
+    current_day = datetime.now().strftime('%a').lower()[:3]  # 'mon', 'tue', etc.
+    
+    # Get services with categories
+    services = shop.services.all().select_related('category')
+    
+    # Get active staff members
+    staff_members = shop.staff.filter(is_active=True)
+    for i in staff_members:
+        print(i.name)
+    # Get shop timings ordered by day
+    shop_timings = shop.timings.all().order_by('day')
+    
+    # Get ratings and reviews with user information
+    customer_rating_list = RatingAndReviews.objects.filter(
+        shop=shop
+    ).select_related(
+        'user'  # Optimize user queries
+    ).order_by('-id')  # Newest first
+    
+    customer_rating_count = customer_rating_list.count()
+    
+    # Calculate average rating
+    avg_rating = customer_rating_list.aggregate(Avg('rating'))
+    avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
+    
+    context = {
         'shop': shop,
         'images': image_urls,
-        'categories': categories if categories else ["General"],
-        'reviews': str(randint(5, 50)),
-        'rating': str(round(uniform(3.5, 5.0), 1)),
-    })
+        'reviews': customer_rating_count,
+        'rating': avg_rating_of_shop,
+        'customer_rating_list': customer_rating_list[:5],  # Only show 5 most recent
+        'now': timezone.now(),
+        'services': services,
+        'staff_members': staff_members,
+        'timings': shop_timings,
+    }
+    
+    return render(request, 'shop_detail.html', context)

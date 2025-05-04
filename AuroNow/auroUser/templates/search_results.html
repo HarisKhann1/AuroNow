@@ -1,5 +1,5 @@
 {% extends 'base_auroUser.html' %} {% block main %}
-<div class="grid grid-cols-1 place-items-center min-h-screen p-4 pt-32">
+<div class="grid grid-cols-1 place-items-center min-h-screen p-4 mt-32">
   <!-- 👈 Added pt-20 here -->
   <div class="container mx-auto mb-56 md:px-5 lg:px-10">
      {% comment %} filters bar start {% endcomment %}
@@ -49,13 +49,10 @@
         class="bg-white shadow-lg rounded-lg w-full max-w-xs duration-300 hover:scale-105"
       >
         <!-- Show Images Inside Each Shop Block -->
-        {% for img_url in shop.images %}
-        <img
-          src="{{ img_url }}"
-          alt="shop image"
-          class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-lg"
-        />
-        {% endfor %}
+        {% if shop.images %}
+         <img src="{{ shop.images.0 }}" alt="shop image" class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-lg" />
+        {% endif %}
+
         <div class="px-2 pb-2 md:px-4 md:pb-4 text-xs md:text-lg flex flex-col">
           <div class="mt-4 flex justify-between items-start">
             {% comment %} Show Shop Name {% endcomment %}

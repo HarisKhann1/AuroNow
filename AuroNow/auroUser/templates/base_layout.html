@@ -1,13 +1,14 @@
 
 {% extends 'base_auroUser.html' %}
 {% load static %}
+
 {% block title %}AuroNow{% endblock %}
 
 {% block main %}
   <!-- Background Container -->
   <div class="relative min-h-screen">
     <!-- Responsive Background Image -->
-    <div class="absolute inset-0 -z-10">
+    <div class="absolute inset-0 -z-10 mt-[70px]">
       <img src="{% static 'images/hero.png' %}" 
            alt="Background"
            class="w-full h-full object-top object-cover" />
