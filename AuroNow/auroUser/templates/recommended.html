@@ -1,3 +1,4 @@
+ {% load static %}
 {% if shops %}
 <div class="min-w-full container mx-auto px-2 py-4">
   <h1 class="text-left font-bold text-2xl mb-4 pl-10">New to AuroNow</h1>
@@ -28,9 +29,11 @@
             {% if shop.images %}
               <img id="shop_image" src="{{ shop.images.0 }}" alt="shop image" class="w-full h-40 object-cover">
             {% else %}
-              <img src="https://via.placeholder.com/300" alt="No image available" class="w-full h-40 object-cover">
+            <!-- default shop image -->
+          <img class="w-full h-40 object-cover" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
             {% endif %}
           </div>
+          <!-- Show Shop Name amd Rating -->
           <div class="p-3">
             <div class="flex justify-between items-start">
               <span class="text-md font-semibold line-clamp-1">{{ shop.name }}</span>
@@ -39,7 +42,9 @@
                 <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
               </div>
             </div>
+            <!-- Show Shop Address -->
             <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
+            <!-- Show Shop Categories -->
             {% for category in shop.categories %} 
               <div class="mt-2 inline-block">
                 <span class="text-xs px-2 py-1  text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>

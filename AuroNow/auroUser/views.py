@@ -22,6 +22,14 @@ def get_shop_data(limit=5):
         # Get all service categories (no [:3] limitation)
         categories = list(shop.categories.values_list('name', flat=True))
 
+        # Get customer reviews and rating
+        customer_rating_list = RatingAndReviews.objects.filter(shop=shop)
+        customer_rating_count = customer_rating_list.count()
+
+        # Calculate the average rating
+        avg_rating = customer_rating_list.aggregate(Avg('rating'))
+        avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
+
         shops_data.append({
             'id': shop.id,
             'email': shop.email,
@@ -29,8 +37,8 @@ def get_shop_data(limit=5):
             'address': shop.address,
             'images': image_urls,
             'categories': categories if categories else ["General"],
-            'reviews': str(randint(5, 50)),  # Random review count
-            'rating': str(round(uniform(3.5, 5.0), 1)),  # Random rating between 3.5 to 5.0
+            'reviews': customer_rating_count,  # Display the number of reviews
+            'rating': avg_rating_of_shop,  # Display the average rating
         })
     
     return shops_data
@@ -70,6 +78,7 @@ def search_results(request):
     # Filter by category if provided
     if query['category']:
         shops = shops.filter(categories__name__iexact=query['category'])
+    
 
     # Now filter by price
     filtered_shops = []
@@ -101,15 +110,24 @@ def search_results(request):
         image_urls = [img.shop_image.url for img in shop_images if img.shop_image]
         categories = list(shop.categories.values_list('name', flat=True))
 
+    
+        customer_rating_list = RatingAndReviews.objects.filter(shop=shop)
+        customer_rating_count = customer_rating_list.count()
+
+        # Calculate the average rating
+        avg_rating = customer_rating_list.aggregate(Avg('rating'))
+        avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
+
         results.append({
             'id': shop.id,
             'name': shop.shop_name,
             'address': shop.address,
             'images': image_urls,
             'categories': categories if categories else ["General"],
-            'reviews': str(randint(5, 50)),
-            'rating': str(round(uniform(3.5, 5.0), 1)),
+            'reviews': customer_rating_count,  # Display the number of reviews
+            'rating': avg_rating_of_shop,  # Display the average rating
         })
+
 
     # Render the search results page
     return render(request, 'search_results.html', {
@@ -132,21 +150,19 @@ def shop_detail(request, id):
         ),
         id=id
     )
-    
+
     # Get all shop images
     shop_images = shop.images.all()
-    image_urls = [img.shop_image.url for img in shop_images if img.shop_image]
-    
-    # Get current day for highlighting in opening hours
-    current_day = datetime.now().strftime('%a').lower()[:3]  # 'mon', 'tue', etc.
-    
+    image_urls = [ img.shop_image.url for img in shop_images if img.shop_image ]
+    #get categories = 
+    categories = list(shop.categories.values_list('name', flat=True))
+
     # Get services with categories
     services = shop.services.all().select_related('category')
     
     # Get active staff members
     staff_members = shop.staff.filter(is_active=True)
-    for i in staff_members:
-        print(i.name)
+   
     # Get shop timings ordered by day
     shop_timings = shop.timings.all().order_by('day')
     
@@ -162,8 +178,8 @@ def shop_detail(request, id):
     # Calculate average rating
     avg_rating = customer_rating_list.aggregate(Avg('rating'))
     avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
-    
     context = {
+        'id':shop.id,
         'shop': shop,
         'images': image_urls,
         'reviews': customer_rating_count,
@@ -173,6 +189,7 @@ def shop_detail(request, id):
         'services': services,
         'staff_members': staff_members,
         'timings': shop_timings,
+        'categories': categories if categories else ["General"],
     }
     
     return render(request, 'shop_detail.html', context)

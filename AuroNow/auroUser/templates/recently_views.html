@@ -1,3 +1,4 @@
+{% load static %}
 <div
   id="recently-viewed-container"
   class="min-w-full container mx-auto px-2 py-4 hidden"
@@ -68,8 +69,9 @@
       container.classList.remove("hidden");
 
       shops.forEach((shop) => {
+        if (!shop.id) return;
         const card = document.createElement("a");
-        card.href = `/shop/${shop.email}`;
+        card.href = `/shop/${shop.id}`;
         card.className = `shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
           bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in`;
 
@@ -78,27 +80,30 @@
         shop.categories.map(category => `<span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">
         ${category || "Category"}</span>`).join(" ")
   : `<span class="text-xs px-2 py-1 text-gray-500 bg-gray-50 rounded-full">No categories</span>`);
+  const defaultShopImage = "{% static 'shopImage/default_shop_image.jpg' %}";
+  
+card.innerHTML = `
+<div class="relative">
+<img src="${shop.image || defaultShopImage}" class="w-full h-40 object-cover" />
+</div>
 
-          card.innerHTML = `
-          <div class="relative">
-            <img src="${shop.image || 'https://via.placeholder.com/300'}" class="w-full h-40 object-cover" />
-          </div>
-          <div class="p-3">
-            <div class="flex justify-between items-start">
-              <span class="text-md font-semibold line-clamp-1">${shop.name}</span>
-              <div class="flex items-center bg-gray-100 px-1 rounded">
-                <span class="text-xs font-bold text-gray-800">${shop.rating || '5.0'}</span>
-                <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
-              </div>
-            </div>
-            <p class="text-xs text-gray-500 mt-1 line-clamp-2">${shop.address}</p>
-            <div class="mt-2 flex flex-wrap gap-1">${categoryTags}</div>
-            <div class="flex justify-between mt-2 text-xs text-gray-600">
-              <span>${shop.reviews || '20'} reviews</span>
-            </div>
-          </div>
-        `;
-        
+
+<div class="p-3">
+  <div class="flex justify-between items-start">
+    <span class="text-md font-semibold line-clamp-1">${shop.name}</span>
+    <div class="flex items-center bg-gray-100 px-1 rounded">
+      <span class="text-xs font-bold text-gray-800">${shop.rating || '5.0'}</span>
+      <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
+    </div>
+  </div>
+  <p class="text-xs text-gray-500 mt-1 line-clamp-2">${shop.address}</p>
+  <div class="mt-2 flex flex-wrap gap-1">${categoryTags}</div>
+  <div class="flex justify-between mt-2 text-xs text-gray-600">
+    <span>${shop.reviews || '20'} reviews</span>
+  </div>
+</div>
+`;
+
 
         wrapper.appendChild(card);
       });
@@ -112,6 +117,5 @@
       });
     }
 
-    // Clear button
   });
 </script>
