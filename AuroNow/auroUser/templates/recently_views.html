@@ -1,0 +1,121 @@
+{% load static %}
+<div
+  id="recently-viewed-container"
+  class="min-w-full container mx-auto px-2 py-4 hidden"
+>
+  <div class="flex justify-between items-center">
+    <h1 class="text-left font-bold text-2xl mb-4 pl-10">Recently Viewed</h1>
+  </div>
+
+  <div class="relative overflow-hidden px-4 sm:px-8 group">
+    <!-- Prev Button -->
+    <button
+      id="recent-prev-btn"
+      class="absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 w-10 h-10 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100 group-hover:pointer-events-auto hover:scale-105"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15 19l-7-7 7-7"
+        />
+      </svg>
+    </button>
+
+    <!-- Next Button -->
+    <button
+      id="recent-next-btn"
+      class="absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-lg z-10 hover:bg-gray-100 w-10 h-10 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100 group-hover:pointer-events-auto hover:scale-105"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <div
+      id="recently-viewed-wrapper"
+      class="recently-viewed-carousel flex gap-6 py-2 pr-4 pl-2 scroll-smooth overflow-x-auto"
+      style="scrollbar-width: none"
+    >
+      <!-- Cards injected here -->
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("recently-viewed-container");
+    const wrapper = document.getElementById("recently-viewed-wrapper");
+    const prevBtn = document.getElementById("recent-prev-btn");
+    const nextBtn = document.getElementById("recent-next-btn");
+
+    const shops = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+
+    if (shops.length > 0) {
+      container.classList.remove("hidden");
+
+      shops.forEach((shop) => {
+        if (!shop.id) return;
+        const card = document.createElement("a");
+        card.href = `/shop/${shop.id}`;
+        card.className = `shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
+          bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in`;
+
+        // Create category tags (use shop.categories instead of shop.services)
+        const categoryTags = (shop.categories && shop.categories.length ? 
+        shop.categories.map(category => `<span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">
+        ${category || "Category"}</span>`).join(" ")
+  : `<span class="text-xs px-2 py-1 text-gray-500 bg-gray-50 rounded-full">No categories</span>`);
+  const defaultShopImage = "{% static 'shopImage/default_shop_image.jpg' %}";
+  
+card.innerHTML = `
+<div class="relative">
+<img src="${shop.image || defaultShopImage}" class="w-full h-40 object-cover" />
+</div>
+
+
+<div class="p-3">
+  <div class="flex justify-between items-start">
+    <span class="text-md font-semibold line-clamp-1">${shop.name}</span>
+    <div class="flex items-center bg-gray-100 px-1 rounded">
+      <span class="text-xs font-bold text-gray-800">${shop.rating || '5.0'}</span>
+      <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
+    </div>
+  </div>
+  <p class="text-xs text-gray-500 mt-1 line-clamp-2">${shop.address}</p>
+  <div class="mt-2 flex flex-wrap gap-1">${categoryTags}</div>
+  <div class="flex justify-between mt-2 text-xs text-gray-600">
+    <span>${shop.reviews || '20'} reviews</span>
+  </div>
+</div>
+`;
+
+
+        wrapper.appendChild(card);
+      });
+
+      // Carousel scroll logic
+      prevBtn.addEventListener("click", () => {
+        wrapper.scrollBy({ left: -300, behavior: "smooth" });
+      });
+      nextBtn.addEventListener("click", () => {
+        wrapper.scrollBy({ left: 300, behavior: "smooth" });
+      });
+    }
+
+  });
+</script>

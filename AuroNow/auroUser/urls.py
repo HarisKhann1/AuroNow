@@ -1,6 +1,9 @@
 from django.urls import path
-from auroUser import views
+from .views import base_layout, search_results, shop_detail
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', base_layout, name='base_layout'),  # URL for the base_layout
+    path('search-results/', search_results, name='search_results'), 
+    path('shop/<int:id>/', shop_detail, name='shop_detail')
 ]
+    

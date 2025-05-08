@@ -2,4 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary-color: #f09245;
+  --primary-hover-color: #E0894F;
+  --secondary-color: #233038;
+  --secondary-hover-color: #2D3C46;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+   
+}
 
+/* Chrome autofill fix */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
