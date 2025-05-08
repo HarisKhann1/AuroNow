@@ -50,6 +50,7 @@ class ShopOwner(AbstractBaseUser, PermissionsMixin):
     address = models.TextField()
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    shop_status_bool = models.BooleanField(default=True)  # True if shop is open, False if closed
     
     # Admin-related fields - default to False for regular salon owners
     is_active = models.BooleanField(default=True)
@@ -75,7 +76,6 @@ class PasswordResetToken(models.Model):
 
 # Service Categories
 class ServiceCategory(models.Model):
-    shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name='categories')
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -89,6 +89,7 @@ class Service(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(default='')
     duration = models.IntegerField(help_text="Duration in minutes")
+    service_image = models.ImageField(upload_to='service_images/', blank=True, null=True)
 
 # Staff Members
 class Staff(models.Model):

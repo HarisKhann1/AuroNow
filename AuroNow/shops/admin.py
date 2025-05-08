@@ -7,8 +7,8 @@ class ShopOwnerAdmin(admin.ModelAdmin):
     search_fields = ('email', 'name', 'shop_name', 'phone')
 
 class ServiceCategoryAdmin(admin.ModelAdmin):
-    list_display = ('shop','name')
-    search_fields = ('name'),
+    list_display = ('name',)
+    search_fields = ('name',),
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('shop','category', 'name', 'price', 'duration')
     search_fields = ('shop', 'name')

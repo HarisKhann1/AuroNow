@@ -282,7 +282,13 @@
 
         {% comment %} add service {% endcomment %}
         <div class='md:w-1/2 md:px-4'>
-            <form id='serviceForm' action='{% url "dashboard_add_service" %}' method='post' class='flex flex-col gap-4'>
+            <form 
+                id='serviceForm' 
+                action='{% url "dashboard_add_service" %}' 
+                method='post' 
+                class='flex flex-col gap-4'
+                enctype="multipart/form-data"
+            >
                 {% csrf_token %}
                 <div class='flex flex-col gap-1'>
                     <label for='service-name' class='text-gray-700 md:font-medium'>Service Name</label>
@@ -315,6 +321,11 @@
                     <label for='service-description' class='text-gray-700 md:font-medium'>Service Description</label>
                     <textarea id='service-description' name='service-description' placeholder='Enter service description' class='p-2 rounded-lg shadow border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'></textarea>
                     <p id='serviceDescriptionAlert' class='hidden font-medium'></p>
+                </div>
+                <div class='flex flex-col gap-1'>
+                    <label for="service-image" class="text-gray-700 md:font-medium">Select Service Image</label>
+                    <input type="file" name="service-image" id="service-image" accept="image/*"
+                        class="w-full border border-gray-300 p-3 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
                 </div>
                 <p id='serviceSuccessAlert' class='mt-1 hidden font-medium'></p>
                 <button type='submit' class='rounded-lg bg-primary hover:bg-primary_hover text-gray-200 p-2'>Add Service</button>
@@ -358,7 +369,7 @@
         <table class="w-full text-sm text-left rtl:text-right text-gray-500">
             <thead class="text-xs uppercase bg-table-background text-gray-200">
                 <tr>
-                    <th scope="col" class="px-6 py-3">SNO</th>
+                    <th scope="col" class="px-6 py-3">Picture</th>
                     <th scope="col" class="px-6 py-3">Name</th>
                     <th scope="col" class="px-6 py-3">Category</th>
                     <th scope="col" class="px-6 py-3">Price</th>
@@ -370,7 +381,15 @@
             <tbody>
                 {% for service_data in service_page_obj %}
                 <tr class="border-b border-gray-300">
-                    <td class="px-6 py-4">{{ forloop.counter }}</td>
+                    <td class="px-6 py-1">
+                        {% if service_data.service_image %}
+                            <img src="{{ service_data.service_image.url }}" alt="Service Image" class="w-16 h-16 rounded-lg object-cover">
+                        {% else %}
+                            <h3 class='w-16 h-16 rounded-lg bg-slate-300 text-gray-500 flex items-center justify-center'>
+                                No Image
+                            </h3>
+                        {% endif %}
+                    </td>
                     <td class="px-6 py-1 font-medium text-black whitespace-nowrap">
                         {{ service_data.name }}
                     </td>
@@ -439,7 +458,11 @@
                                     Edit Service
                                 </h3>
                             </div>
-                            <form method="post" action="{% url 'dashboard_edit_service' service_data.id %}">
+                            <form 
+                                method="post" 
+                                action="{% url 'dashboard_edit_service' service_data.id %}"
+                                enctype="multipart/form-data"
+                            >
                                 {% csrf_token %}
                                 <div class="flex flex-col gap-4">
                                     <div class="flex flex-col gap-1">
@@ -476,6 +499,12 @@
                                         <label for="serviceDescription-{{ service_data.id }}" class="block text-sm text-gray-700">Service Description</label>
                                         <textarea name="service-description" id="serviceDescription-{{ service_data.id }}"
                                             class="block bg-off-white-google w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2">{{ service_data.description }}</textarea>
+                                    </div>
+                                    <!-- service image -->
+                                    <div class='flex flex-col gap-1'>
+                                        <label for="service-image" class="text-gray-700 text-sm">Select Service Image</label>
+                                        <input type="file" name="service-image" id="service-image" accept="image/*"
+                                            class="w-full border border-gray-300 p-3 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
                                     </div>
                                 </div>
                                 {% comment %} action buttons {% endcomment %}
