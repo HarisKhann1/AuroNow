@@ -1,13 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from shops.models import ShopOwner, ServiceCategory, ShopImage
-from random import randint, uniform
 from django.utils import timezone
 from django.db.models import Avg
-from datetime import datetime
 from auroUser.models import  RatingAndReviews
+from shops.models import ShopOwner, ServiceCategory, ShopImage,Service
 
-
-# from .models import ShopOwner, ShopImage, Service, Staff, ShopTiming, RatingAndReviews
 
 # Helper function to get random shops data
 def get_shop_data(limit=5):
@@ -19,8 +15,8 @@ def get_shop_data(limit=5):
         shop_images = ShopImage.objects.filter(shop=shop)
         image_urls = [image.shop_image.url for image in shop_images if image.shop_image]
 
-        # Get all service categories (no [:3] limitation)
-        categories = list(shop.categories.values_list('name', flat=True))
+        # Get all service categories ()
+        categories = ServiceCategory.objects.filter(services__shop=shop).values_list('name', flat=True).distinct()
 
         # Get customer reviews and rating
         customer_rating_list = RatingAndReviews.objects.filter(shop=shop)
@@ -40,11 +36,15 @@ def get_shop_data(limit=5):
             'reviews': customer_rating_count,  # Display the number of reviews
             'rating': avg_rating_of_shop,  # Display the average rating
         })
-    
+
     return shops_data
 
 # View for base layout showing recommended shops
 def base_layout(request):
+    # categories = ServiceCategory.objects.values_list('name', flat=True).distinct()
+
+    # print("category:", categories)
+
     context = {
         'shops': get_shop_data(),
         'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),
@@ -84,7 +84,8 @@ def search_results(request):
     filtered_shops = []
 
     for shop in shops.distinct():
-        services = shop.services.all()
+            #get  services
+        services = Service.objects.filter(shop=shop).all()
 
         # Apply price range filter if selected
         if query['price_range']:
@@ -108,9 +109,8 @@ def search_results(request):
     for shop in filtered_shops:
         shop_images = ShopImage.objects.filter(shop=shop)
         image_urls = [img.shop_image.url for img in shop_images if img.shop_image]
-        categories = list(shop.categories.values_list('name', flat=True))
-
-    
+        categories = ServiceCategory.objects.filter(services__shop=shop).values_list('name', flat=True).distinct()
+        
         customer_rating_list = RatingAndReviews.objects.filter(shop=shop)
         customer_rating_count = customer_rating_list.count()
 
@@ -142,7 +142,6 @@ def shop_detail(request, id):
     # Fetch the shop with optimized queries
     shop = get_object_or_404(
         ShopOwner.objects.prefetch_related(
-            'categories',
             'services',
             'staff',
             'timings',
@@ -155,7 +154,8 @@ def shop_detail(request, id):
     shop_images = shop.images.all()
     image_urls = [ img.shop_image.url for img in shop_images if img.shop_image ]
     #get categories = 
-    categories = list(shop.categories.values_list('name', flat=True))
+    # Get categories related to this shop
+    categories = ServiceCategory.objects.filter(services__shop=shop).values_list('name', flat=True).distinct()
 
     # Get services with categories
     services = shop.services.all().select_related('category')

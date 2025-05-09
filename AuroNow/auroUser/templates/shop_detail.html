@@ -162,12 +162,11 @@
         <div class='flex flex-row w-full gap-4 border border-secondary-color rounded-lg shadow-sm hover:shadow-md transition'>
           <div class='w-[40%] rounded-l-lg'>
             
-            {% if service.image %}
-            <img src="{service.image.0}" alt="">
+            {% if service.service_image %}
+            <img src="{{service.service_image.url}}" alt="service Image"  class="w-full h-full object-cover rounded-l-lg">
             {% else %} 
-            <img class="w-full h-full object-cover rounded-l-lg" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
+            <img src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  class="w-full h-full object-cover rounded-l-lg" >
              {% endif %} 
-            
           </div>
           <div class="w-full py-3 flex flex-col">
             <div class='flex justify-between items-center gap-2'>
