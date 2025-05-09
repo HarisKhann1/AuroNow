@@ -1138,6 +1138,14 @@ select {
   margin-top: 70px;
 }
 
+.mt-5 {
+  margin-top: 1.25rem;
+}
+
+.-mt-2 {
+  margin-top: -0.5rem;
+}
+
 .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;
@@ -1396,12 +1404,20 @@ select {
   max-width: 20rem;
 }
 
+.max-w-7xl {
+  max-width: 80rem;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
 
 .flex-none {
   flex: none;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
 }
 
 .flex-grow {
@@ -1594,6 +1610,12 @@ select {
   --tw-space-y-reverse: 0;
   margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(2rem * var(--tw-space-y-reverse));
+}
+
+.space-x-10 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(2.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(2.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .overflow-hidden {
@@ -2481,6 +2503,12 @@ select {
   transition-duration: 150ms;
 }
 
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .duration-200 {
   transition-duration: 200ms;
 }
@@ -2691,6 +2719,11 @@ input:-webkit-autofill:focus {
   color: rgb(185 28 28 / var(--tw-text-opacity, 1));
 }
 
+.hover\:text-gray-300:hover {
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity, 1));
+}
+
 .hover\:underline:hover {
   text-decoration-line: underline;
 }
@@ -2829,12 +2862,20 @@ input:-webkit-autofill:focus {
     display: none;
   }
 
+  .sm\:h-4 {
+    height: 1rem;
+  }
+
   .sm\:w-28 {
     width: 7rem;
   }
 
   .sm\:w-\[calc\(50\%-24px\)\] {
     width: calc(50% - 24px);
+  }
+
+  .sm\:w-4 {
+    width: 1rem;
   }
 
   .sm\:translate-x-0 {
@@ -2927,6 +2968,14 @@ input:-webkit-autofill:focus {
 
   .md\:mt-4 {
     margin-top: 1rem;
+  }
+
+  .md\:mb-3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .md\:mb-5 {
+    margin-bottom: 1.25rem;
   }
 
   .md\:block {
@@ -3074,6 +3123,11 @@ input:-webkit-autofill:focus {
     padding-bottom: 3rem;
   }
 
+  .md\:px-12 {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
   .md\:pb-4 {
     padding-bottom: 1rem;
   }
@@ -3173,6 +3227,10 @@ input:-webkit-autofill:focus {
     height: 11rem;
   }
 
+  .lg\:h-6 {
+    height: 1.5rem;
+  }
+
   .lg\:w-32 {
     width: 8rem;
   }
@@ -3183,6 +3241,10 @@ input:-webkit-autofill:focus {
 
   .lg\:w-\[calc\(25\%-24px\)\] {
     width: calc(25% - 24px);
+  }
+
+  .lg\:w-6 {
+    width: 1.5rem;
   }
 
   .lg\:grid-cols-2 {
@@ -3256,6 +3318,16 @@ input:-webkit-autofill:focus {
   .lg\:text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
+  }
+
+  .lg\:text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .lg\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
   }
 
   .lg\:font-semibold {

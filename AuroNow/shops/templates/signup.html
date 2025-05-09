@@ -37,7 +37,7 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i data-feather="user" class="h-5 w-5 text-gray-400"></i>
                     </div>
-                    <input type="text" id="id_name" name="name" class="pl-10 w-full py-2 px-3 border {% if form.name.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="John Doe" value="{{ form.name.value|default:'' }}">
+                    <input type="text" id="id_name" name="name" class="text-black pl-10 w-full py-2 px-3 border {% if form.name.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="John Doe" value="{{ form.name.value|default:'' }}">
                 </div>
                 {% if form.name.errors %}
                 <p class="mt-1 text-red-500 text-sm">{{ form.name.errors.0 }}</p>
@@ -129,6 +129,20 @@
                 {% endif %}
             </div>
             
+            <!-- City -->
+            <div class="mb-4">
+                <label for="id_city" class="block text-gray-700 text-sm font-medium mb-2">City</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-feather="map-pin" class="h-5 w-5 text-gray-400"></i>
+                    </div>
+                    <input type="text" id="id_city" name="city" class="pl-10 w-full py-2 px-3 border {% if form.city.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Your City" value="{{ form.city.value|default:'' }}">
+                </div>
+                {% if form.city.errors %}
+                <p class="mt-1 text-red-500 text-sm">{{ form.city.errors.0 }}</p>
+                {% endif %}
+            </div>
+
             <!-- Address -->
             <div class="mb-4">
                 <label for="id_address" class="block text-gray-700 text-sm font-medium mb-2">Address</label>

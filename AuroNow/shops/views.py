@@ -788,6 +788,7 @@ def dashboard_profile(request):
     shop_owner_latitude = shop_owner_instance.latitude
     shop_owner_longitude = shop_owner_instance.longitude
     is_active = shop_owner_instance.shop_status_bool
+    city = shop_owner_instance.city
 
 
     context={
@@ -800,6 +801,7 @@ def dashboard_profile(request):
         'shop_owner_longitude': shop_owner_longitude,
         'is_active': is_active,
         'shop_image_url': shop_image_url,  # Pass the image URL to the template
+        'city': city,
     }
 
     return render(request, 'dashboard/profile.html', context)
@@ -817,15 +819,15 @@ def update_profile(request):
         shop_owner_address = request.POST.get('address')
         shop_owner_latitude = request.POST.get('latitdue')
         shop_owner_longitude = request.POST.get('longitude')
+        shop_owner_city = request.POST.get('city')
         is_active_bool = request.POST.get('is_active')
-        print(Shop_name, shop_owner_name, shop_owner_email, shop_owner_phone, shop_owner_address, shop_owner_latitude, shop_owner_longitude, is_active_bool)
-
 
         # Update the instance with new values
         shop_owner_instance.name = shop_owner_name
         shop_owner_instance.email = shop_owner_email
         shop_owner_instance.shop_name = Shop_name
         shop_owner_instance.phone = shop_owner_phone
+        shop_owner_instance.city = shop_owner_city.capitalize()
         shop_owner_instance.address = shop_owner_address
         shop_owner_instance.latitude = float(shop_owner_latitude)
         shop_owner_instance.longitude = float(shop_owner_longitude)
