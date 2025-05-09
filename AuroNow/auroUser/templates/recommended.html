@@ -47,6 +47,7 @@
             <!-- Show Shop Categories -->
             {% for category in shop.categories %} 
               <div class="mt-2 inline-block">
+              {% comment %} <p>debug: {{category.0}}</p> {% endcomment %}
                 <span class="text-xs px-2 py-1  text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
               </div>
             {% endfor %}

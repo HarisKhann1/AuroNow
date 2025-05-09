@@ -1,80 +1,62 @@
-<header class=" bg-red-500 fixed top-0 left-0 w-full z-50 shadow-lg ">
-  <!-- Navbar Container -->
-    <nav class="mx-0">
-      <div
-        class="bg-off-white-google w-full mx-auto h-auto px-4 py-4 flex items-center justify-between sticky overflow-hidden top-0"
-      >
-        <!-- Title -->
-        <a href="/" class="text-black text-2xl font-serif">AURONOW</a>
-  
-        <!-- Mobile Menu Button -->
-        <button
-          class="md:hidden block text-black focus:outline-none"
-          id="menu-btn"
-        >
-          ☰
-        </button>
-  
-        <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center gap-6 ">
-          {% comment %} <ul class="list-none flex gap-3 lg:gap-6">
-            <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Home</a></li>
-            <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Services</a></li>
-            <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Booking</a></li>
-            <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Profile</a></li>
-          </ul> {% endcomment %}
-          {% comment %} login and professional button {% endcomment %}
-          <div class='flex gap-3'>
-            <a
-              href="#"
-              class="bg-primary-color text-gray-700 font-medium px-6 py-2 rounded-full hover:bg-primary-hover-color transition duration-300"
-            >
-              Login
+<!-- Header Section -->
+<header class="bg-off-white-google text-white fixed top-0 left-0 w-full z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-12 py-4">
+      <div class="flex items-center justify-between">
+          <!-- Logo Section -->
+          <div class="flex-shrink-0">
+              <a href="#" class="text-2xl font-bold text-black font-serif">AuroNow</a>
+          </div>
+
+          {% comment %} <!-- Navigation Menu -->
+          <nav class="hidden md:flex space-x-10 text-lg">
+              <a href="#" class="hover:text-gray-300 transition-all">Home</a>
+              <a href="#services" class="hover:text-gray-300 transition-all">Services</a>
+              <a href="#about" class="hover:text-gray-300 transition-all">About Us</a>
+              <a href="#contact" class="hover:text-gray-300 transition-all">Contact</a>
+          </nav> {% endcomment %}
+
+          <!-- Call-to-Action Button -->
+          <div class="hidden md:block">
+              <!-- Desktop Links -->
+            <div class="hidden md:flex items-center gap-2">
+              <a href="#" class="bg-primary-color text-gray-700 px-6 py-2 rounded-full hover:bg-primary-hover-color transition font-medium">
+                Login
             </a>
-            
-            <a
-              href="{% url "dashboard_login" %}"
-              class="bg-secondary-color text-white px-3 py-2 rounded-full hover:bg-secondary-hover-color transition duration-300"
-            >
+            <a href="{% url 'dashboard_login' %}" class="bg-secondary-color text-white px-4 py-2 rounded-full hover:bg-secondary-hover-color transition font-medium">
               For Professional
           </a>
-        </div>
-        </div>
       </div>
-  
-      <!-- Mobile Menu (Hidden by default) -->
-      <div
-        class="md:hidden hidden flex-col items-center bg-slate-100 rounded-2xl border border-black mt-1 p-4 shadow-md"
-        id="mobile-menu">
-        {% comment %} <ul class="list-none flex flex-col mt-0 gap-0.5 ">
-          <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Home</a></li>
-          <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Services</a></li>
-          <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Booking</a></li>
-          <li><a href="#" class="hover:underline hover:decoration-[var(--primary-hover-color)] decoration-2">Profile</a></li>
-        </ul> {% endcomment %}
-        <div class='flex flex-col mt-2 gap-2 sm:flex-row text-start text-white'>
-          <a href="#"
-            class="w-full border border-primary-color text-gray-600 px-6 py-1.5 text-xs font-semibold rounded-lg ">
+          </div>
+
+          <!-- Mobile Menu Button (for smaller screens) -->
+          <div class="md:hidden flex items-center">
+              <button id="menu-button" class="text-black focus:outline-none">
+                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                  </svg>
+              </button>
+          </div>
+      </div>
+
+      <!-- Mobile Navigation Menu -->
+      <div id="mobile-menu" class="md:hidden mt-5 hidden space-y-4 flex-col">
+          <a href="#" class="w-full border border-primary-color text-gray-600 px-6 py-1.5 text-sm font-semibold rounded-lg">
             Login
           </a>
-          <a 
-          href="{% url "dashboard_login" %}"
-          class="w-full bg-secondary-color text-xs font-medium px-3 py-2 rounded-lg ">
+          <a href="{% url 'dashboard_login' %}" class="w-full bg-secondary-color text-sm font-medium px-4 py-2 rounded-lg text-white">
             For Professional
           </a>
         </div>
-      </div>
-    </nav>
-      <!-- Alpine.js for Mobile Menu Toggle -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const menuBtn = document.getElementById("menu-btn");
-        const mobileMenu = document.getElementById("mobile-menu");
-  
-        menuBtn.addEventListener("click", () => {
-          mobileMenu.classList.toggle("hidden");
-        });
-      });
-    </script>
-  </header>
-  
+  </div>
+</header>
+
+<script>
+  // Mobile Menu Toggle
+  const menuButton = document.getElementById('menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  menuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      mobileMenu.classList.add('flex');
+  });
+</script>
