@@ -6,7 +6,7 @@ from shops.models import ShopOwner, ServiceCategory, ShopImage,Service
 
 
 # Helper function to get random shops data
-def get_shop_data(limit=5):
+def get_shop_data(limit=7):
     shops = ShopOwner.objects.all()[:limit]
     shops_data = []
 
