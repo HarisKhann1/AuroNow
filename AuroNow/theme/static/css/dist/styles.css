@@ -1140,13 +1140,6 @@ select {
   -webkit-line-clamp: 1;
 }
 
-.line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
 .block {
   display: block;
 }
@@ -1761,11 +1754,6 @@ select {
   border-color: transparent;
 }
 
-.border-orange-500 {
-  --tw-border-opacity: 1;
-  border-color: rgb(249 115 22 / var(--tw-border-opacity, 1));
-}
-
 .bg-\[\#233038\] {
   --tw-bg-opacity: 1;
   background-color: rgb(35 48 56 / var(--tw-bg-opacity, 1));
@@ -1982,10 +1970,6 @@ select {
   padding: 2rem;
 }
 
-.p-px {
-  padding: 1px;
-}
-
 .px-1 {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
@@ -2086,11 +2070,6 @@ select {
   padding-bottom: 1px;
 }
 
-.px-3\.5 {
-  padding-left: 0.875rem;
-  padding-right: 0.875rem;
-}
-
 .pb-10 {
   padding-bottom: 2.5rem;
 }
@@ -2149,10 +2128,6 @@ select {
 
 .pt-8 {
   padding-top: 2rem;
-}
-
-.pl-0 {
-  padding-left: 0px;
 }
 
 .text-left {
@@ -2538,12 +2513,6 @@ input:-webkit-autofill:focus {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.hover\:scale-110:hover {
-  --tw-scale-x: 1.1;
-  --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
 .hover\:bg-\[\#0b0f12\]:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(11 15 18 / var(--tw-bg-opacity, 1));
@@ -2886,35 +2855,6 @@ input:-webkit-autofill:focus {
     padding-bottom: 0.25rem;
   }
 
-  .sm\:px-1 {
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-  }
-
-  .sm\:px-10 {
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
-  .sm\:px-5 {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-
-  .sm\:px-12 {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-
-  .sm\:px-0 {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-
-  .sm\:pl-2 {
-    padding-left: 0.5rem;
-  }
-
   .sm\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
@@ -3059,6 +2999,10 @@ input:-webkit-autofill:focus {
     margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
+  .md\:rounded-lg {
+    border-radius: 0.5rem;
+  }
+
   .md\:p-12 {
     padding: 3rem;
   }
@@ -3117,10 +3061,6 @@ input:-webkit-autofill:focus {
 
   .md\:pb-4 {
     padding-bottom: 1rem;
-  }
-
-  .md\:pl-2 {
-    padding-left: 0.5rem;
   }
 
   .md\:text-left {
@@ -3312,11 +3252,6 @@ input:-webkit-autofill:focus {
   .lg\:py-2 {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-  }
-
-  .lg\:px-12 {
-    padding-left: 3rem;
-    padding-right: 3rem;
   }
 
   .lg\:text-3xl {
