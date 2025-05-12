@@ -30,7 +30,7 @@
   
   <!-- 👈 Added pt-20 here -->
   <div class="container mx-auto mb-56 md:px-5 lg:px-10">
-     {% comment %} filters bar start {% endcomment %}
+     <!-- filters bar start -->
      <form id="filterForm" method="GET" action="{% url 'search_results' %}" class="flex flex-wrap gap-4 mb-6">
       <div class="flex flex-row gap-4">
         <div class=''>
@@ -54,17 +54,18 @@
         </div>
       
         <div>
-          <label for="address" class="block text-sm font-semibold mb-1">Location:</label>
-          <select name="address" id="address" class="bg-gray-300 truncate outline-none border-none w-20 md:w-40 pr-3 pl-2 py-2 rounded-md text-xs md:text-sm">
+          <label for="city" class="block text-sm font-semibold mb-1">Location:</label>
+          <select name="city" id="city" class="bg-gray-300 truncate outline-none border-none w-20 md:w-40 pr-3 pl-2 py-2 rounded-md text-xs md:text-sm">
             <option class="text-xs md:text-sm" value="">All</option>
-            {% for address in addresses %}
-              <option class="text-xs"  value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>{{ address }}</option>
+            {% for city in cities %}
+              <option class="text-xs"  value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>{{ city }}</option>
             {% endfor %}
           </select>
         </div>
       </div>
     </form>    
-       {% comment %} filters bar end {% endcomment %}
+     <!-- filters bar start end-->
+
     {% if results %}
     <h2 class="text-2xl font-bold mb-4">Search Results</h2>
     <!-- card-->
@@ -126,7 +127,7 @@
   const filterForm = document.getElementById('filterForm');
 
   // Auto-submit on any dropdown change
-  ['category', 'price', 'address'].forEach(id => {
+  ['category', 'price', 'city'].forEach(id => {
     const select = document.getElementById(id);
     select.addEventListener('change', () => {
       filterForm.submit();

@@ -18,6 +18,7 @@
                 <p class='text-sm sm:text-base md:text-gray-700'>Latitdue: <span class='font-semibold text-slate-600'>{{ shop_owner_latitude }}</span></p>
                 <p class='text-sm sm:text-base md:text-gray-700'>Longitude: <span class='font-semibold text-slate-600'>{{ shop_owner_longitude }}</span></p>
                 <p class='text-sm sm:text-base md:text-gray-700'>Shop Status: <span class='font-semibold text-slate-600'> {% if is_active %} Active {% else %} Deactive {% endif %}</span></p>
+                <p class='text-sm sm:text-base md:text-gray-700'>City: <span class='font-semibold text-slate-600'>{{ city }}</span></p>
                 <p class='text-sm sm:text-base md:text-gray-700'>Address: <span class='font-semibold text-slate-600'>{{ shop_owner_address }}</span></p>
             </div>
         </div>
@@ -101,7 +102,13 @@
                     </div>
                 </div>
                 <!-- Address -->
-                <div class='flex flex-col gap-4'>
+                <div class='flex flex-col gap-4 -mt-4'>
+                    <div class='flex flex-col gap-1 w-full'>
+                        <label for='city' class='text-gray-700 md:font-medium'>City</label>
+                        <input required type='text' value='{{ city }}' id='city' name='city' placeholder='Enter Your City' 
+                        class='w-full text-gray-700 text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                        >
+                    </div>
                     <div class='flex flex-col gap-1 w-full'>
                         <label for='address' class='text-gray-700 md:font-medium'>Address</label>
                         <textarea name="address" id="address"

@@ -51,7 +51,8 @@ class ShopOwner(AbstractBaseUser, PermissionsMixin):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     shop_status_bool = models.BooleanField(default=True)  # True if shop is open, False if closed
-    
+    city = models.CharField(max_length=255, default='Karachi')
+
     # Admin-related fields - default to False for regular salon owners
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # False by default - no admin access

@@ -6,7 +6,7 @@ from shops.models import ShopOwner, ServiceCategory, ShopImage,Service
 
 
 # Helper function to get random shops data
-def get_shop_data(limit=7):
+def get_shop_data(limit=5):
     shops = ShopOwner.objects.all()[:limit]
     shops_data = []
 
@@ -41,14 +41,10 @@ def get_shop_data(limit=7):
 
 # View for base layout showing recommended shops
 def base_layout(request):
-    # categories = ServiceCategory.objects.values_list('name', flat=True).distinct()
-
-    # print("category:", categories)
-
     context = {
         'shops': get_shop_data(),
         'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),
-        'addresses': ShopOwner.objects.values_list('address', flat=True).distinct(),
+        'cities': ShopOwner.objects.values_list('city', flat=True).distinct(),
         'price_ranges': ["0-50", "51-100", "101-200", "200+"],
     }
     return render(request, 'base_layout.html', context)
@@ -59,11 +55,9 @@ def search_results(request):
     query = {
         'category': request.GET.get('category', '').strip(),
         'shop_name': request.GET.get('shop_name', '').strip(),
-        'address': request.GET.get('address', '').strip(),
+        'city': request.GET.get('city', '').strip(),
         'price_range': request.GET.get('price', '').strip(),
     }
-
-
     # Start with all shops
     shops = ShopOwner.objects.all()
 
@@ -71,9 +65,9 @@ def search_results(request):
     if query['shop_name']:
         shops = shops.filter(shop_name__icontains=query['shop_name'])
 
-    # Filter by address if provided
-    if query['address']:
-        shops = shops.filter(address__icontains=query['address'])
+    # Filter by city if provided
+    if query['city']:
+        shops = shops.filter(city__icontains=query['city'])
 
     # Filter by category if provided
     if query['category']:
@@ -133,7 +127,7 @@ def search_results(request):
     return render(request, 'search_results.html', {
         'results': results,
         'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),
-        'addresses': ShopOwner.objects.values_list('address', flat=True).distinct(),
+        'cities': ShopOwner.objects.values_list('city', flat=True).distinct(),
         'price_ranges': ["0-50", "51-100", "101-200", "200+"],
     })
 

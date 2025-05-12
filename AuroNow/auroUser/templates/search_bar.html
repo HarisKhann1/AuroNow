@@ -28,11 +28,11 @@
     <span class="text-gray-500">|</span>
 
     <!-- Location -->
-    <select name="address" class="bg-transparent  outline-none text-medium border-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
+    <select name="city" class="bg-transparent  outline-none text-medium border-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
       <option  class="text-black" value="">Location</option>
-      {% for address in addresses %}
-      <option  class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
-        {{ address }}
+      {% for city in cities %}
+      <option  class="text-black" value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>
+        {{ city }}
       </option>
       {% endfor %}
     </select>
@@ -54,7 +54,8 @@
     </button>
   </div>
 
-  <!-- Tablet Layout -->
+  
+    <!-- Tablet Layout -->
   <div id='tablet' class="hidden md:flex md:flex-col lg:hidden gap-3">
     <div class="grid grid-cols-2 gap-3">
       <!--categories  -->
@@ -72,11 +73,11 @@
         class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full  focus:ring-0" />
       
         <!-- Location -->
-      <select name="address" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
+      <select name="city" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
         <option  class="text-black" value="">Location</option>
-        {% for address in addresses %}
-        <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
-          {{ address }}
+        {% for city in cities %}
+        <option class="text-black" value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>
+          {{ city }}
         </option>
         {% endfor %}
       </select>
@@ -116,11 +117,11 @@
       class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full focus:ring-0" />
 
     <!-- Location -->
-    <select name="address" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
+    <select name="city" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
       <option class="text-black" value="">Location</option>
-      {% for address in addresses %}
-      <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
-        {{ address }}
+      {% for city in cities %}
+      <option class="text-black" value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>
+        {{ city }}
       </option>
       {% endfor %}
     </select>
@@ -139,7 +140,8 @@
     <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-lg hover:bg-primary-hover-color w-full mt-2 focus:ring-0 hover:text-gray-200">
       Search
     </button>
-  </div>
+  </div> 
+
 </form>
 
 <script>
