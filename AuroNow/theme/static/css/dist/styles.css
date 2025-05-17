@@ -1000,6 +1000,11 @@ select {
   margin-right: auto;
 }
 
+.my-1 {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .my-auto {
   margin-top: auto;
   margin-bottom: auto;
@@ -1242,6 +1247,10 @@ select {
 
 .h-96 {
   height: 24rem;
+}
+
+.h-\[400px\] {
+  height: 400px;
 }
 
 .h-\[calc\(100\%\)\] {
@@ -1823,6 +1832,11 @@ select {
   background-color: rgb(220 252 231 / var(--tw-bg-opacity, 1));
 }
 
+.bg-indigo-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(224 231 255 / var(--tw-bg-opacity, 1));
+}
+
 .bg-indigo-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(199 210 254 / var(--tw-bg-opacity, 1));
@@ -2164,6 +2178,10 @@ select {
 
 .text-\[10px\] {
   font-size: 10px;
+}
+
+.text-\[8px\] {
+  font-size: 8px;
 }
 
 .text-base {
@@ -3074,6 +3092,10 @@ input:-webkit-autofill:focus {
   .md\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
+  }
+
+  .md\:text-\[10px\] {
+    font-size: 10px;
   }
 
   .md\:text-base {

@@ -107,7 +107,7 @@
       <select name="category" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
         <option class="text-black" value="" >Category</option>
         {% for cat in categories %}
-        <option  class="text-black" class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
+        <option class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
           {{ cat }}
         </option>
         {% endfor %}
@@ -143,8 +143,9 @@
       </button>
     </div> 
   </main>
-  
+
 </form>
+
 <!-- Near Shops -->
 <div class="flex items-center lg:px-6 py-2 w-full max-w-3xl mx-auto  ">
   <div class = "transition duration-300  hover:scale-105 flex items-center">
@@ -152,6 +153,7 @@
     <button id="near-shops-btn" type='button' class="inline-block text-white">Near Shops</button>
   </div>
 </div>
+<!-- Near Shops -->
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -185,24 +187,90 @@
     window.addEventListener("resize", updateFormInputs);
   });
 
-
   // get user lati & longi 
-   document.getElementById('near-shops-btn').addEventListener('click', function () {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const url = new URL("{% url 'search_results' %}", window.location.origin);
-        url.searchParams.set('lat', lat);
-        url.searchParams.set('lon', lon);
-        window.location.href = url.toString();
-      }, function (error) {
-        alert("Unable to retrieve your location.");
-      });
-    } else {
-      alert("Geolocation is not supported by your browser.");
+ document.getElementById('near-shops-btn').addEventListener('click', function () {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  this.disabled = true;
+  this.textContent = "Locating...";
+
+  // Check if location was previously stored and reuse it
+  const storedPos = sessionStorage.getItem('lastKnownPosition');
+  if (storedPos) {
+    const { lat, lon } = JSON.parse(storedPos);
+    redirectToNearbyShops(lat, lon);
+    return;
+  }
+
+  const geoOptions = {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 10000
+  };
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      let { latitude: lat, longitude: lon, accuracy } = position.coords;
+
+      // Round to 6 decimal places
+      lat = Number(lat.toFixed(6));
+      lon = Number(lon.toFixed(6));
+
+      console.log(`Position: ${lat}, ${lon} (Accuracy: ${accuracy}m)`);
+
+      if (accuracy > 100) {
+        if (!confirm(`Your location is only accurate within ${Math.round(accuracy)}m. Continue anyway?`)) {
+          resetButton();
+          return;
+        }
+      }
+
+      // Store for future sessions
+      sessionStorage.setItem('lastKnownPosition', JSON.stringify({ lat, lon }));
+      redirectToNearbyShops(lat, lon);
+    },
+    (error) => {
+      const lastPos = sessionStorage.getItem('lastKnownPosition');
+      if (lastPos) {
+        if (confirm("Location access blocked. Use your last known position?")) {
+          const { lat, lon } = JSON.parse(lastPos);
+          redirectToNearbyShops(lat, lon);
+          return;
+        }
+      }
+
+      const errors = {
+        1: "Permission denied. Enable location access in browser settings.",
+        2: "Could not determine location. Check your network/GPS.",
+        3: "Request timed out. Try again in an open area."
+      };
+      alert(errors[error.code] || "Location unavailable. Try again later.");
+      resetButton();
+    },
+    geoOptions
+  );
+
+  function redirectToNearbyShops(lat, lon) {
+    try {
+      const url = new URL("{% url 'nearby_shops' %}", window.location.origin);
+      url.searchParams.set('lat', lat);
+      url.searchParams.set('lon', lon);
+      window.location.href = url.toString();
+    } catch (error) {
+      alert("Failed to generate URL. Please try again.");
+      resetButton();
     }
-  });
+  }
+
+  function resetButton() {
+    const btn = document.getElementById('near-shops-btn');
+    btn.disabled = false;
+    btn.textContent = "Find Nearby Shops";
+  }
+});
 
 </script>
 
