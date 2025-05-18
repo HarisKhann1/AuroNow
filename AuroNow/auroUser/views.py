@@ -320,7 +320,7 @@ def user_reset_password(request, token):
                 messages.success(request, 'Password reset successful')
                 return redirect('user_login')
         
-        return render(request, 'resetPass.html')
+        return render(request, 'auth/reset_password.html')
     except UserPasswordResetToken.DoesNotExist:
         messages.error(request, 'Invalid token')
         return redirect('user_login')

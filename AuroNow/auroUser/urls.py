@@ -7,7 +7,7 @@ urlpatterns = [
     path('logout/', logout_view, name='user_logout'),  # URL for user logout
     path('signup/', user_signup, name='user_signup'),  # URL for user login
     path('forget-password/', forget_password, name='user_forget_password'),  # URL for password reset
-    path('user/reset-password/<uuid:token>/', user_reset_password, name='reset_password'),
+    path('user/reset-password/<uuid:token>/', user_reset_password, name='user_reset_password'),
     
     # main urls
     path('', base_layout, name='base_layout'),  # URL for the base_layout
