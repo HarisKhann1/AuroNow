@@ -297,3 +297,31 @@ def forget_password(request):
     return render(request, 'auth/forget_password.html')
 # ------------------------------Forget Password End-----------------------------------------------
 
+# ------------------------------Reset Password Start---------------------------------------------
+def user_reset_password(request, token):
+    try:
+        token_obj = UserPasswordResetToken.objects.get(token=token)
+        
+        if not token_obj.is_valid():
+            messages.error(request, 'Token expired')
+            return redirect('user_login')
+        
+        if request.method == 'POST':
+            password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
+            
+            if password != confirm_password:
+                messages.error(request, 'Passwords do not match')
+            else:
+                user = token_obj.user
+                user.set_password(password)
+                user.save()
+                token_obj.delete()
+                messages.success(request, 'Password reset successful')
+                return redirect('user_login')
+        
+        return render(request, 'resetPass.html')
+    except UserPasswordResetToken.DoesNotExist:
+        messages.error(request, 'Invalid token')
+        return redirect('user_login')
+# ------------------------------Reset Password End-----------------------------------------------

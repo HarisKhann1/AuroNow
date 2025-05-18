@@ -63,7 +63,7 @@ def dashboard_login_view(request):
 
         user = backend.authenticate(request, email=email, password=password)
         if user is not None:
-            login(request, user)
+            login(request, user, backend='shops.backends.ShopOwnerBackend')
             return redirect('dashboard_home')  # Redirect after successful login
         else:
             messages.error(request, 'Invalid email or password')
