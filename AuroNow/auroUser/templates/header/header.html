@@ -50,11 +50,11 @@
       <!-- Mobile Navigation Menu -->
       <div id="mobile-menu" class="md:hidden mt-5 hidden space-y-4 flex-col">
          {% if user.is_authenticated %}
-            <a href="#" class="w-full border border-primary-color text-gray-700 px-6 py-1.5 text-sm font-semibold rounded-lg">
-              Sign Up
+            <a   href="{% url 'user_logout' %}"  class="w-full border border-red-500 bg-red-200 text-gray-700 px-6 py-1.5 text-sm font-semibold rounded-lg">
+              Logout
             </a>
          {% else %}
-            <a href="#" class="w-full border border-primary-color text-gray-700 px-6 py-1.5 text-sm font-semibold rounded-lg">
+            <a href="{% url 'user_login' %}" class="w-full border border-primary-color text-gray-700 px-6 py-1.5 text-sm font-semibold rounded-lg">
               Login
             </a>
          {% endif %}
