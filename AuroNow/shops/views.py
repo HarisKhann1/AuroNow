@@ -22,6 +22,9 @@ from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
 from django.db.models.functions import ExtractMonth
+from django.contrib.auth import login
+from shops.backends import ShopOwnerBackend
+
 
 # -------------- authentication start --------------------------------------
 # Importing environment variables
@@ -38,7 +41,10 @@ def dashboard_signup_view(request):
             login(request, shop_owner)
             user_email = form.cleaned_data.get('email')
             confirm_new_password = form.cleaned_data.get('password1')
-            user_login = authenticate(request, email=user_email, password=confirm_new_password)
+
+            backend = ShopOwnerBackend()
+            user_login = backend.authenticate(request, email=user_email, password=confirm_new_password)
+
             if user_login:
                 login(request, user_login)
                 messages.success(request, 'Account created successfully!')
@@ -53,7 +59,9 @@ def dashboard_login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         # Use the authenticate method to check the credentials
-        user = authenticate(request, email=email, password=password)
+        backend = ShopOwnerBackend()
+
+        user = backend.authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
             return redirect('dashboard_home')  # Redirect after successful login
@@ -298,7 +306,7 @@ def add_service_view(request):
         service_image = request.FILES.get('service-image')
 
         if service_name and service_category and service_price and service_duration and service_description:
-            category_instance = ServiceCategory.objects.get(shop=user, id=int(service_category))
+            category_instance = ServiceCategory.objects.get(id=int(service_category))
             Service.objects.create(
                 shop=user,
                 category=category_instance,

@@ -25,20 +25,6 @@ class ShopOwnerManager(BaseUserManager):
         shop_owner.set_password(password)
         shop_owner.save(using=self._db)
         return shop_owner
-    
-    def create_superuser(self, email, name, shop_name, password=None, **extra_fields):
-        # Set admin privileges for superuser
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('is_active', True)
-        
-        return self.create_user(
-            email=email,
-            name=name,
-            shop_name=shop_name,
-            password=password,
-            **extra_fields
-        )
 
 # Shop Owner Model
 class ShopOwner(AbstractBaseUser, PermissionsMixin):

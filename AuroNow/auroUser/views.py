@@ -1,8 +1,20 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 from django.db.models import Avg
-from auroUser.models import  RatingAndReviews
+from auroUser.models import  RatingAndReviews, User, UserPasswordResetToken
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout, authenticate
+from django.contrib import messages
 from shops.models import ShopOwner, ServiceCategory, ShopImage,Service
+from django.core.mail import send_mail
+import environ
+from django.conf import settings
+
+
+# Importing environment variables
+env = environ.Env()
+environ.Env.read_env()
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default=None)
 
 
 # Helper function to get random shops data
@@ -193,3 +205,95 @@ def shop_detail(request, id):
     }
     
     return render(request, 'shop_detail.html', context)
+
+
+
+# ------------------------------Login view Start---------------------------------------------
+# User login View
+def user_login(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        user = authenticate(request, email=email, password=password)  # use email here
+        print("user:", user)
+        if user is not None:
+            print("in if condition of user login")
+            login(request, user)
+            return redirect('base_layout')
+        else:
+            messages.error(request, 'Invalid email or password. Please try again.')
+
+    return render(request, 'auth/login.html')
+# ------------------------------Login view End-----------------------------------------------
+
+# ------------------------------Logout View Start-----------------------------------------------
+# User Logout View
+def logout_view(request):
+    logout(request)
+    # Redirect to the base layout after logout
+    return redirect('base_layout')
+# ------------------------------Logout View End-------------------------------------------------
+
+# ------------------------------Signup View Start-------------------------------------------------
+# User Singup View
+def user_signup(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        city = request.POST.get('city')
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
+
+        isUserExist = User.objects.get(email=email)
+
+        if isUserExist:
+            messages.error(request, 'The user already exist.')
+            return render(request, 'auth/signup.html')
+
+        # Create a new user
+        User.objects.create_user(
+            name=name,
+            email=email,
+            phone=phone,
+            city=city,
+            password=password
+        ).save()
+        # Log the user in after registration
+        user = authenticate(request, email=email, password=password)  # use email here
+        if user is not None:
+            login(request, user)
+            # Redirect to the base layout after login
+            return redirect('base_layout')  
+        else:
+            messages.error(request, 'Registration successful but login failed. Please try again.')
+            return render(request, 'auth/signup.html')
+        
+    return render(request, 'auth/signup.html')
+# ------------------------------Signup View End---------------------------------------------------
+
+# ------------------------------Forget Password Start---------------------------------------------
+def forget_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = User.objects.get(email=email)
+        if user:
+            # Generate a password reset token and send it to the user's email
+            token = UserPasswordResetToken.objects.create(user=user)
+            # Send email logic
+            reset_link = f"{request.scheme}://{request.get_host()}/user/reset-password/{token.token}"
+            send_mail(
+                'Password Reset', # Subject of the email
+                f'Click the link to reset your password: {reset_link}', # Body of the email
+                EMAIL_HOST_USER, # Sender's email
+                [email], # Recipient's email
+                fail_silently=False, # Set to True in production
+            )
+            messages.success(request, 'Password reset link has been sent to your email.')
+            return redirect('user_login')  # Redirect to login page after sending email
+        else:
+            messages.error(request, 'Email not found.')
+
+    return render(request, 'auth/forget_password.html')
+# ------------------------------Forget Password End-----------------------------------------------
+

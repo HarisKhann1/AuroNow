@@ -1,0 +1,80 @@
+{% extends 'base_auroUser.html' %}
+{% load static %}
+
+{% block title %}
+    AuroNow - Signup
+{% endblock %}
+
+{% block main %}
+    <section>
+        <div class="flex flex-col justify-center p-4 mt-20 sm:mt-28">
+        <div class="max-w-md w-full mx-auto border border-slate-300 rounded-2xl p-8 bg-off-white-google shadow-md">
+            <div class="text-center mb-10">
+                <h1 class="font-bold underline text-secondary-color text-lg sm:text-2xl">SignUp</h1> 
+            </div>
+
+            <!-- Alert of success and failure -->
+            {% if messages %}
+                <div id="messages-container" class="mb-4">
+                    {% for message in messages %}
+                        <div class="toast-message mb-4 p-3 rounded
+                            {% if message.tags == 'error' %} bg-red-200 text-red-800 {% elif message.tags == 'success' %} bg-green-100 text-green-800 {% endif %}"
+                            data-timeout="5000">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <form id="form" action="{% url "user_signup" %}" method="POST">
+                {% csrf_token %}
+                <div class="space-y-6">
+                     <!-- name -->
+                    <div>
+                        <label for="name" class="text-slate-800 text-sm font-medium mb-2 block">Name</label>
+                        <input id="name" name="name" type="text" class="text-slate-800 bg-white border border-slate-300 w-full text-sm px-4 py-3 rounded-md outline-indigo-500" placeholder="Enter your email" />
+                    </div>
+                    <!-- email -->
+                    <div>
+                        <label for="email" class="text-slate-800 text-sm font-medium mb-2 block">Email</label>
+                        <input id="email" name="email" type="email" class="text-slate-800 bg-white border border-slate-300 w-full text-sm px-4 py-3 rounded-md outline-indigo-500" placeholder="Enter your email" />
+                    </div>
+                    <!-- city -->
+                    <div>
+                        <label for="city" class="text-slate-800 text-sm font-medium mb-2 block">City</label>
+                        <input id="city" name="city" type="text" class="text-slate-800 bg-white border border-slate-300 w-full text-sm px-4 py-3 rounded-md outline-indigo-500" placeholder="Enter your city" />
+                    </div>
+                    <!-- phone -->
+                    <div>
+                        <label for="phone" class="text-slate-800 text-sm font-medium mb-2 block">Phone</label>
+                        <input id="phone" name="phone" type="tel" class="text-slate-800 bg-white border border-slate-300 w-full text-sm px-4 py-3 rounded-md outline-indigo-500" placeholder="Enter your phone number" />
+                    </div>
+                    <!-- password -->
+                    <div>
+                        <label label="password" class="text-slate-800 text-sm font-medium mb-2 block">Password</label>
+                        <input id="password" name="password" type="password" class="text-slate-800 bg-white border border-slate-300 w-full text-sm px-4 py-3 rounded-md outline-indigo-500" placeholder="Enter your password" />
+                    </div>
+                </div>
+                <!-- submit button-->
+                <div class="mt-8">
+                    <button type="submit" class="w-full py-3 px-4 text-sm tracking-wider font-medium rounded-md text-white bg-primary hover:bg-primary_hover focus:outline-none cursor-pointer">
+                    Create an account
+                    </button>
+                </div>
+                <!-- Already have an account -->
+                <p class="text-slate-800 text-sm mt-6 text-center">Already have an account? <a href="{% url "user_login" %}" class="text-indigo-600 font-semibold hover:underline ml-1">Login here</a></p>
+            </form>
+        </div>
+        </div>
+    </section>
+
+    <script>
+        // Function to remove the toast message after a certain time
+        setTimeout(function () {
+        const message = document.getElementById('messages-container');
+        if (message) {
+            message.classList.add('hidden');
+        }
+    }, 5000);
+    </script>
+{% endblock %}
