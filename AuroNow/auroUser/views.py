@@ -9,8 +9,10 @@ from shops.models import ShopOwner, ServiceCategory, ShopImage,Service
 from django.core.mail import send_mail
 import environ
 from django.conf import settings
+import h3
+from geopy.distance import geodesic
 
-
+ 
 # Importing environment variables
 env = environ.Env()
 environ.Env.read_env()
@@ -23,21 +25,20 @@ def get_shop_data(limit=5):
     shops_data = []
 
     for shop in shops:
-        # Get all images related to the shop
+        # Fetch related shop images
         shop_images = ShopImage.objects.filter(shop=shop)
         image_urls = [image.shop_image.url for image in shop_images if image.shop_image]
 
-        # Get all service categories ()
+        # Fetch distinct service categories
         categories = ServiceCategory.objects.filter(services__shop=shop).values_list('name', flat=True).distinct()
 
-        # Get customer reviews and rating
+        # Fetch reviews and calculate average rating
         customer_rating_list = RatingAndReviews.objects.filter(shop=shop)
         customer_rating_count = customer_rating_list.count()
-
-        # Calculate the average rating
         avg_rating = customer_rating_list.aggregate(Avg('rating'))
         avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
 
+        # Append to shop data list
         shops_data.append({
             'id': shop.id,
             'email': shop.email,
@@ -45,61 +46,96 @@ def get_shop_data(limit=5):
             'address': shop.address,
             'images': image_urls,
             'categories': categories if categories else ["General"],
-            'reviews': customer_rating_count,  # Display the number of reviews
-            'rating': avg_rating_of_shop,  # Display the average rating
+            'reviews': customer_rating_count,
+            'rating': avg_rating_of_shop,
         })
 
     return shops_data
 
-# View for base layout showing recommended shops
+# ----------------------------
+# View: Base Layout with Filters and Recommended Shops
+# ----------------------------
 def base_layout(request):
-    # categories = ServiceCategory.objects.values_list('name', flat=True).distinct()
-
-    # print("category:", categories)
-
     context = {
         'shops': get_shop_data(),
         'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),
-        'addresses': ShopOwner.objects.values_list('address', flat=True).distinct(),
+        'cities': ShopOwner.objects.values_list('city', flat=True).distinct(),
         'price_ranges': ["0-50", "51-100", "101-200", "200+"],
     }
     return render(request, 'base_layout.html', context)
 
-# Search Results View
-def search_results(request):
-    # Capture query parameters
+
+
+# ----------------------------
+# H3 Geolocation Helpers
+# ----------------------------
+
+def latlng_to_cell(lat, lon, resolution=9):
+    return h3.latlng_to_cell(lat, lon, resolution)
+
+def nearby_shops(request):
+    # Get user coordinates
+    lat = request.GET.get('lat')
+    lon = request.GET.get('lon')
+
+    if not lat or not lon:
+        print("DEBUG: Location not provided.")
+        return render(request, 'nearby_shops.html', {'error': 'Location not provided.'})
+
+    lat, lon = float(lat), float(lon)
+    user_coords = (lat, lon)
+    print(f"DEBUG: User coordinates: {user_coords}")
+
+    # Extract query filters
     query = {
         'category': request.GET.get('category', '').strip(),
         'shop_name': request.GET.get('shop_name', '').strip(),
-        'address': request.GET.get('address', '').strip(),
+        'city': request.GET.get('city', '').strip(),
         'price_range': request.GET.get('price', '').strip(),
     }
+    print(f"DEBUG: Query filters: {query}")
+
+    # Get H3 hex rings (2km ~= k_ring 3)
+    resolution = 9
+    center_hex = h3.latlng_to_cell(lat, lon, resolution)
+    nearby_hexes = h3.grid_disk(center_hex, 3)
+    print(f"DEBUG: Center hex: {center_hex}, Nearby hexes: {len(nearby_hexes)}")
+
+    all_shops = ShopOwner.objects.filter(latitude__isnull=False, longitude__isnull=False)
+    print(f"DEBUG: Total shops with coordinates: {all_shops.count()}")
+
+    # First: filter by proximity (2km max)
+    nearby_shops = []
+    for shop in all_shops:
+        shop_coords = (shop.latitude, shop.longitude)
+        distance_km = geodesic(user_coords, shop_coords).km
+        print(f"DEBUG: Shop '{shop.shop_name}' is {distance_km:.2f} km away.")
+
+        if distance_km <= 2:
+            nearby_shops.append((shop, distance_km))
+
+    print(f"DEBUG: Shops within 2km: {len(nearby_shops)}")
+
+    # Apply additional filters
+    filtered_shops = nearby_shops
 
 
-    # Start with all shops
-    shops = ShopOwner.objects.all()
-
-    # Filter by shop name if provided
-    if query['shop_name']:
-        shops = shops.filter(shop_name__icontains=query['shop_name'])
-
-    # Filter by address if provided
-    if query['address']:
-        shops = shops.filter(address__icontains=query['address'])
-
-    # Filter by category if provided
+    # Filter: category
     if query['category']:
-        shops = shops.filter(categories__name__iexact=query['category'])
-    
+        shop_ids = [s.id for s, _ in filtered_shops]
+        category_shop_ids = Service.objects.filter(
+            shop_id__in=shop_ids,
+            category__name__iexact=query['category']
+        ).values_list('shop_id', flat=True).distinct()
 
-    # Now filter by price
-    filtered_shops = []
+        filtered_shops = [(s, d) for (s, d) in filtered_shops if s.id in category_shop_ids]
+        print(f"DEBUG: After category filter: {len(filtered_shops)}")
 
-    for shop in shops.distinct():
-            #get  services
-        services = Service.objects.filter(shop=shop).all()
+    # Filter: price
+    final_shops = []
+    for shop, distance_km in filtered_shops:
+        services = Service.objects.filter(shop=shop)
 
-        # Apply price range filter if selected
         if query['price_range']:
             try:
                 if query['price_range'].endswith('+'):
@@ -109,24 +145,108 @@ def search_results(request):
                     min_p, max_p = map(float, query['price_range'].split('-'))
                     services = services.filter(price__gte=min_p, price__lte=max_p)
             except ValueError:
-                print("Invalid price range format provided:", query['price_range'])
+                print("DEBUG: Invalid price format received.")
+                services = Service.objects.filter(shop=shop)  # fallback to all services
 
-        # Only add the shop if it has services matching the price filter
+        if services.exists():
+            final_shops.append((shop, distance_km))
+        else:
+            print(f"DEBUG: Shop {shop.shop_name} excluded due to no services.")
+
+    print(f"DEBUG: Final shops after price filtering: {len(final_shops)}")
+    final_shops.sort(key=lambda x: x[1])
+
+    # Build results for template
+    results = []
+    for shop, distance_km in final_shops:
+        shop_images = ShopImage.objects.filter(shop=shop)
+        image_urls = [img.shop_image.url for img in shop_images if img.shop_image]
+
+        categories = ServiceCategory.objects.filter(
+            services__shop=shop
+        ).values_list('name', flat=True).distinct()
+
+        reviews = RatingAndReviews.objects.filter(shop=shop)
+        review_count = reviews.count()
+        avg_rating = reviews.aggregate(Avg('rating'))
+        avg_rating_value = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] else 0
+
+        results.append({
+            'id': shop.id,
+            'name': shop.shop_name,
+            'address': shop.address,
+            'images': image_urls,
+            'categories': categories if categories else ["General"],
+            'reviews': review_count,
+            'rating': avg_rating_value,
+            'distance': round(distance_km, 2),  # distance in km, rounded for display
+        })
+
+    print(f"DEBUG: Total results sent to template: {len(results)}")
+
+    return render(request, 'nearby_shops.html', {
+        'results': results,
+        'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),
+        'cities': ShopOwner.objects.values_list('city', flat=True).distinct(),
+        'price_ranges': ["0-50", "51-100", "101-200", "200+"],
+        'is_near_shops': True,
+})
+# ----------------------------
+# View: Search Results with Filters and Nearby H3 Radius
+# ----------------------------
+def search_results(request):
+
+    query = {
+        'category': request.GET.get('category', '').strip(),
+        'shop_name': request.GET.get('shop_name', '').strip(),
+        'city': request.GET.get('city', '').strip(),
+        'price_range': request.GET.get('price', '').strip(),
+    }
+ 
+    shops = ShopOwner.objects.all()
+
+    # Apply filters
+    if query['shop_name']:
+        print("Filtering by name:", query['shop_name'])
+        shops = shops.filter(shop_name__icontains=query['shop_name'])
+    if query['city']:
+        print("Filtering by city:", query['city'])
+        shops = shops.filter(city__icontains=query['city'])
+    if query['category']:
+        category_shop_ids = Service.objects.filter(
+            shop__in=shops,
+            category__name__iexact=query['category']
+        ).values_list('shop_id', flat=True).distinct()
+        shops = shops.filter(id__in=category_shop_ids)
+
+    filtered_shops = []
+    for shop in shops.distinct():
+        services = Service.objects.filter(shop=shop)
+
+        if query['price_range']:
+            try:
+                if query['price_range'].endswith('+'):
+                    min_price = float(query['price_range'][:-1])
+                    services = services.filter(price__gte=min_price)
+                else:
+                    min_p, max_p = map(float, query['price_range'].split('-'))
+                    services = services.filter(price__gte=min_p, price__lte=max_p)
+                print(f"Price filter applied for shop {shop.id}")
+            except ValueError:
+                print("Invalid price range:", query['price_range'])
+
         if services.exists():
             filtered_shops.append(shop)
-       
-    # Build final results
-    results = []
 
+
+    # Build results context
+    results = []
     for shop in filtered_shops:
         shop_images = ShopImage.objects.filter(shop=shop)
         image_urls = [img.shop_image.url for img in shop_images if img.shop_image]
         categories = ServiceCategory.objects.filter(services__shop=shop).values_list('name', flat=True).distinct()
-        
         customer_rating_list = RatingAndReviews.objects.filter(shop=shop)
         customer_rating_count = customer_rating_list.count()
-
-        # Calculate the average rating
         avg_rating = customer_rating_list.aggregate(Avg('rating'))
         avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
 
@@ -136,72 +256,69 @@ def search_results(request):
             'address': shop.address,
             'images': image_urls,
             'categories': categories if categories else ["General"],
-            'reviews': customer_rating_count,  # Display the number of reviews
-            'rating': avg_rating_of_shop,  # Display the average rating
+            'reviews': customer_rating_count,
+            'rating': avg_rating_of_shop,
         })
 
-
-    # Render the search results page
     return render(request, 'search_results.html', {
         'results': results,
         'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),
-        'addresses': ShopOwner.objects.values_list('address', flat=True).distinct(),
+        'cities': ShopOwner.objects.values_list('city', flat=True).distinct(),
         'price_ranges': ["0-50", "51-100", "101-200", "200+"],
     })
 
-
+# ----------------------------
+# View: Shop Detail Page
+# ----------------------------
 def shop_detail(request, id):
-    # Fetch the shop with optimized queries
+    # Fetch shop with related data to avoid multiple DB hits
     shop = get_object_or_404(
         ShopOwner.objects.prefetch_related(
-            'services',
-            'staff',
-            'timings',
-            'images',
+            'services', 'staff', 'timings', 'images',
         ),
         id=id
     )
 
-    # Get all shop images
+    # Get shop images
     shop_images = shop.images.all()
-    image_urls = [ img.shop_image.url for img in shop_images if img.shop_image ]
-    #get categories = 
-    # Get categories related to this shop
+    image_urls = [img.shop_image.url for img in shop_images if img.shop_image]
+
+    # Get categories
     categories = ServiceCategory.objects.filter(services__shop=shop).values_list('name', flat=True).distinct()
 
-    # Get services with categories
+    # Get services and staff
     services = shop.services.all().select_related('category')
-    
-    # Get active staff members
     staff_members = shop.staff.filter(is_active=True)
-   
+
     # Get shop timings ordered by day
-    shop_timings = shop.timings.all().order_by('day')
-    
-    # Get ratings and reviews with user information
-    customer_rating_list = RatingAndReviews.objects.filter(
-        shop=shop
-    ).select_related(
-        'user'  # Optimize user queries
-    ).order_by('-id')  # Newest first
-    
+    WEEKDAY_ORDER = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+    shop_timings = sorted(
+        shop.timings.all(),
+        key=lambda x: WEEKDAY_ORDER.index(x.day))
+    print("shop_timings: ",shop_timings)
+
+    # Get latest 5 reviews with user info
+    customer_rating_list = RatingAndReviews.objects.filter(shop=shop).select_related('user').order_by('-id')
     customer_rating_count = customer_rating_list.count()
-    
-    # Calculate average rating
     avg_rating = customer_rating_list.aggregate(Avg('rating'))
     avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
+
+    
+    # Prepare context
     context = {
-        'id':shop.id,
+        'id': shop.id,
         'shop': shop,
         'images': image_urls,
         'reviews': customer_rating_count,
         'rating': avg_rating_of_shop,
-        'customer_rating_list': customer_rating_list[:5],  # Only show 5 most recent
+        'customer_rating_list': customer_rating_list[:5],
         'now': timezone.now(),
         'services': services,
         'staff_members': staff_members,
-        'timings': shop_timings,
+        'shop_timings': shop_timings,
         'categories': categories if categories else ["General"],
+        "longitude" : shop.longitude,
+        "latitude" : shop.latitude,
     }
     
     return render(request, 'shop_detail.html', context)
@@ -245,10 +362,10 @@ def user_signup(request):
         phone = request.POST.get('phone')
         password = request.POST.get('password')
 
-        isUserExist = User.objects.get(email=email)
-
-        if isUserExist:
-            messages.error(request, 'The user already exist.')
+        print(email, city, phone, password)
+        # isUserExist = User.objects.get(email=email)
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'The user already exists.')
             return render(request, 'auth/signup.html')
 
         # Create a new user

@@ -1,88 +1,136 @@
+{% load static %}
 <form
   action="{% url 'search_results' %}"
   method="GET"
   class="bg-transparent text-white border shadow-gray-200 rounded-lg lg:rounded-full px-4 py-1 w-full max-w-3xl mx-auto"
 >
-  <!-- Laptop/Desktop Layout -->
-  <div id='desktop' class="hidden lg:flex lg:items-center lg:gap-0">
-  
-    <!--categories  -->
-    <select name="category" class="bg-transparent border-none focus:outline-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
-      <option class="text-black " value="">Category</option>
-      {% for cat in categories %}
-      <option class="text-black " value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
-        {{ cat }}
-      </option>
-      {% endfor %}
-    </select>
-    <span class="text-gray-500">|</span>
 
-    <!--Name Input  -->
-    <input 
-  type="text" 
-  name="shop_name" 
-  placeholder="Name" 
-  value="{{ request.GET.shop_name }}"
-  class="bg-transparent placeholder:text-white outline-none border-none text-medium flex-grow focus:ring-0 text-white
-         [&:-webkit-autofill]:bg-transparent [&:-webkit-autofill]:text-white"/>
-    <span class="text-gray-500">|</span>
+  <!-- Search Bar -->
+  <main class="bg-transparent text-white  shadow-md rounded-lg lg:rounded-full px-4 py-2 w-full max-w-3xl mx-auto">
 
-    <!-- Location -->
-    <select name="address" class="bg-transparent  outline-none text-medium border-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
-      <option  class="text-black" value="">Location</option>
-      {% for address in addresses %}
-      <option  class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
-        {{ address }}
-      </option>
-      {% endfor %}
-    </select>
-    <span class="text-gray-500">|</span>
-  
-    <!--Price -->
-    <select name="price" class="bg-transparent outline-none text-medium border-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
-      <option  class="text-black" value="">Price</option>
-      {% for price in price_ranges %}
-      <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
-        {{ price }}
-      </option>
-      {% endfor %}
-    </select>
-
-    <!-- search button -->
-   <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-full hover:bg-primary-hover-color -mr-2">
-      Search
-    </button>
-  </div>
-
-  <!-- Tablet Layout -->
-  <div id='tablet' class="hidden md:flex md:flex-col lg:hidden gap-3">
-    <div class="grid grid-cols-2 gap-3">
+    <!-- Laptop/Desktop Layout -->
+    <div id='desktop' class="hidden lg:flex lg:items-center lg:gap-0">
+    
       <!--categories  -->
-      <select name="category" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
-        <option value="" class="text-black">Category</option>
+      <select name="category" class="bg-transparent border-none focus:outline-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
+        <option class="text-black " value="">Category</option>
+        {% for cat in categories %}
+        <option class="text-black " value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
+          {{ cat }}
+        </option>
+        {% endfor %}
+      </select>
+      <span class="text-gray-500">|</span>
+
+      <!--Name Input  -->
+      <input 
+        type="text" 
+        name="shop_name" 
+        placeholder="Name" 
+        value="{{ request.GET.shop_name }}"
+        class="bg-transparent placeholder:text-white outline-none border-none text-medium flex-grow focus:ring-0 text-white
+           [&:-webkit-autofill]:bg-transparent [&:-webkit-autofill]:text-white"
+      />
+      <span class="text-gray-500">|</span>
+
+      <!-- Location -->
+      <select name="city" class="bg-transparent  outline-none text-medium border-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
+        <option  class="text-black" value="">Location</option>
+        {% for city in cities %}
+        <option  class="text-black" value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>
+          {{ city }}
+        </option>
+        {% endfor %}
+      </select>
+      <span class="text-gray-500">|</span>
+    
+      <!--Price -->
+      <select name="price" class="bg-transparent outline-none text-medium border-none appearance-none w-auto focus:ring-0 hover:text-gray-200">
+        <option  class="text-black" value="">Price</option>
+        {% for price in price_ranges %}
+        <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
+          {{ price }}
+        </option>
+        {% endfor %}
+      </select>
+      <!-- search button -->
+     <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-full hover:bg-primary-hover-color -mr-2">
+        Search
+      </button>
+    </div>
+
+
+      <!-- Tablet Layout -->
+    <div id='tablet' class="hidden md:flex md:flex-col lg:hidden gap-3">
+      <div class="grid grid-cols-2 gap-3">
+        <!--categories  -->
+        <select name="category" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
+          <option value="" class="text-black">Category</option>
+          {% for cat in categories %}
+          <option class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
+            {{ cat }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <!--Name Input  -->
+        <input type="text" name="shop_name" placeholder="Name" value="{{ request.GET.shop_name }}"
+          class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full  focus:ring-0" />
+
+          <!-- Location -->
+        <select name="city" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
+          <option  class="text-black" value="">Location</option>
+          {% for city in cities %}
+          <option class="text-black" value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>
+            {{ city }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <!--Price -->
+        <select name="price" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
+          <option class="text-black" value="">Price</option>
+          {% for price in price_ranges %}
+          <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
+            {{ price }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <!-- search button -->
+
+      <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-lg hover:bg-primary-hover-color w-full md:w-1/2 mx-auto">
+        Search
+      </button>
+    </div>
+    <!-- Mobile Layout -->
+    <div id='mobile' class="flex flex-col gap-2 md:hidden">
+      <!--categories  -->
+      <select name="category" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
+        <option class="text-black" value="" >Category</option>
         {% for cat in categories %}
         <option class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
           {{ cat }}
         </option>
         {% endfor %}
       </select>
-        
+
       <!--Name Input  -->
       <input type="text" name="shop_name" placeholder="Name" value="{{ request.GET.shop_name }}"
-        class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full  focus:ring-0" />
-      
-        <!-- Location -->
-      <select name="address" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
-        <option  class="text-black" value="">Location</option>
-        {% for address in addresses %}
-        <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
-          {{ address }}
+        class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full focus:ring-0" />
+
+      <!-- Location -->
+      <select name="city" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
+        <option class="text-black" value="">Location</option>
+        {% for city in cities %}
+        <option class="text-black" value="{{ city }}" {% if request.GET.city == city %}selected{% endif %}>
+          {{ city }}
         </option>
         {% endfor %}
       </select>
 
       <!--Price -->
-      <select name="price" class="bg-transparent focus:outline-none text-medium border-none appearance-none w-full focus:ring-0 hover:text-gray-200">
+      <select name="price" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
         <option class="text-black" value="">Price</option>
         {% for price in price_ranges %}
         <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
@@ -90,57 +138,24 @@
         </option>
         {% endfor %}
       </select>
-    </div>
-    <!-- search button -->
 
-    <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-lg hover:bg-primary-hover-color w-full md:w-1/2 mx-auto">
-      Search
-    </button>
-  </div>
+      <!-- search button -->
+      <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-lg hover:bg-primary-hover-color w-full mt-2 focus:ring-0 hover:text-gray-200">
+        Search
+      </button>
+    </div> 
+  </main>
 
-  <!-- Mobile Layout -->
-  <div id='mobile' class="flex flex-col gap-2 md:hidden">
-    
-    <!--categories  -->
-    <select name="category" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
-      <option class="text-black" value="" >Category</option>
-      {% for cat in categories %}
-      <option  class="text-black" class="text-black" value="{{ cat }}" {% if request.GET.category == cat %}selected{% endif %}>
-        {{ cat }}
-      </option>
-      {% endfor %}
-    </select>
-
-    <!--Name Input  -->
-    <input type="text" name="shop_name" placeholder="Name" value="{{ request.GET.shop_name }}"
-      class="bg-transparent placeholder:text-white outline-none border-none text-medium w-full focus:ring-0" />
-
-    <!-- Location -->
-    <select name="address" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
-      <option class="text-black" value="">Location</option>
-      {% for address in addresses %}
-      <option class="text-black" value="{{ address }}" {% if request.GET.address == address %}selected{% endif %}>
-        {{ address }}
-      </option>
-      {% endfor %}
-    </select>
-
-    <!--Price -->
-    <select name="price" class="bg-transparent focus:outline-none text-sm border-none appearance-none w-full py-2 focus:ring-0 hover:text-gray-200">
-      <option class="text-black" value="">Price</option>
-      {% for price in price_ranges %}
-      <option class="text-black" value="{{ price }}" {% if request.GET.price == price %}selected{% endif %}>
-        {{ price }}
-      </option>
-      {% endfor %}
-    </select>
-
-    <!-- search button -->
-    <button type="submit" class="bg-primary-color text-gray-700 px-4 py-2 rounded-lg hover:bg-primary-hover-color w-full mt-2 focus:ring-0 hover:text-gray-200">
-      Search
-    </button>
-  </div>
 </form>
+
+<!-- Near Shops -->
+<div class="flex items-center lg:px-6 py-2 w-full max-w-3xl mx-auto  ">
+  <div class = "transition duration-300  hover:scale-105 flex items-center">
+    <img class="inline-block w-6 h-6 " src="{% static 'icons/location-icon.png' %}" alt="">
+    <button id="near-shops-btn" type='button' class="inline-block text-white">Near Shops</button>
+  </div>
+</div>
+<!-- Near Shops -->
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -173,6 +188,91 @@
     updateFormInputs();
     window.addEventListener("resize", updateFormInputs);
   });
+
+  // get user lati & longi 
+ document.getElementById('near-shops-btn').addEventListener('click', function () {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  this.disabled = true;
+  this.textContent = "Locating...";
+
+  // Check if location was previously stored and reuse it
+  const storedPos = sessionStorage.getItem('lastKnownPosition');
+  if (storedPos) {
+    const { lat, lon } = JSON.parse(storedPos);
+    redirectToNearbyShops(lat, lon);
+    return;
+  }
+
+  const geoOptions = {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 10000
+  };
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      let { latitude: lat, longitude: lon, accuracy } = position.coords;
+
+      // Round to 6 decimal places
+      lat = Number(lat.toFixed(6));
+      lon = Number(lon.toFixed(6));
+
+      console.log(`Position: ${lat}, ${lon} (Accuracy: ${accuracy}m)`);
+
+      if (accuracy > 100) {
+        if (!confirm(`Your location is only accurate within ${Math.round(accuracy)}m. Continue anyway?`)) {
+          resetButton();
+          return;
+        }
+      }
+
+      // Store for future sessions
+      sessionStorage.setItem('lastKnownPosition', JSON.stringify({ lat, lon }));
+      redirectToNearbyShops(lat, lon);
+    },
+    (error) => {
+      const lastPos = sessionStorage.getItem('lastKnownPosition');
+      if (lastPos) {
+        if (confirm("Location access blocked. Use your last known position?")) {
+          const { lat, lon } = JSON.parse(lastPos);
+          redirectToNearbyShops(lat, lon);
+          return;
+        }
+      }
+
+      const errors = {
+        1: "Permission denied. Enable location access in browser settings.",
+        2: "Could not determine location. Check your network/GPS.",
+        3: "Request timed out. Try again in an open area."
+      };
+      alert(errors[error.code] || "Location unavailable. Try again later.");
+      resetButton();
+    },
+    geoOptions
+  );
+
+  function redirectToNearbyShops(lat, lon) {
+    try {
+      const url = new URL("{% url 'nearby_shops' %}", window.location.origin);
+      url.searchParams.set('lat', lat);
+      url.searchParams.set('lon', lon);
+      window.location.href = url.toString();
+    } catch (error) {
+      alert("Failed to generate URL. Please try again.");
+      resetButton();
+    }
+  }
+
+  function resetButton() {
+    const btn = document.getElementById('near-shops-btn');
+    btn.disabled = false;
+    btn.textContent = "Find Nearby Shops";
+  }
+});
 
 </script>
 

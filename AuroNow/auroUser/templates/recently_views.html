@@ -4,10 +4,10 @@
   class="min-w-full container mx-auto px-2 py-4 hidden"
 >
   <div class="flex justify-between items-center">
-    <h1 class="text-left font-bold text-2xl mb-4 pl-10">Recently Viewed</h1>
+    <h1 class="text-left font-bold text-2xl mb-4 px-2 sm:px-6 md:px-10">Recently Viewed</h1>
   </div>
 
-  <div class="relative overflow-hidden px-4 sm:px-8 group">
+  <div class="relative overflow-hidden px-2 sm:px-6 group">
     <!-- Prev Button -->
     <button
       id="recent-prev-btn"
@@ -57,65 +57,112 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const container = document.getElementById("recently-viewed-container");
-    const wrapper = document.getElementById("recently-viewed-wrapper");
-    const prevBtn = document.getElementById("recent-prev-btn");
-    const nextBtn = document.getElementById("recent-next-btn");
+document.addEventListener("DOMContentLoaded", function () {
+  const container = document.getElementById("recently-viewed-container");
+  const wrapper = document.getElementById("recently-viewed-wrapper");
+  const prevBtn = document.getElementById("recent-prev-btn");
+  const nextBtn = document.getElementById("recent-next-btn");
 
-    const shops = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+  const shops = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+  if (shops.length === 0) return;
 
-    if (shops.length > 0) {
-      container.classList.remove("hidden");
+  container.classList.remove("hidden");
 
-      shops.forEach((shop) => {
-        if (!shop.id) return;
-        const card = document.createElement("a");
-        card.href = `/shop/${shop.id}`;
-        card.className = `shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
-          bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in`;
+  const defaultImage = "{% static 'shopImage/default_shop_image.jpg' %}";
 
-        // Create category tags (use shop.categories instead of shop.services)
-        const categoryTags = (shop.categories && shop.categories.length ? 
-        shop.categories.map(category => `<span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">
-        ${category || "Category"}</span>`).join(" ")
-  : `<span class="text-xs px-2 py-1 text-gray-500 bg-gray-50 rounded-full">No categories</span>`);
-  const defaultShopImage = "{% static 'shopImage/default_shop_image.jpg' %}";
-  
-card.innerHTML = `
-<div class="relative">
-<img src="${shop.image || defaultShopImage}" class="w-full h-40 object-cover" />
-</div>
+  shops.forEach(shop => {
+    if (!shop.id) return;
+    const card = document.createElement("a");
+    card.href = `/shop/${shop.id}`;
+    card.className = `shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
+      bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in`;
 
+    const categoriesHTML = shop.categories?.length
+      ? shop.categories.map(cat => `<span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">${cat}</span>`).join(" ")
+      : `<span class="text-xs px-2 py-1 text-gray-500 bg-gray-50 rounded-full">No categories</span>`;
 
-<div class="p-3">
-  <div class="flex justify-between items-start">
-    <span class="text-md font-semibold line-clamp-1">${shop.name}</span>
-    <div class="flex items-center bg-gray-100 px-1 rounded">
-      <span class="text-xs font-bold text-gray-800">${shop.rating || '5.0'}</span>
-      <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
-    </div>
-  </div>
-  <p class="text-xs text-gray-500 mt-1 line-clamp-2">${shop.address}</p>
-  <div class="mt-2 flex flex-wrap gap-1">${categoryTags}</div>
-  <div class="flex justify-between mt-2 text-xs text-gray-600">
-    <span>${shop.reviews || '20'} reviews</span>
-  </div>
-</div>
-`;
+    card.innerHTML = `
+      <div class="relative">
+        <img src="${shop.image || defaultImage}" class="w-full h-40 object-cover" />
+      </div>
+      <div class="p-3">
+        <div class="flex justify-between items-start">
+          <span class="text-md font-semibold line-clamp-1">${shop.name}</span>
+          <div class="flex items-center bg-gray-100 px-1 rounded">
+            <span class="text-xs font-bold text-gray-800">${shop.rating || "5.0"}</span>
+            <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">${shop.address || "No address"}</p>
+        <div class="mt-2">${categoriesHTML}</div>
+        <div class="flex justify-between mt-2 text-xs text-gray-600">
+          <span>${shop.reviews || "20"} reviews</span>
+        </div>
+      </div>
+    `;
 
+    wrapper.appendChild(card);
+  });
 
-        wrapper.appendChild(card);
-      });
+  // Carousel logic
+  let cardWidth = 0;
+  let visibleCards = 1;
+  let hasInteracted = false;
 
-      // Carousel scroll logic
-      prevBtn.addEventListener("click", () => {
-        wrapper.scrollBy({ left: -300, behavior: "smooth" });
-      });
-      nextBtn.addEventListener("click", () => {
-        wrapper.scrollBy({ left: 300, behavior: "smooth" });
-      });
+  function initCarousel() {
+    const firstCard = wrapper.querySelector('.shop-card');
+    if (!firstCard) return;
+
+    cardWidth = firstCard.offsetWidth + 24;
+
+    if (window.innerWidth >= 1024) {
+      visibleCards = 4;
+    } else if (window.innerWidth >= 768) {
+      visibleCards = 2;
+    } else {
+      visibleCards = 1;
+    }
+  }
+
+  function slide(direction) {
+    const scrollAmount = direction * visibleCards * cardWidth;
+    wrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+
+  function updateButtons() {
+    if (!hasInteracted) return;
+
+    const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
+
+    if (wrapper.scrollLeft <= 0) {
+      prevBtn.classList.add("opacity-0", "pointer-events-none");
+    } else {
+      prevBtn.classList.remove("opacity-0", "pointer-events-none");
     }
 
+    if (wrapper.scrollLeft >= maxScroll - 5) {
+      nextBtn.classList.add("opacity-0", "pointer-events-none");
+    } else {
+      nextBtn.classList.remove("opacity-0", "pointer-events-none");
+    }
+  }
+
+  container.addEventListener("mouseenter", () => {
+    hasInteracted = true;
+    updateButtons();
   });
+
+  container.addEventListener("mouseleave", () => {
+    prevBtn.classList.add("opacity-0", "pointer-events-none");
+    nextBtn.classList.add("opacity-0", "pointer-events-none");
+  });
+
+  prevBtn.addEventListener("click", () => slide(-1));
+  nextBtn.addEventListener("click", () => slide(1));
+
+  wrapper.addEventListener("scroll", updateButtons);
+  window.addEventListener("resize", initCarousel);
+
+  initCarousel();
+});
 </script>
