@@ -150,7 +150,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -165,7 +164,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-AUTH_USER_MODEL = 'shops.ShopOwner'
+AUTH_USER_MODEL = 'auroUser.User'  # Custom user model
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # for regular users
+    'shops.backends.ShopOwnerBackend',             # for shop owners
+]
+
 # URL to use when referring to static files located in STATICFILES_DIRS
 STATIC_URL = '/static/'
 # If you want to specify additional directories to look for static files
@@ -189,7 +195,7 @@ NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 # settings.py
 # LOGIN_REDIRECT_URL = 'dashboard_home'
-# LOGOUT_REDIRECT_URL = 'dashboard_login'
+LOGOUT_REDIRECT_URL = 'base_layout'  # Redirect to the base layout after logout
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

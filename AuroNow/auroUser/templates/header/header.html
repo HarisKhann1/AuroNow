@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between">
           <!-- Logo Section -->
           <div class="flex-shrink-0">
-              <a href="#" class="text-2xl font-bold text-black font-serif">AuroNow</a>
+              <a href="{% url "base_layout" %}" class="text-2xl font-bold text-black font-serif">AuroNow</a>
           </div>
 
           {% comment %} <!-- Navigation Menu -->
@@ -19,12 +19,24 @@
           <div class="hidden md:block">
               <!-- Desktop Links -->
             <div class="hidden md:flex items-center gap-2">
-              <a href="#" class="bg-primary-color text-gray-700 px-6 py-2 rounded-full hover:bg-primary-hover-color transition font-medium">
-                Login
-            </a>
+              {% if user.is_authenticated %}
+                  <a 
+                    href="{% url 'user_logout' %}" 
+                    class="bg-[#E53935] text-white px-6 py-2 rounded-full hover:bg-[#D32F2F] transition font-medium"
+                  >
+                    Logout
+                  </a>
+                {% else %}
+                  <a href="{% url 'user_login' %}" class="bg-primary-color text-gray-700 px-6 py-2 rounded-full hover:bg-primary-hover-color transition font-medium">
+                    Login
+                  </a>
+              {% endif %}
             <a href="{% url 'dashboard_login' %}" class="bg-secondary-color text-white px-4 py-2 rounded-full hover:bg-secondary-hover-color transition font-medium">
               For Professional
-          </a>
+            </a>
+            
+
+          
       </div>
           </div>
 
@@ -40,9 +52,15 @@
 
       <!-- Mobile Navigation Menu -->
       <div id="mobile-menu" class="md:hidden mt-5 hidden space-y-4 flex-col">
-          <a href="#" class="w-full border border-primary-color text-gray-600 px-6 py-1.5 text-sm font-semibold rounded-lg">
-            Login
-          </a>
+         {% if user.is_authenticated %}
+            <a   href="{% url 'user_logout' %}"  class="w-full border border-red-500 bg-red-200 text-gray-700 px-6 py-1.5 text-sm font-semibold rounded-lg">
+              Logout
+            </a>
+         {% else %}
+            <a href="{% url 'user_login' %}" class="w-full border border-primary-color text-gray-700 px-6 py-1.5 text-sm font-semibold rounded-lg">
+              Login
+            </a>
+         {% endif %}
           <a href="{% url 'dashboard_login' %}" class="w-full bg-secondary-color text-sm font-medium px-4 py-2 rounded-lg text-white">
             For Professional
           </a>
