@@ -36,19 +36,19 @@ def dashboard_signup_view(request):
     if request.method == 'POST':
         form = ShopOwnerSignUpForm(request.POST)
         if form.is_valid():
-            shop_owner = form.save()
-            shop_owner.set_password(form.cleaned_data.get('password1'))
-            login(request, shop_owner)
-            user_email = form.cleaned_data.get('email')
-            confirm_new_password = form.cleaned_data.get('password1')
+            shop_owner = form.save(commit=False)
+            password = form.cleaned_data.get('password1')
+            shop_owner.set_password(password)
+            shop_owner.save()
 
-            backend = ShopOwnerBackend()
-            user_login = backend.authenticate(request, email=user_email, password=confirm_new_password)
+            # Authenticate and login
+            user_login = authenticate(request, email=shop_owner.email, password=password)
 
             if user_login:
                 login(request, user_login)
                 messages.success(request, 'Account created successfully!')
-                return redirect('dashboard_home')  # Redirect to dashboard
+                return redirect('dashboard_home')
+
     else:
         form = ShopOwnerSignUpForm()
    
