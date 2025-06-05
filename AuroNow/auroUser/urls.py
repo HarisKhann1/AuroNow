@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import base_layout, search_results, shop_detail, user_login, user_signup, logout_view, forget_password, user_reset_password ,nearby_shops
+from .views import base_layout, search_results, shop_detail, user_login, user_signup, logout_view, forget_password, user_reset_password, nearby_shops, bookingSystem, remove_service_from_cart, add_service_to_cart
+
+
 
 urlpatterns = [
     # authentication urls
@@ -14,5 +16,10 @@ urlpatterns = [
     path('search-results/', search_results, name='search_results'), 
     path('shop/<int:id>/', shop_detail, name='shop_detail'),
     path('nearby-shops/', nearby_shops, name='nearby_shops'),
+
+    # booking system urls
+    path("shop/<int:shop_id>/cart/", bookingSystem, name="shopping-cart"),  # URL for the booking system
+    path('add/service/shop/<int:shop_id>/service/<int:service_id>/', add_service_to_cart, name='add_service_to_cart'),  # URL to add a service to the cart
+    path('remove/service/shop/<int:shop_id>/service/<int:service_id>/', remove_service_from_cart, name='remove_service_from_cart'), # URL to remove a service from the cart
 ]
     

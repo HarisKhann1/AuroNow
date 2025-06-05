@@ -166,11 +166,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 AUTH_USER_MODEL = 'auroUser.User'  # Custom user model
 
-
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # for regular users
     'shops.backends.ShopOwnerBackend',             # for shop owners
 ]
+
+
 
 # URL to use when referring to static files located in STATICFILES_DIRS
 STATIC_URL = '/static/'

@@ -1,0 +1,76 @@
+{% extends 'base_auroUser.html' %}
+{% load static %}
+
+{% block main %}
+<section class="px-4 md:px-10 py-8 bg-white">
+    <div>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6">Services</h2>
+      <div class="relative border border-red-500 flex flex-row justify-between gap-6">
+          <!-- Display services details -->
+          <div class="w-1/2  flex flex-col gap-6" id="services-container">
+            {% for service in shop_services %}
+            <div class='flex flex-row gap-4 border border-secondary-color rounded-lg shadow-sm hover:shadow-md transition'>
+              <div class='w-[40%] rounded-l-lg'>
+                
+                {% if service.image %}
+                <img src="{{service.image}}" alt="service Image"  class="w-full h-full object-cover rounded-l-lg">
+                {% else %} 
+                <img src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  class="w-full h-full object-cover rounded-l-lg" >
+                 {% endif %} 
+              </div>
+              <div class="w-full py-3 flex flex-col">
+                <div class='flex justify-between items-center gap-2'>
+                  <h3 class="md:text-lg font-medium text-gray-700">{{ service.name }}</h3>
+                  <p class="text-gray-800 text-xs md:text-base font-semibold pr-4">Rs.{{ service.price }}</p>
+                </div>
+                <p class="text-gray-500 text-xs md:text-sm">{{ service.duration }} min</p>
+                {% if service.description %}
+                <p class="text-gray-600 text-sm mt-1">{{ service.description }}</p>
+                {% endif %}
+                <a   
+                  href="{% url 'add_service_to_cart' shop_id=service.shop service_id=service.id %}"
+                  class="mt-2 md:mt-3 w-24 sm:w-28 border border-secondary-color
+                       text-black px-2 text-center sm:px-4 py-[1px] sm:py-1 rounded-full 
+                        hover:bg-secondary-color hover:text-primary-color
+                        hover:font-semibold transition duration-300"
+                      >
+                  Book Now
+                </a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+           <!-- calculation card -->
+           <div class="absolute right-0 w-[40%] bg-white border border-secondary-color rounded-lg shadow-sm p-4">
+                <h1 class="font-medium text-center border-b-2 border-black pb-4">Service List</h1>
+
+                {% for service in user_selected_service_details %}
+                <div class="flex justify-between items-center mb-4 border border-gray-200 p-2 rounded-lg shadow-md">
+                    <div class="flex flex-col">
+                        <span class="text-gray-700">{{ service.name }}</span>
+                        <span class="text-gray-800 text-sm">duration: {{ service.duration }}</span>
+                    </div>
+                  <div class="flex flex-col items-end">
+                    <a href='{% url "remove_service_from_cart" shop_id=service.shop service_id=service.id %}' class="delete-service-btn bg-red-200 hover:bg-red-300 rounded cursor-pointer" title="Remove Service">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 hover:text-red-700 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </a>
+                    <span class="text-gray-800">Rs.{{ service.price }}</span>
+                  </div>
+                </div>
+                {% endfor %}
+           </div>
+        </div>
+      
+      {% comment %} {% if shop.services.all.count > 6 %}
+      <div class="text-end mt-6">
+        <a href="#" class="bg-secondary-color text-white px-4 py-2 rounded-lg hover:bg-secondary-hover-color transition duration-500 ">
+          Show All Services
+        </a>
+      </div>
+      {% endif %} {% endcomment %}
+    </div>
+  </section>
+{% endblock %}

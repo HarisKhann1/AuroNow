@@ -442,3 +442,86 @@ def user_reset_password(request, token):
         messages.error(request, 'Invalid token')
         return redirect('user_login')
 # ------------------------------Reset Password End-----------------------------------------------
+
+# ------------------------------Booking System--------------------------------------------------
+def bookingSystem(request, shop_id=None):
+    # get the shop and service dettails from the shoping cart
+    user_selected_service_details = request.session.get('user_selected_service_details', [])
+    if not user_selected_service_details:
+        messages.error(request, 'No services selected. Please add services to your cart.')
+        return redirect('base_layout')  # Redirect to base layout if no services are selected
+    
+    # Fetch the shop services
+    print("shop_id:", user_selected_service_details)
+
+    # get the shop services details
+    services_list = []
+    if shop_id:
+        services = Service.objects.filter(shop=shop_id)
+        if services:
+            for service in services:
+                services_list.append({
+                    'id': service.id,
+                    'name': service.name,
+                    'price': float(service.price),
+                    'duration': service.duration,
+                    'shop': service.shop.id,
+                    'image': service.service_image.url if service.service_image else None,
+                })
+    
+    context = {
+        'user_selected_service_details': user_selected_service_details,
+        'shop_services': services_list,
+        'shop_id': shop_id,
+    }
+    return render(request, 'select_services.html', context)
+
+# ------------------------------Booking System End ---------------------------------------------
+
+# ------------------------------ add Service to Cart Start ---------------------------------------------
+def add_service_to_cart(request, shop_id, service_id):
+    # Initialize the session cart if it doesn't exist
+    if 'user_selected_service_details' not in request.session:
+        request.session['user_selected_service_details'] = []
+
+    # Copy the cart from session
+    user_selected_service_details = request.session['user_selected_service_details']
+
+    # Fetch the service to be added
+    service = Service.objects.filter(shop=shop_id, id=service_id).first()
+
+    if service:
+        service_data = {
+            'id': service.id,
+            'name': service.name,
+            'price': float(service.price),
+            'duration': service.duration,
+            'shop': service.shop.id,
+        }
+
+        # Avoid duplicates by checking service ID
+        if not any(s['id'] == service.id for s in user_selected_service_details):
+            user_selected_service_details.append(service_data)
+            request.session['user_selected_service_details'] = user_selected_service_details
+            request.session.modified = True  # Ensure session is saved
+
+    return redirect('shopping-cart', shop_id)  # Redirect to booking page
+# ------------------------------ add Service to Cart End ---------------------------------------------
+
+# ------------------------------ Remove Service from Cart Start ---------------------------------------------
+# Remove a service from the cart
+def remove_service_from_cart(request, shop_id ,service_id):
+    user_selected_service_details = request.session.get('user_selected_service_details', [])
+    
+    # Filter out the service to be removed
+    user_selected_service_details = [
+        service for service in user_selected_service_details if service['id'] != service_id
+    ]
+    
+    # Update the session
+    request.session['user_selected_service_details'] = user_selected_service_details
+    request.session.modified = True  # Ensure session is saved
+
+    return redirect('shopping-cart', shop_id)  # Redirect to booking page
+
+# ------------------------------ Remove Service from Cart End ---------------------------------------------
