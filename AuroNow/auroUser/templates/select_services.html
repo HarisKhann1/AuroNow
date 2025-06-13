@@ -1,19 +1,44 @@
 {% extends 'base_auroUser.html' %}
 {% load static %}
 
+{% block title %}
+  AuroNow | Select Services
+{% endblock title %}
+
 {% block main %}
+<style>
+                  .custom-scrollbar::-webkit-scrollbar {
+                  width: 8px;
+                  }
+                  .custom-scrollbar::-webkit-scrollbar-thumb {
+                  background: #d1d5db;
+                  border-radius: 6px;
+                  }
+                  .custom-scrollbar::-webkit-scrollbar-track {
+                  background: #f3f4f6;
+                  border-radius: 6px;
+                  }
+                  .custom-scrollbar {
+                  scrollbar-width: thin;
+                  scrollbar-color: #7a7f80 #F4F0EC;
+                  }
+                </style>
 <section class="px-4 md:px-10 py-8 bg-white">
+  <div class="pt-14">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">Select Services</h1>
+    <p class="text-gray-600 mb-4">Choose the services you want to book from <span class="font-bold text-primary-color">{{ shop_name }}</span>.</p>
+  </div>
     <div>
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6">Services</h2>
-      <div class="relative border border-red-500 flex flex-row justify-between gap-6">
-          <!-- Display services details -->
-          <div class="w-1/2  flex flex-col gap-6" id="services-container">
+      {% comment %} <h2 class="text-2xl md:text-4xl md:font-bold font-semibold text-gray-800 mb-6">Services</h2> {% endcomment %}
+      <div class="flex flex-col md:flex-row gap-6 justify-between items-start">
+          <!-- Display shop services details -->
+          <div class="md:w-1/2  flex flex-col gap-6" id="services-container">
             {% for service in shop_services %}
             <div class='flex flex-row gap-4 border border-secondary-color rounded-lg shadow-sm hover:shadow-md transition'>
-              <div class='w-[40%] rounded-l-lg'>
+              <div class=' rounded-l-lg'>
                 
                 {% if service.image %}
-                <img src="{{service.image}}" alt="service Image"  class="w-full h-full object-cover rounded-l-lg">
+                <img src="{{service.image}}" alt="service Image"  class="w-28 h-full object-cover rounded-l-lg">
                 {% else %} 
                 <img src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  class="w-full h-full object-cover rounded-l-lg" >
                  {% endif %} 
@@ -21,7 +46,7 @@
               <div class="w-full py-3 flex flex-col">
                 <div class='flex justify-between items-center gap-2'>
                   <h3 class="md:text-lg font-medium text-gray-700">{{ service.name }}</h3>
-                  <p class="text-gray-800 text-xs md:text-base font-semibold pr-4">Rs.{{ service.price }}</p>
+                  <p class="text-xs md:text-base font-semibold pr-4 text-indigo-600">Rs.{{ service.price|floatformat:0 }}</p>
                 </div>
                 <p class="text-gray-500 text-xs md:text-sm">{{ service.duration }} min</p>
                 {% if service.description %}
@@ -41,27 +66,86 @@
             {% endfor %}
           </div>
 
-           <!-- calculation card -->
-           <div class="absolute right-0 w-[40%] bg-white border border-secondary-color rounded-lg shadow-sm p-4">
-                <h1 class="font-medium text-center border-b-2 border-black pb-4">Service List</h1>
+           <!-- large screen - calculation card -->
+           <div class="hidden md:block  md:w-[35%] lg:[30%] bg-number-bg rounded-lg shadow-sm p-4">
+                <h1 class="font-medium text-center border-b-2 border-black pb-4">Your Services Cart</h1>
 
-                {% for service in user_selected_service_details %}
-                <div class="flex justify-between items-center mb-4 border border-gray-200 p-2 rounded-lg shadow-md">
-                    <div class="flex flex-col">
-                        <span class="text-gray-700">{{ service.name }}</span>
-                        <span class="text-gray-800 text-sm">duration: {{ service.duration }}</span>
+                <!-- Service in the cart -->
+                <div class="max-h-52 overflow-y-scroll mt-4 custom-scrollbar">
+                  {% if user_selected_service_details|length > 0 %}
+                    {% for service in user_selected_service_details %}
+                    <div class="mt-2 sm:mt-4 border border-gray-200 p-2 rounded-lg shadow-md">
+                        <div class="flex flex-col">
+                          <!-- Service Name and Remove Button -->
+                          <div class="flex flex-row justify-between items-center gap-2">
+                            <span class="text-gray-700 text-sm md:text-base font-medium">{{ service.name }}</span>
+                            <a href='{% url "remove_service_from_cart" shop_id=service.shop service_id=service.id %}' class="delete-service-btn bg-red-200 hover:bg-red-300 rounded cursor-pointer" title="Remove Service">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 hover:text-red-700 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </a>
+                          </div>
+                          <!-- Service duration and price -->
+                          <div class="flex flex-row justify-between mt-[2px] gap-2">
+                            <p class="text-gray-500 text-xs md:text-sm mt-1">{{ service.duration }} min</p>
+                            <p class="text-[#30373d] text-xs md:text-base font-semibold">Rs.{{ service.price|floatformat:0 }}</p>
+                          </div>
+                        </div>
                     </div>
-                  <div class="flex flex-col items-end">
-                    <a href='{% url "remove_service_from_cart" shop_id=service.shop service_id=service.id %}' class="delete-service-btn bg-red-200 hover:bg-red-300 rounded cursor-pointer" title="Remove Service">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 hover:text-red-700 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </a>
-                    <span class="text-gray-800">Rs.{{ service.price }}</span>
-                  </div>
+                    {% endfor %}
+                  {% else %}
+                    <div class="text-center text-gray-500 mt-4">
+                      <p class="text-sm">No services added to the cart.</p>
+                    </div>
+                   {% endif %}
                 </div>
-                {% endfor %}
+
+                <!-- Total Price and Total Duration of the services -->
+                 <div class="mt-8 border-t border-gray-600 pt-4">
+                    <div class="flex flex-row justify-between">
+                        <span class="text-gray-700 text-sm font-medium">Total Price:</span>
+                        <span class="text-[#30373d] text-sm font-semibold">Rs.{{ total_price|floatformat:0 }}</span>
+                    </div>
+                    <div class="flex flex-row justify-between">
+                        <span class="text-gray-700 text-sm  font-medium">Total Duration:</span>
+                        <span class="text-[#30373d] text-sm font-semibold">{{ total_hours }}h - {{ total_minutes }}min</span>
+                      </div>
+                      {% if service_count > 0 %}
+                        <a href="{% url "choose_professional" %}" class="mt-2 block bg-secondary-color text-white text-center py-2 rounded-lg hover:bg-opacity-90 transition">Continue</a>
+                      {% endif %}
+                 </div>
            </div>
+
+          <!-- mobile screen - calculation card -->
+           <div class="bg-number-bg md:hidden fixed bottom-0 left-0 right-0 shadow-lg p-4 flex flex-row justify-between items-center gap-2">
+            {% if service_count > 0 %}
+                <div>
+                    <h2 class="font-semibold">Total services: {{ service_count }}</h2>
+                    <div class="flex flex-row gap-2 text-sm">
+                        <p>Rs.{{ total_price }} <span class="ml-2"> - </span></p>
+                        <p>{{ total_hours}}h {{ total_minutes}}m</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center text-gray-500 mt-4">
+                    <p class="text-sm">No services added to the cart.</p>
+                </div>
+            {% endif %}
+              {% if service_count > 0 %}
+                <!-- services delete button -->
+                <div class="flex flex-row gap-2">
+                  <a href="{% url "mobile_remove_services_cart" %}" class="px-3 mt-2 block bg-red-500 text-white text-center py-2 rounded-lg hover:bg-opacity-90 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                  </a>
+                  <!-- continue button -->
+                  <a href="{% url "choose_professional" %}" class="px-3 mt-2 block bg-secondary-color text-white text-center py-2 rounded-lg hover:bg-opacity-90 transition">
+                   <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
+                  </a>
+                </div>
+              {% else %}
+            {% endif %}
+          </div>
+
         </div>
       
       {% comment %} {% if shop.services.all.count > 6 %}

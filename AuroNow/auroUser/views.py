@@ -5,7 +5,7 @@ from auroUser.models import  RatingAndReviews, User, UserPasswordResetToken
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-from shops.models import ShopOwner, ServiceCategory, ShopImage,Service
+from shops.models import ShopOwner, ServiceCategory, ShopImage,Service, Staff
 from django.core.mail import send_mail
 import environ
 from django.conf import settings
@@ -333,9 +333,7 @@ def user_login(request):
         password = request.POST.get('password')
 
         user = authenticate(request, email=email, password=password)  # use email here
-        print("user:", user)
         if user is not None:
-            print("in if condition of user login")
             login(request, user)
             return redirect('base_layout')
         else:
@@ -362,7 +360,6 @@ def user_signup(request):
         phone = request.POST.get('phone')
         password = request.POST.get('password')
 
-        print(email, city, phone, password)
         # isUserExist = User.objects.get(email=email)
         if User.objects.filter(email=email).exists():
             messages.error(request, 'The user already exists.')
@@ -444,16 +441,48 @@ def user_reset_password(request, token):
 # ------------------------------Reset Password End-----------------------------------------------
 
 # ------------------------------Booking System--------------------------------------------------
+
+def service_cart_details(request=None):
+    user_selected_service_details = request.session.get('user_selected_service_details', [])
+    
+    return user_selected_service_details
+    # # calculate the total price and duration of the selected services
+    # total_duration = 0
+    # total_price = 0.0
+    
+    # for service in user_selected_service_details:
+    #     total_price += service['price']
+    #     total_duration += service['duration']
+    
+    # # transform the total duration from minutes to hours and minutes
+    # total_hours = total_duration // 60 # integer division to get hours
+    # total_minutes = total_duration % 60 # modulus to get remaining minutes
+
+    # return user_selected_service_details
+
+    
 def bookingSystem(request, shop_id=None):
     # get the shop and service dettails from the shoping cart
-    user_selected_service_details = request.session.get('user_selected_service_details', [])
-    if not user_selected_service_details:
-        messages.error(request, 'No services selected. Please add services to your cart.')
-        return redirect('base_layout')  # Redirect to base layout if no services are selected
+    user_selected_service_details = service_cart_details(request)
+    shop_name = ShopOwner.objects.filter(id=shop_id).first().shop_name if shop_id else None
+    # ------------------------------------------------------------------------------------
+    # calculate the total price and duration of the selected services
+    total_duration = 0
+    total_price = 0.0
+    print("DEBUG: User selected service details:", user_selected_service_details)
+    print("type of user_selected_service_details:", type(user_selected_service_details))
+    print("length of user_selected_service_details:", len(user_selected_service_details) if user_selected_service_details else 0)
+    length = len(user_selected_service_details) if user_selected_service_details else 0
+    if length > 0:
+        for service in user_selected_service_details:
+            total_price += service['price']
+            total_duration += service['duration']
     
-    # Fetch the shop services
-    print("shop_id:", user_selected_service_details)
+    # transform the total duration from minutes to hours and minutes
+    total_hours = total_duration // 60 # integer division to get hours
+    total_minutes = total_duration % 60 # modulus to get remaining minutes
 
+    # ------------------------------------------------------------------------------------
     # get the shop services details
     services_list = []
     if shop_id:
@@ -470,9 +499,15 @@ def bookingSystem(request, shop_id=None):
                 })
     
     context = {
-        'user_selected_service_details': user_selected_service_details,
+        'shop_name': shop_name,
+        'user_selected_service_details': user_selected_service_details if user_selected_service_details else [],
         'shop_services': services_list,
         'shop_id': shop_id,
+        'total_price': total_price,
+        'total_duration': total_duration,
+        'service_count': len(user_selected_service_details),
+        'total_hours': total_hours,
+        'total_minutes': total_minutes,
     }
     return render(request, 'select_services.html', context)
 
@@ -486,6 +521,11 @@ def add_service_to_cart(request, shop_id, service_id):
 
     # Copy the cart from session
     user_selected_service_details = request.session['user_selected_service_details']
+
+    # make sure the session only collect the one shop services if not then clear the session
+    if user_selected_service_details and user_selected_service_details[0]['shop'] != shop_id:
+        user_selected_service_details = []
+        request.session['user_selected_service_details'] = user_selected_service_details
 
     # Fetch the service to be added
     service = Service.objects.filter(shop=shop_id, id=service_id).first()
@@ -525,3 +565,242 @@ def remove_service_from_cart(request, shop_id ,service_id):
     return redirect('shopping-cart', shop_id)  # Redirect to booking page
 
 # ------------------------------ Remove Service from Cart End ---------------------------------------------
+
+# ------------------------------ Mobile Screen services Cart ---------------------------------------------
+def mobile_remove_servies_cart(request):
+     # get the shop and service dettails from the shoping cart
+    user_selected_service_details = service_cart_details(request)
+    # ------------------------------------------------------------------------------------
+    # calculate the total price and duration of the selected services
+    total_duration = 0
+    total_price = 0.0
+
+    length = len(user_selected_service_details) if user_selected_service_details else 0
+    if length > 0:
+        for service in user_selected_service_details:
+            total_price += service['price']
+            total_duration += service['duration']
+    
+    # transform the total duration from minutes to hours and minutes
+    total_hours = total_duration // 60 # integer division to get hours
+    total_minutes = total_duration % 60 # modulus to get remaining minutes
+
+    context = {
+        'user_selected_service_details': user_selected_service_details if user_selected_service_details else [],
+        'total_price': total_price,
+        'total_duration': total_duration,
+        'service_count': length,
+        'total_hours': total_hours,
+        'total_minutes': total_minutes,
+    }
+
+    return render(request, 'delete_mobile_shop_Services.html', context)
+# ------------------------------ Mobile Screen services Cart Start ---------------------------------------------
+# ------------------------------ Choice of Staff Start ----------------------------------------------
+def choose_staff(request):
+    staff_members = []
+    service_cart_list = service_cart_details(request);
+    # ------------------------------------------------------------------------------------
+    # calculate the total price and duration of the selected services
+    total_duration = 0
+    total_price = 0.0
+    
+    for service in service_cart_list:
+        total_price += service['price']
+        total_duration += service['duration']
+    
+    # transform the total duration from minutes to hours and minutes
+    total_hours = total_duration // 60 # integer division to get hours
+    total_minutes = total_duration % 60 # modulus to get remaining minutes
+
+    # ------------------------------------------------------------------------------------
+    print("DEBUG: Service cart list:", service_cart_list)
+    if len(service_cart_list) == 0:
+        return redirect('base_layout')
+    
+    # Get the shop ID and fetch the staff members
+    shop_id = service_cart_list[0]['shop']
+    shop_staff = Staff.objects.filter(shop_id=shop_id, is_active=True).order_by('name')
+    if shop_staff.exists():
+        for staff in shop_staff:
+            staff_members.append({
+                'id': staff.id,
+                'name': staff.name,
+            })
+
+    # from auroUser.calculate_slote import find_available_slots
+    # shop_id = 2
+    # requested_services = [
+    #     {'staff_id': 4, 'duration': 40},
+    #     {'staff_id': 2, 'duration': 20}
+    # ]
+    # available_slots = find_available_slots(shop_id, requested_services)
+    # print('slotes',available_slots)
+
+    context = {
+        'shop_id': shop_id,
+        'staff_members': staff_members,
+        'service_cart_list': service_cart_list,
+        'total_price': total_price,
+        'total_duration': total_duration,
+        'service_count': len(service_cart_list),
+        'total_hours': total_hours,
+        'total_minutes': total_minutes,
+    }
+
+    return render(request, 'choose_professional.html', context)
+
+# ------------------------------ Choice of Staff End ----------------------------------------------
+
+# ------------------------------ select date and time for booking Start ---------------------------
+
+import json
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+import datetime
+@csrf_exempt  # ONLY for testing. Use CSRF token in production!
+def select_date_and_time(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # print("DEBUG: Received JSON data:", data)
+            
+            # user selected appointment date
+            appointment_date = data[-1]['date']
+            request.session['appointment_date'] = appointment_date
+            
+            """
+            staff_service_dic = {}
+            count = 1
+            if data:
+                for service in data:
+                    if count == len(data):
+                        break
+                    count += 1
+                    staff_service_dic[int(service['selectedProfessional'])] = int(service['duration'])
+            print("DEBUG: Staff service dictionary:", staff_service_dic)
+            """
+
+            staff_service_tuple = []
+            count = 1
+            if data:
+                for service in data:
+                    if count == len(data):
+                        break
+                    count += 1
+                    staff_service_tuple.append((int(service['selectedProfessional']), int(service['duration'])))
+            print("DEBUG: Staff service tuple:", staff_service_tuple)
+            # ----------------------------------------------------------------------------------------------
+            from auroUser.calculate_slote import get_available_slots
+            user_selected_service_details = request.session.get('user_selected_service_details', [])
+            # Get available slots
+            shop_id = user_selected_service_details[0]['shop'] if user_selected_service_details else None
+            print("DEBUG: Shop ID:", shop_id)
+            # appointment_date = "2025-6-10"
+
+            common_slots, individual_slots = get_available_slots(
+                shop_id, staff_service_tuple, appointment_date
+            )
+
+            print("DEBUG: Individual staff slots:", individual_slots)
+            staff_ids = []
+            for staff_id, slots in individual_slots.items():
+                staff_ids.append(staff_id)
+            request.session['staff_ids'] = staff_ids
+            print("DEBUG: Staff IDs:", staff_ids)
+
+            from auroUser.common_slotes import find_common_continuous_slots
+            result = find_common_continuous_slots(individual_slots)
+            # add the above common slotes result to the django session
+            request.session['common_slots'] = result
+            print("DEBUG: Resulting continuous slots:", result)
+        # ----------------------------------------------------------------------------------------------
+
+            return HttpResponse('{"status": "success", "message": "Data received successfully!"}', content_type='application/json')
+        
+        except Exception as error:
+            print("DEBUG: Error parsing JSON data:", error)
+            return HttpResponse('{"status": "error", "message": "Invalid data format"}', content_type='application/json', status=400)
+
+    return HttpResponse('{"status": "error", "message": "Invalid request method"}', content_type='application/json', status=405)
+# ------------------------------ select date and time for booking End -----------------------------
+@login_required(login_url='user_login')
+def select_slot(Request):
+    # get the appointment date from the session
+    appointment_date = Request.session.get('appointment_date', None)
+    user_selected_service_details = Request.session.get('user_selected_service_details', [])
+
+    # get the common slots from the session
+    common_slots = Request.session.get('common_slots', [])
+
+    context = {
+        'common_slots': common_slots,
+        'today': appointment_date,
+        'user_selected_service_details': user_selected_service_details,
+    }
+    return render(Request, 'select_appointment_date.html', context)
+# ------------------------------ select date and time for booking End -----------------------------
+
+# ------------------------------ Booking Confirmation Start ---------------------------------------------
+@login_required(login_url='user_login')
+def booking_confirmed(request):
+    # get the user_selected_service_details from the session
+    user_selected_service_details = request.session.get('user_selected_service_details', [])
+    staff_ids = request.session.get('staff_ids', [])
+
+    # get the duration from the session
+    durations = []
+    for service in user_selected_service_details:
+        durations.append(service['duration'])
+    print("DEBUG: duation:", durations)
+
+
+    if request.method == 'POST':
+        selectedSlot = request.POST.get('selectedSlot')
+        customer_id = request.POST.get('customerId')
+
+        print("DEBUG: customerid", customer_id)
+        print("DEBUG: Selected slot:", selectedSlot)
+        from auroUser.exact_slotes import split_time_slots
+        slots = split_time_slots(selectedSlot, durations)
+        print(slots)  # [('09:00', '10:00'), ('10:00', '10:45')]
+        print("DEBUG: user_selected_service_details:", user_selected_service_details)
+
+        merged_all_service_appointments_data = []
+        for i,service in enumerate(user_selected_service_details):
+            service_data = {
+                'user_id': customer_id,
+                'shop_id': service['shop'],
+                'service_id': service['id'],
+                'staff_id': staff_ids[i] if i < len(staff_ids) else None,  # Ensure we don't go out of bounds
+                'appointment_date': request.session.get('appointment_date', None),
+                'start_time': slots[i][0] if i < len(slots) else None,  # Ensure we don't go out of bounds
+                'end_time': slots[i][1] if i < len(slots) else None,  # Ensure we don't go out of bounds
+            }
+            merged_all_service_appointments_data.append(service_data)
+            print("DEBUG: Merged appointment data:", merged_all_service_appointments_data)
+
+        # Create the appointment in the database
+        from auroUser.models import BookAppointment
+        for appointment_data in merged_all_service_appointments_data:
+            appointment = BookAppointment.objects.create(
+                user_id=appointment_data['user_id'],
+                shop_id=appointment_data['shop_id'],
+                service_id=appointment_data['service_id'],
+                staff_id=appointment_data['staff_id'],
+                appointment_date=appointment_data['appointment_date'],
+                start_time=appointment_data['start_time'],
+                end_time=appointment_data['end_time'],
+            )
+            appointment.save()
+            print("DEBUG: Appointment created:", appointment)
+        
+    # Clear the session data after booking
+    request.session['user_selected_service_details'] = []
+    request.session['appointment_date'] = None
+    request.session['common_slots'] = []
+    request.session['staff_ids'] = []
+    print("DEBUG: Session data cleared after booking.")
+    messages.success(request, 'Booking confirmed successfully!')
+    return redirect('base_layout')  # Redirect to the base layout after booking confirmation
+# ------------------------------ Booking Confirmation End ---------------------------------------------

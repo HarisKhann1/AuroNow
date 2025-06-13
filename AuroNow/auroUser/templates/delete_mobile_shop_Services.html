@@ -1,0 +1,58 @@
+{% extends 'base_auroUser.html' %}
+{% load static %}
+
+{% block title %}
+  AuroNow | Remove Services
+{% endblock title %}
+
+{% block main %}
+    <section class="mt-20 px-4 md:px-10 py-8 bg-white">
+        <div class="w-full bg-number-bg rounded-lg shadow-sm p-4">
+                <h1 class="font-medium text-center border-b-2 border-black pb-4">Your Services Cart</h1>
+                <!-- Service in the cart -->
+                <div class="max-h-52 overflow-y-scroll mt-4 custom-scrollbar">
+                  {% if user_selected_service_details|length > 0 %}
+                    {% for service in user_selected_service_details %}
+                    <div class="mt-2 sm:mt-4 border border-gray-200 p-2 rounded-lg shadow-md">
+                        <div class="flex flex-col">
+                          <!-- Service Name and Remove Button -->
+                          <div class="flex flex-row justify-between items-center gap-2">
+                            <span class="text-gray-700 text-sm md:text-base font-medium">{{ service.name }}</span>
+                            <a href='{% url "remove_service_from_cart" shop_id=service.shop service_id=service.id %}' class="delete-service-btn bg-red-200 hover:bg-red-300 rounded cursor-pointer" title="Remove Service">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 hover:text-red-700 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </a>
+                          </div>
+                          <!-- Service duration and price -->
+                          <div class="flex flex-row justify-between mt-[2px] gap-2">
+                            <p class="text-gray-500 text-xs md:text-sm mt-1">{{ service.duration }} min</p>
+                            <p class="text-[#30373d] text-xs md:text-base font-semibold">Rs.{{ service.price|floatformat:0 }}</p>
+                          </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                  {% else %}
+                    <div class="text-center text-gray-500 mt-4">
+                      <p class="text-sm">No services added to the cart.</p>
+                    </div>
+                   {% endif %}
+                </div>
+
+                <!-- Total Price and Total Duration of the services -->
+                 <div class="mt-8 border-t border-gray-600 pt-4">
+                    <div class="flex flex-row justify-between">
+                        <span class="text-gray-700 text-sm font-medium">Total Price:</span>
+                        <span class="text-[#30373d] text-sm font-semibold">Rs.{{ total_price|floatformat:0 }}</span>
+                    </div>
+                    <div class="flex flex-row justify-between">
+                        <span class="text-gray-700 text-sm  font-medium">Total Duration:</span>
+                        <span class="text-[#30373d] text-sm font-semibold">{{ total_hours }}h - {{ total_minutes }}min</span>
+                      </div>
+                      {% if service_count > 0 %}
+                        <a href="{% url "choose_professional" %}" class="mt-2 block bg-secondary-color text-white text-center py-2 rounded-lg hover:bg-opacity-90 transition">Continue</a>
+                      {% endif %}
+                 </div>
+           </div>
+    </section>
+{% endblock %}

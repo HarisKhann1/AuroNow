@@ -1,0 +1,37 @@
+{% extends 'base_auroUser.html' %}
+{% load static %}
+
+{% block title %}
+  AuroNow | Book Appointment 
+{% endblock title %}
+
+{% block main %}
+    <section class="pt-28 flex items-center justify-center min-h-screen px-4">
+        <!-- a selection appointment cart in the middle of the screen -->
+         <div class="bg-number-bg w-full max-w-md px-6 py-10 rounded-lg shadow-lg">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">Available slotes on <span class="text-primary-color">{{today}}</span></h1>
+            <div>
+              {% if user_selected_service_details|length > 0 %}
+                <form action="{% url "booking_confirmed" %}" method='POST'>
+                  {% csrf_token %}
+                  <input type="hidden" name="customerId" value="{{ user.id }}">
+                  <label for="selectSlot">Select Slot</label>
+                  <select id="selectSlot" name="selectedSlot" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                    {% if common_slots %}
+                      {% for slot in common_slots %}
+                        <option value="{{slot}}">{{ slot.0 }} to {{ slot.1 }}</option>
+                      {% endfor %}
+                    {% else %}
+                      <option value="" class="text-red-500 font-semibold" disabled>No available slots - try another date</option>
+                    {% endif %}
+                  </select>
+                  <button {% if common_slots|length == 0 %}disabled{% endif %} type="submit" class="mt-4 px-4 py-2 bg-secondary-color rounded-lg text-white">Confirm</button>
+                </form>
+              {% else %}
+                <p class="text-gray-500 text-start">No services selected. Please select services first.</p>
+                <a href="{% url "base_layout" %}" class="mt-4 inline-block px-4 py-2 bg-secondary-color text-white rounded-lg">Select Services</a>
+              {% endif %}
+            </div>
+         </div>
+    </section>
+{% endblock %}
