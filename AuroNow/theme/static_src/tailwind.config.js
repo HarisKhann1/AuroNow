@@ -53,7 +53,6 @@ module.exports = {
                 'off-white-google': '#eeeeee',
                 'table-background': '#37404f', // Table background color (dark gray)
                 'number-bg': '#d3dbdd', // Number background color (light gray)
-              
             },
             fontFamily: {
                 'font-style':'var(--font-mono)',

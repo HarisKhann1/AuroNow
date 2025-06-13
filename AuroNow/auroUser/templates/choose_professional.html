@@ -1,0 +1,121 @@
+{% extends 'base_auroUser.html' %}
+{% load static %}
+
+{% block title %}
+  AuroNow | Select Professional
+{% endblock title %}
+
+{% block main %}
+    <section class="container mx-auto px-4 md:px-10 py-2 md:py-8 border flex flex-col items-center justify-center">
+        <!-- choose professional for each service -->
+        <div class="w-full md:w-1/2 lg:w-[40%] 2xl:w-[30%] mt-20 border bg-number-bg rounded-lg shadow-sm p-4">
+            <h1 class='font-bold text-xl mb-8 text-center'>Select professional</h1>
+            <div>
+                <label for="dateField" class="block text-gray-700 text-sm font-medium mb-2">Select Date:</label>
+                <input required type="date" id="dateField" name="appointment_date" class="mb-4 p-2 border border-gray-300 rounded w-full">
+            </div>
+            <div class="service-container">
+                {% if service_cart_list|length > 0 %}
+                <!-- Display shop services details -->
+                    {% for service in service_cart_list %}
+                        <div class="flex flex-col border border-gray-300 hover:border-gray-400 rounded-lg shadow-sm hover:shadow-md transition p-4 mb-4">
+                            <h3 serviceID={{service.id}} class="text-sm font-semibold">{{ service.name }}</h3>
+                            <p class="text-gray-500 text-sm md:text-base mt-1">{{ service.duration }} min</p>
+                            <!-- for loop for to select professional -->
+                            <p class="text-gray-600 text-sm mt-2">Select a professional:</p>
+                            <select name="member" id="member" class="mt-1 rounded-full border border-gray-300 p-2 pl-4">
+                                {% for professional in staff_members %}
+                                    <option value="{{ professional.id }}">{{ professional.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-gray-500 mt-4">
+                        <p class="text-sm">No services added to the cart.</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="flex justify-center mt-6">
+                <button id="continue-button" class="w-full bg-secondary-color hover:bg-secondary-hover-color text-white text-center py-2 rounded-lg hover:bg-opacity-90 transition">
+                    Continue
+                </button>
+            </div>
+        </div>
+
+        <!-- Device-md: Service Cart-->
+        {% comment %} <div class="hidden md:block md:absolute top-24 right-5 md:w-[30%] bg-number-bg rounded-lg shadow-sm p-4">
+            <h1 class="font-medium text-center border-b-2 border-black pb-4">Your Services Cart</h1>
+            <!-- Service in the cart -->
+            <div class="max-h-52 overflow-y-scroll mt-4 custom-scrollbar">
+                {% if service_cart_list|length > 0 %}
+                {% for service in service_cart_list %}
+                <div class="mt-2 sm:mt-4 border border-gray-200 p-2 rounded-lg shadow-md">
+                    <div class="flex flex-col">
+                        <!-- Service Name and Remove Button -->
+                        <div class="flex flex-row justify-between items-center gap-2">
+                        <span class="text-gray-700 text-sm md:text-base font-medium">{{ service.name }}</span>
+                        <a href='{% url "remove_service_from_cart" shop_id=service.shop service_id=service.id %}' class="delete-service-btn bg-red-200 hover:bg-red-300 rounded cursor-pointer" title="Remove Service">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 hover:text-red-700 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </a>
+                        </div>
+                        <!-- Service duration and price -->
+                        <div class="flex flex-row justify-between mt-[2px] gap-2">
+                            <p class="text-gray-500 text-xs md:text-sm mt-1">{{ service.duration }} min</p>
+                            <p class="text-[#30373d] text-xs md:text-base font-semibold">Rs.{{ service.price|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center text-gray-500 mt-4">
+                    <p class="text-sm">No services added to the cart.</p>
+                </div>
+                {% endif %}
+            </div>
+
+                <!-- Total Price and Total Duration of the services -->
+                 <div class="mt-8 border-t border-gray-600 pt-4">
+                    <div class="flex flex-row justify-between">
+                        <span class="text-gray-700 text-sm font-medium">Total Price:</span>
+                        <span class="text-[#30373d] text-sm font-semibold">Rs.{{ total_price|floatformat:0 }}</span>
+                    </div>
+                    <div class="flex flex-row justify-between">
+                        <span class="text-gray-700 text-sm  font-medium">Total Duration:</span>
+                        <span class="text-[#30373d] text-sm font-semibold">{{ total_duration }} min</span>
+                      </div>
+                      <button id="continue-button" class="mt-2 w-full block bg-secondary-color text-white text-center py-2 rounded-lg hover:bg-opacity-90 transition
+                        {% if service_count <= 0 %}disabled{% endif %}">
+                        Continue
+                    </button>
+                 </div>
+        </div> {% endcomment %}
+
+        {% comment %} <!-- Mobile view: Service Cart -->
+        <div class="bg-number-bg md:hidden fixed bottom-0 left-0 right-0 shadow-lg p-4 flex flex-row justify-between items-center gap-2">
+            {% if service_count > 0 %}
+                <div>
+                    <h2 class="font-semibold">Total services: {{ service_count }}</h2>
+                    <div class="flex flex-row gap-2 text-sm">
+                        <p>Rs.{{ total_price }} <span class="ml-2"> - </span></p>
+                        <p>{{ total_hours}}h {{ total_minutes}}m</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center text-gray-500 mt-4">
+                    <p class="text-sm">No services added to the cart.</p>
+                </div>
+            {% endif %}
+            <button id="continue-button-mobile"
+                class="px-3 mt-2 block bg-secondary-color text-white text-center py-2 rounded-lg hover:bg-opacity-90 transition
+                {% if service_count <= 0 %}disabled{% endif %}"
+                >
+                Continue
+            </button>
+        </div> {% endcomment %}
+    </section>
+
+<script src={% static "js/auro_user/chooseProfessional.js" %}></script>
+{% endblock %}
