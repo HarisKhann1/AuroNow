@@ -7,26 +7,30 @@
               <a href="{% url "base_layout" %}" class="text-2xl font-bold text-black font-serif">AuroNow</a>
           </div>
 
-          {% comment %} <!-- Navigation Menu -->
-          <nav class="hidden md:flex space-x-10 text-lg">
-              <a href="#" class="hover:text-gray-300 transition-all">Home</a>
-              <a href="#services" class="hover:text-gray-300 transition-all">Services</a>
-              <a href="#about" class="hover:text-gray-300 transition-all">About Us</a>
-              <a href="#contact" class="hover:text-gray-300 transition-all">Contact</a>
-          </nav> {% endcomment %}
-
           <!-- Call-to-Action Button -->
           <div class="hidden md:block">
               <!-- Desktop Links -->
             <div class="hidden md:flex items-center gap-2">
               {% if user.is_authenticated %}
+                <div class="flex items-center gap-2 flex-row-reverse">
                   <a 
                     href="{% url 'user_logout' %}" 
                     class="bg-[#E53935] text-white px-6 py-2 rounded-full hover:bg-[#D32F2F] transition font-medium"
                   >
                     Logout
                   </a>
-                {% else %}
+                  <!-- User Appointment view -->
+                    <a 
+                      href="{% url "customer_appointment_history" %}" 
+                      class="text-black" 
+                    >
+                     <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000" aria-label="Appointments">
+                       <title>Appointments</title>
+                       <path d="M434.67-227.33 295.33-366l47.34-47.33 92 90.66 178.66-178.66 47.34 48-226 226ZM186.67-80q-27 0-46.84-19.83Q120-119.67 120-146.67v-600q0-27 19.83-46.83 19.84-19.83 46.84-19.83h56.66V-880h70v66.67h333.34V-880h70v66.67h56.66q27 0 46.84 19.83Q840-773.67 840-746.67v600q0 27-19.83 46.84Q800.33-80 773.33-80H186.67Zm0-66.67h586.66v-420H186.67v420Zm0-486.66h586.66v-113.34H186.67v113.34Zm0 0v-113.34 113.34Z"/>
+                     </svg>
+                    </a>
+                </div>
+              {% else %}
                   <a href="{% url 'user_login' %}" class="bg-primary-color text-gray-700 px-6 py-2 rounded-full hover:bg-primary-hover-color transition font-medium">
                     Login
                   </a>
@@ -53,9 +57,22 @@
       <!-- Mobile Navigation Menu -->
       <div id="mobile-menu" class="md:hidden mt-5 hidden space-y-4 flex-col">
          {% if user.is_authenticated %}
-            <a   href="{% url 'user_logout' %}"  class="w-full border border-red-500 bg-red-200 text-gray-700 px-6 py-1.5 text-sm font-semibold rounded-lg">
+          <div class="flex flex-col-reverse gap-4">
+            <a   href="{% url 'user_logout' %}"  class="w-full border border-red-500 bg-red-200 text-gray-700 px-3 py-1.5 text-sm font-semibold rounded-lg">
               Logout
             </a>
+             <!-- User Appointment view -->                
+              <a 
+                href="{% url "customer_appointment_history" %}" 
+                class="border border-primary-color px-3 py-1 rounded-lg bg-amber-50  text-black flex items-center gap-2 flex-row-reverse justify-between" 
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#000000" aria-label="Appointments">
+                  <title>Appointments</title>
+                  <path d="M434.67-227.33 295.33-366l47.34-47.33 92 90.66 178.66-178.66 47.34 48-226 226ZM186.67-80q-27 0-46.84-19.83Q120-119.67 120-146.67v-600q0-27 19.83-46.83 19.84-19.83 46.84-19.83h56.66V-880h70v66.67h333.34V-880h70v66.67h56.66q27 0 46.84 19.83Q840-773.67 840-746.67v600q0 27-19.83 46.84Q800.33-80 773.33-80H186.67Zm0-66.67h586.66v-420H186.67v420Zm0-486.66h586.66v-113.34H186.67v113.34Zm0 0v-113.34 113.34Z"/>
+                </svg>
+                <p class="text-black font-semibold text-sm">Appointment History</p>
+              </a>
+           </div>
          {% else %}
             <a href="{% url 'user_login' %}" class="w-full border border-primary-color text-gray-700 px-6 py-1.5 text-sm font-semibold rounded-lg">
               Login

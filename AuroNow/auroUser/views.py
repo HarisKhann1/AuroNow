@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 from django.db.models import Avg
-from auroUser.models import  RatingAndReviews, User, UserPasswordResetToken
+from auroUser.models import  RatingAndReviews, User, UserPasswordResetToken, BookAppointment
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -804,3 +804,31 @@ def booking_confirmed(request):
     messages.success(request, 'Booking confirmed successfully!')
     return redirect('base_layout')  # Redirect to the base layout after booking confirmation
 # ------------------------------ Booking Confirmation End ---------------------------------------------
+
+# ---------------------------- Customer Appointment History View Start ---------------------------------------------
+@login_required(login_url='user_login')
+def customer_appointment_history(request):
+    user = request.user
+    # recent top 20 appointments for the user
+    appointments = list(BookAppointment.objects.filter(user_id=user.id).select_related('shop', 'service', 'staff').order_by('-appointment_date', '-start_time', '-end_time')[:20])
+    # appointments.reverse()
+
+    appointment_list = []
+    for appointment in appointments:
+        appointment_list.append({
+            'id': appointment.id,
+            'shop_name': appointment.shop.shop_name,
+            'service_name': appointment.service.name,
+            'staff_name': appointment.staff.name if appointment.staff else "N/A",
+            'appointment_date': appointment.appointment_date,
+            'start_time': appointment.start_time,
+            'end_time': appointment.end_time,
+            'status': appointment.status,
+        })
+
+    context = {
+        'appointments': appointment_list,
+        'user': user,
+    }
+
+    return render(request, 'user_appointment.html', context)

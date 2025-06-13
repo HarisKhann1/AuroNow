@@ -27,5 +27,8 @@ urlpatterns = [
     path('select-professional/select-slot/', views.select_slot, name='haris'),  # URL select_slot
     path('booking/confirm/', views.booking_confirmed, name='booking_confirmed'),  # URL for booking confirmation
 
+    # user profile urls
+    path('appointment-history/', views.customer_appointment_history, name='customer_appointment_history'),  # URL for user profile
+    # path('profile/edit/', views.edit_profile, name='edit_profile'),  # URL for editing user profile
 ]
     
