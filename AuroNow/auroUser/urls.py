@@ -1,5 +1,15 @@
 from django.urls import path
-from .views import base_layout, search_results, shop_detail, user_login, user_signup, logout_view, forget_password, user_reset_password ,nearby_shops
+from .views import (base_layout, 
+                    search_results,
+                    shop_detail,
+                    user_login,
+                    user_signup,
+                    logout_view,
+                    forget_password,
+                    user_reset_password ,
+                    nearby_shops,
+                    )
+
 
 urlpatterns = [
     # authentication urls
@@ -12,7 +22,7 @@ urlpatterns = [
     # main urls
     path('', base_layout, name='base_layout'),  # URL for the base_layout
     path('search-results/', search_results, name='search_results'), 
-    path('shop/<int:id>/', shop_detail, name='shop_detail'),
+    path('shop/<int:shop_id>/', shop_detail, name='shop_detail'),
     path('nearby-shops/', nearby_shops, name='nearby_shops'),
 ]
     
