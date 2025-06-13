@@ -58,13 +58,13 @@ def get_shop_data(limit=5):
 # View: Base Layout with Filters and Recommended Shops
 # ----------------------------
 def base_layout(request):
-    context = {
+    results = {
         'shops': get_shop_data(),
         'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),
         'cities': ShopOwner.objects.values_list('city', flat=True).distinct(),
         'price_ranges': ["0-50", "51-100", "101-200", "200+"],
     }
-    return render(request, 'base_layout.html', context)
+    return render(request, 'base_layout.html', results)
 
 
 
@@ -272,13 +272,13 @@ def search_results(request):
 # ----------------------------
 # View: Shop Detail Page
 # ----------------------------
-def shop_detail(request, id):
+def shop_detail(request, shop_id):
     # Fetch shop with related data to avoid multiple DB hits
     shop = get_object_or_404(
         ShopOwner.objects.prefetch_related(
             'services', 'staff', 'timings', 'images',
         ),
-        id=id
+        id=shop_id
     )
 
     # Get shop images
@@ -297,7 +297,6 @@ def shop_detail(request, id):
     shop_timings = sorted(
         shop.timings.all(),
         key=lambda x: WEEKDAY_ORDER.index(x.day))
-    print("shop_timings: ",shop_timings)
 
     # Get latest 5 reviews with user info
     customer_rating_list = RatingAndReviews.objects.filter(shop=shop).select_related('user').order_by('-id')
@@ -307,8 +306,8 @@ def shop_detail(request, id):
 
     
     # Prepare context
-    context = {
-        'id': shop.id,
+    results = {
+        'shop_id': shop.id,
         'shop': shop,
         'images': image_urls,
         'reviews': customer_rating_count,
@@ -323,8 +322,7 @@ def shop_detail(request, id):
         "latitude" : shop.latitude,
     }
     
-    return render(request, 'shop_detail.html', context)
-
+    return render(request, 'shop_detail.html', results)
 
 
 # ------------------------------Login view Start---------------------------------------------

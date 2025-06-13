@@ -970,6 +970,7 @@ select {
   top: 0.75rem;
 }
 
+
 .-z-10 {
   z-index: -10;
 }
@@ -1188,17 +1189,6 @@ select {
   margin-top: 70px;
 }
 
-.-ml-8 {
-  margin-left: -2rem;
-}
-
-.mt-40 {
-  margin-top: 10rem;
-}
-
-.ms-2 {
-  margin-inline-start: 0.5rem;
-}
 
 .line-clamp-1 {
   overflow: hidden;
@@ -1307,8 +1297,8 @@ select {
   height: 24rem;
 }
 
-.h-\[400px\] {
-  height: 400px;
+.h-\[300px\] {
+  height: 300px;
 }
 
 .h-\[calc\(100\%\)\] {
@@ -2052,20 +2042,6 @@ select {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 
-.bg-indigo-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(129 140 248 / var(--tw-bg-opacity, 1));
-}
-
-.bg-indigo-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(79 70 229 / var(--tw-bg-opacity, 1));
-}
-
-.bg-blue-700 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(29 78 216 / var(--tw-bg-opacity, 1));
-}
 
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5;
@@ -2874,6 +2850,11 @@ input:-webkit-autofill:focus {
   color: rgb(17 24 39 / var(--tw-text-opacity, 1));
 }
 
+.hover\:text-indigo-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(79 70 229 / var(--tw-text-opacity, 1));
+}
+
 .hover\:text-indigo-800:hover {
   --tw-text-opacity: 1;
   color: rgb(55 48 163 / var(--tw-text-opacity, 1));
@@ -3063,6 +3044,10 @@ input:-webkit-autofill:focus {
     height: 1rem;
   }
 
+  .sm\:h-\[350px\] {
+    height: 350px;
+  }
+
   .sm\:w-28 {
     width: 7rem;
   }
@@ -3205,6 +3190,10 @@ input:-webkit-autofill:focus {
 
   .md\:h-96 {
     height: 24rem;
+  }
+
+  .md\:h-\[450px\] {
+    height: 450px;
   }
 
   .md\:h-auto {

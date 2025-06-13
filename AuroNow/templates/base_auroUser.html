@@ -7,6 +7,9 @@
     <title>{% block title %}auroUser{% endblock %}</title>
     {% tailwind_css %}
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
   </head>
   <body class="min-h-screen">
     
@@ -21,9 +24,8 @@
     {% include 'footer/footer.html' %}
      <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script> 
       <!-- Google Maps API -->
-     {% comment %} <script async
-      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
-    </script>  {% endcomment %}
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 
   </body>
 </html>
