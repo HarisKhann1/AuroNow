@@ -14,7 +14,7 @@ urlpatterns = [
     # main urls
     path('', views.base_layout, name='base_layout'),  # URL for the base_layout
     path('search-results/', views.search_results, name='search_results'), 
-    path('shop/<int:id>/', views.shop_detail, name='shop_detail'),
+    path('shop/<int:shop_id>/', views.shop_detail, name='shop_detail'),
     path('nearby-shops/', views.nearby_shops, name='nearby_shops'),
 
     # booking system urls
