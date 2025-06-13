@@ -11,6 +11,8 @@ import environ
 from django.conf import settings
 import h3
 from geopy.distance import geodesic
+from requests import get
+
 
  
 # Importing environment variables
@@ -832,3 +834,64 @@ def customer_appointment_history(request):
     }
 
     return render(request, 'user_appointment.html', context)
+# ----------------------------- Customer Appointment History View End ---------------------------------------------
+
+# ---------------------------- User Profile View Start ---------------------------------------------
+@login_required(login_url='user_login')
+def user_profile(request):
+    user = request.user
+    user_details = User.objects.filter(id=user.id).first()
+    
+    name = user_details.name if user_details else "N/A"
+    email = user_details.email if user_details else "N/A"
+    phone = user_details.phone if user_details else "N/A"
+    city = user_details.city if user_details else "N/A"
+
+
+    context = {
+        'user': user,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'city': city,
+    }
+    return render(request, 'user_profile.html', context)
+# ---------------------------- User Profile View End ---------------------------------------------
+
+# --------------------------- Update User Profile -------------------------------------
+@login_required(login_url='user_login')
+def update_user_profile(request):
+    loc = get('http://ip-api.com/json/')
+    city = loc.json().get('city', 'N/A')
+    
+    user = request.user
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+
+        # Update user details
+        user.name = name
+        user.email = email
+        user.phone = phone
+        user.city = city.lower()  
+        user.save()
+
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('edit_profile')
+# --------------------------- Update User Profile End -------------------------------------
+
+# --------------------------- Update User Password -------------------------------------
+@login_required(login_url='user_login')
+def change_user_password(request):
+    if request.method == 'POST':
+        password = request.POST.get('password')
+
+        user = request.user
+
+        # Set the new password
+        user.set_password(password)
+        user.save()
+
+        messages.success(request, 'Password changed successfully!')
+        return redirect('edit_profile')
