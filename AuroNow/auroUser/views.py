@@ -353,10 +353,12 @@ def logout_view(request):
 # ------------------------------Signup View Start-------------------------------------------------
 # User Singup View
 def user_signup(request):
+    loc = get('http://ip-api.com/json/')
+    city = loc.json().get('city', 'N/A')
+
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
-        city = request.POST.get('city')
         phone = request.POST.get('phone')
         password = request.POST.get('password')
 
@@ -370,7 +372,7 @@ def user_signup(request):
             name=name,
             email=email,
             phone=phone,
-            city=city,
+            city=city.lower(),
             password=password
         ).save()
         # Log the user in after registration
