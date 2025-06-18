@@ -167,9 +167,10 @@ USE_TZ = True
 AUTH_USER_MODEL = 'auroUser.User'  # Custom user model
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # for regular users
-    'shops.backends.ShopOwnerBackend',             # for shop owners
+    'django.contrib.auth.backends.ModelBackend',     # Default user model
+    'shops.backends.ShopOwnerBackend',               # ShopOwner custom backend
 ]
+
 
 
 

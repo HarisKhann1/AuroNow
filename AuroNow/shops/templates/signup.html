@@ -1,402 +1,428 @@
+{% extends 'base_auroUser.html' %}
 {% load static tailwind_tags %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuroNow - Sign Up</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js"></script>
-    {% tailwind_css %}
-</head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
-        <!-- Header -->
-        <div class="bg-[#233038] py-4">
-            <h2 class="text-center text-2xl font-bold text-white">AuroNow</h2>
-            <p class="text-center text-indigo-100">Create your account</p>
-        </div>
-        
-        <!-- Form -->
-        {% if messages %}
-        <div class="py-2 px-4">
-            {% for message in messages %}
-            <div class="p-2 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} rounded">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        
-        <form method="post" class="py-6 px-8" id="signupForm" novalidate>
-            {% csrf_token %}
-            
-            <!-- Name -->
-            <div class="mb-4">
-                <label for="id_name" class="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-feather="user" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <input type="text" id="id_name" name="name" class="text-black pl-10 w-full py-2 px-3 border {% if form.name.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="John Doe" value="{{ form.name.value|default:'' }}">
-                </div>
-                {% if form.name.errors %}
-                <p class="mt-1 text-red-500 text-sm">{{ form.name.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Email -->
-            <div class="mb-4">
-                <label for="id_email" class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-feather="mail" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <input type="email" id="id_email" name="email" class="pl-10 w-full py-2 px-3 border {% if form.email.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="your@email.com" value="{{ form.email.value|default:'' }}">
-                </div>
-                {% if form.email.errors %}
-                <p class="mt-1 text-red-500 text-sm">{{ form.email.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Password -->
-            <div class="mb-4">
-                <label for="id_password1" class="block text-gray-700 text-sm font-medium mb-2">Password</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-feather="lock" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <input type="password" id="id_password1" name="password1" class="pl-10 w-full py-2 px-3 border {% if form.password1.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter your password">
-                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <button type="button" id="togglePassword1" class="text-gray-400 hover:text-gray-500 focus:outline-none">
-                            <i data-feather="eye" class="h-5 w-5" id="showPasswordIcon1"></i>
-                            <i data-feather="eye-off" class="h-5 w-5 hidden" id="hidePasswordIcon1"></i>
-                        </button>
-                    </div>
-                    
-                </div>
-                
-                {% if form.password1.errors %}
-                <p class="mt-1 text-red-500 text-sm">{{ form.password1.errors.0 }}</p>
-                {% endif %}
-                <p class="mt-1 text-gray-500 text-xs">password must be 8 character long consist of alpha-numberic.</p>
-            </div>
-            
-            <!-- Confirm Password -->
-            <div class="mb-4">
-                <label for="id_password2" class="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-feather="lock" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <input type="password" id="id_password2" name="password2" class="pl-10 w-full py-2 px-3 border {% if form.password2.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter your password again">
-                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <button type="button" id="togglePassword2" class="text-gray-400 hover:text-gray-500 focus:outline-none">
-                            <i data-feather="eye" class="h-5 w-5" id="showPasswordIcon2"></i>
-                            <i data-feather="eye-off" class="h-5 w-5 hidden" id="hidePasswordIcon2"></i>
-                        </button>
-                    </div>
-                </div>
-                {% if form.password2.errors %}
-                <p class="mt-1 text-red-500 text-sm">{{ form.password2.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Phone -->
-            <div class="mb-4">
-                <label for="id_phone" class="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-feather="phone" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <input type="tel" id="id_phone" name="phone" class="pl-10 w-full py-2 px-3 border {% if form.phone.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="11-digit number only" value="{{ form.phone.value|default:'' }}">
-                </div>
-                {% if form.phone.errors %}
-                <p class="mt-1 text-red-500 text-sm">{{ form.phone.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Shop Name -->
-            <div class="mb-4">
-                <label for="id_shop_name" class="block text-gray-700 text-sm font-medium mb-2">Shop Name</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-feather="shopping-bag" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <input type="text" id="id_shop_name" name="shop_name" class="pl-10 w-full py-2 px-3 border {% if form.shop_name.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Your Shop Name" value="{{ form.shop_name.value|default:'' }}">
-                </div>
-                {% if form.shop_name.errors %}
-                <p class="mt-1 text-red-500 text-sm">{{ form.shop_name.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- City -->
-            <div class="mb-4">
-                <label for="id_city" class="block text-gray-700 text-sm font-medium mb-2">City</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-feather="map-pin" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <input type="text" id="id_city" name="city" class="pl-10 w-full py-2 px-3 border {% if form.city.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Your City" value="{{ form.city.value|default:'' }}">
-                </div>
-                {% if form.city.errors %}
-                <p class="mt-1 text-red-500 text-sm">{{ form.city.errors.0 }}</p>
-                {% endif %}
+{% load static %}
+
+{% block title %}
+  AuroNow | Shop Registration
+{% endblock title %}
+
+{% block main %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .error-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+
+    <section class="pt-28 bg-[#aab5b7] pb-12 min-h-screen flex items-center justify-center p-4">
+        <div class="bg-number-bg rounded-2xl shadow-lg p-8 w-full max-w-md">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">SignUp</h1>
             </div>
 
-            <!-- Address -->
-            <div class="mb-4">
-                <label for="id_address" class="block text-gray-700 text-sm font-medium mb-2">Address</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i data-feather="map-pin" class="h-5 w-5 text-gray-400"></i>
-                    </div>
-                    <textarea id="id_address" name="address" rows="3" class="pl-10 w-full py-2 px-3 border {% if form.address.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Your Complete Address">{{ form.address.value|default:'' }}</textarea>
-                </div>
-                {% if form.address.errors %}
-                <p class="mt-1 text-red-500 text-sm">{{ form.address.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Location Fields -->
-            <div class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                    <label class="block text-gray-700 text-sm font-medium">Shop Location</label>
-                    <button type="button" id="getLocationBtn" class="text-sm text-blue-600 hover:text-blue-800 focus:outline-none flex items-center">
-                        <i data-feather="navigation" class="h-4 w-4 mr-1"></i>
-                        Get Current Co-ordinates
-                    </button>
-                </div>
-                <div class="location-status mb-2 hidden" id="locationStatus">
-                    <p class="text-sm text-gray-600 italic" id="locationStatusText">Fetching your location...</p>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Latitude -->
-                    <div>
-                        <label for="id_latitude" class="block text-gray-700 text-sm font-medium mb-2">Latitude</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-feather="map" class="h-5 w-5 text-gray-400"></i>
-                            </div>
-                            <input type="text" id="id_latitude" name="latitude" class="pl-10 w-full py-2 px-3 border {% if form.latitude.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g. 28.613939" value="{{ form.latitude.value|default:'' }}">
+            <!-- alert for success and errors -->
+            {% if messages %}
+            <div class="fixed top-24 right-5 z-50 space-y-2">
+                {% for message in messages %}
+                    <div id="alert-border-3" class="flex items-center gap-4 p-4 mb-4 text-secondary-color border-t-4 border-green-500 rounded-t-lg
+                        {% if message.tags == 'error' %} bg-red-200 {% elif message.tags == 'success' %} bg-green-200 {% endif %}" 
+                        bg-green-50" role="alert"
+                    >
+                        <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <div class="toast-message rounded">
+                            {{ message }}
                         </div>
-                        {% if form.latitude.errors %}
-                        <p class="mt-1 text-red-500 text-sm">{{ form.latitude.errors.0 }}</p>
-                        {% endif %}
+                        <button type="button" class="ms-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2  p-1.5 bg-black text-white hover:bg-secondary-hover-color inline-flex items-center justify-center h-8 w-8"  data-dismiss-target="#alert-border-3" aria-label="Close">
+                        <span class="sr-only">Dismiss</span>
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        </button>
                     </div>
-                    
-                    <!-- Longitude -->
-                    <div>
-                        <label for="id_longitude" class="block text-gray-700 text-sm font-medium mb-2">Longitude</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-feather="map" class="h-5 w-5 text-gray-400"></i>
-                            </div>
-                            <input type="text" id="id_longitude" name="longitude" class="pl-10 w-full py-2 px-3 border {% if form.longitude.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g. 77.209021" value="{{ form.longitude.value|default:'' }}">
-                        </div>
-                        {% if form.longitude.errors %}
-                        <p class="mt-1 text-red-500 text-sm">{{ form.longitude.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-                <p class="mt-2 text-xs text-gray-500">Your shop's location is required. You can either use your current location or enter coordinates manually.</p>
+                {% endfor %}
             </div>
-            
-            <!-- Submit Button -->
-            <div>
-                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#233038] hover:bg-[#131b20] focus:outline-none">
-                    Create Account
+            {% endif %}
+
+            <!-- Success Message -->
+            <div id="successMessage" class="hidden bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-6">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <span>Registration successful! Welcome to our salon network.</span>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="salonSignupForm" class="space-y-6" action="{% url 'dashboard_signup' %}" method="post">
+                {% csrf_token %}
+
+                <!-- Name Field -->
+                <div class="space-y-2">
+                    <label for="name" class="block text-sm font-medium text-gray-700">Owner Name</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your name"
+                        required
+                    >
+                    <span id="nameError" class="text-red-500 text-sm hidden">
+                        <span class="error-text"></span>
+                    </span>
+                </div>
+
+                <!-- Email Field -->
+                <div class="space-y-2">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your email"
+                        required
+                    >
+                    <span id="emailError" class="text-red-500 text-sm hidden">
+                        <span class="error-text"></span>
+                    </span>
+                </div>
+
+                <!-- Phone Field -->
+                <div class="space-y-2">
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your phone number"
+                        maxlength="11"
+                        required
+                    >
+                    <span id="phoneError" class="text-red-500 text-sm hidden">
+                        <span class="error-text"></span>
+                    </span>
+                </div>
+
+                <!-- Shop Name Field -->
+                <div class="space-y-2">
+                    <label for="shop_name" class="block text-sm font-medium text-gray-700">Salon Name</label>
+                    <input 
+                        type="text" 
+                        id="shop_name" 
+                        name="shop_name"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your salon name"
+                        required
+                    >
+                    <span id="shopNameError" class="text-red-500 text-sm hidden">
+                        <span class="error-text"></span>
+                    </span>
+                </div>
+
+                <!-- Address Field -->
+                <div class="space-y-2">
+                    <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                    <textarea 
+                        id="address" 
+                        name="address"
+                        rows="3"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                        placeholder="Enter your salon address"
+                        required
+                    ></textarea>
+                    <span id="addressError" class="text-red-500 text-sm hidden">
+                        <span class="error-text"></span>
+                    </span>
+                </div>
+
+                <!-- Password Field -->
+                <div class="space-y-2">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            class="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            placeholder="Enter your password"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            id="togglePassword"
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                        >
+                            <i class="fas fa-eye" id="passwordIcon"></i>
+                        </button>
+                    </div>
+                    <span id="passwordError" class="text-red-500 text-sm hidden">
+                        <span class="error-text"></span>
+                    </span>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="space-y-2">
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword"
+                            class="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            placeholder="Confirm your password"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            id="toggleConfirmPassword"
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                        >
+                            <i class="fas fa-eye" id="confirmPasswordIcon"></i>
+                        </button>
+                    </div>
+                    <span id="confirmPasswordError" class="text-red-500 text-sm hidden">
+                        <span class="error-text"></span>
+                    </span>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="w-full bg-slate-700 text-white font-medium py-3 px-6 rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200">
+                    <span id="submitText">Create an account</span>
+                    <span id="loadingText" class="hidden">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>Creating Account...
+                    </span>
                 </button>
-            </div>
-            
-            <!-- Sign In Link -->
-            <div class="mt-4 text-center">
-                <p class="text-sm text-gray-600">
+            </form>
+
+            <!-- Login Link -->
+            <div class="text-center mt-6">
+                <p class="text-gray-600 text-sm">
                     Already have an account? 
-                    <a href={% url 'dashboard_login' %} class="font-medium text-black hover:text-gray-800">
-                        Login
+                    <a href="{% url "dashboard_login" %}" class="text-gray-600 hover:text-gray-700 font-semibold transition-colors duration-200">
+                        Login here
                     </a>
                 </p>
             </div>
-        </form>
-    </div>
-    
-    <script>
-        // Initialize Feather icons
-        document.addEventListener('DOMContentLoaded', function() {
-            feather.replace();
-            
-            // Password toggle functionality for first password field
-            const togglePassword1 = document.getElementById('togglePassword1');
-            const password1 = document.getElementById('id_password1');
-            const showIcon1 = document.getElementById('showPasswordIcon1');
-            const hideIcon1 = document.getElementById('hidePasswordIcon1');
+        </div>
 
-            togglePassword1.addEventListener('click', function() {
-                if (password1.type === 'password') {
-                    password1.type = 'text';
-                    showIcon1.classList.add('hidden');
-                    hideIcon1.classList.remove('hidden');
-                } else {
-                    password1.type = 'password';
-                    showIcon1.classList.remove('hidden');
-                    hideIcon1.classList.add('hidden');
+        <script>
+            class SalonSignupValidator {
+                constructor() {
+                    this.form = document.getElementById('salonSignupForm');
+                    this.initializeEventListeners();
+                    this.setupPasswordToggles();
                 }
-            });
-            
-            // Password toggle functionality for confirm password field
-            const togglePassword2 = document.getElementById('togglePassword2');
-            const password2 = document.getElementById('id_password2');
-            const showIcon2 = document.getElementById('showPasswordIcon2');
-            const hideIcon2 = document.getElementById('hidePasswordIcon2');
-            
-            togglePassword2.addEventListener('click', function() {
-                // Toggle password visibility
-                if (password2.type === 'password') {
-                    password2.type = 'text';
-                    showIcon2.classList.add('hidden');
-                    hideIcon2.classList.remove('hidden');
-                } else {
-                    password2.type = 'password';
-                    showIcon2.classList.remove('hidden');
-                    hideIcon2.classList.add('hidden');
+
+                initializeEventListeners() {
+                    // Form submission
+                    this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+
+                    // Real-time validation
+                    const fields = ['email', 'name', 'phone', 'shop_name', 'address', 'password', 'confirmPassword'];
+                    fields.forEach(field => {
+                        const input = document.getElementById(field);
+                        input.addEventListener('blur', () => this.validateField(field));
+                        input.addEventListener('input', () => this.clearError(field));
+                    });
+
+                    // Restrict phone input to digits only
+                    document.getElementById('phone').addEventListener('input', (e) => {
+                        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+                    });
                 }
-            });
-            
-            // Phone validation - only allow digits
-            const phone = document.getElementById('id_phone');
-            phone.addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^\d]/g, '');
-                
-                // Validate phone - must be exactly 11 digits
-                if (this.value.length > 0 && this.value.length !== 11) {
-                    this.classList.add('border-red-500');
-                    this.classList.remove('border-gray-300');
-                } else {
-                    this.classList.remove('border-red-500');
-                    this.classList.add('border-gray-300');
+
+                setupPasswordToggles() {
+                    document.getElementById('togglePassword').addEventListener('click', () => {
+                        this.togglePasswordVisibility('password', 'passwordIcon');
+                    });
+
+                    document.getElementById('toggleConfirmPassword').addEventListener('click', () => {
+                        this.togglePasswordVisibility('confirmPassword', 'confirmPasswordIcon');
+                    });
                 }
-            });
-            
-            // Location functionality
-            const getLocationBtn = document.getElementById('getLocationBtn');
-            const latitudeInput = document.getElementById('id_latitude');
-            const longitudeInput = document.getElementById('id_longitude');
-            const locationStatus = document.getElementById('locationStatus');
-            const locationStatusText = document.getElementById('locationStatusText');
-            const signupForm = document.getElementById('signupForm');
-            
-            // Try to get location on page load
-            requestLocationPermission();
-            
-            // Geolocation API implementation
-            getLocationBtn.addEventListener('click', function() {
-                requestLocationPermission();
-            });
-            
-            function requestLocationPermission() {
-                if (navigator.geolocation) {
-                    locationStatus.classList.remove('hidden');
-                    locationStatusText.textContent = "Fetching your location...";
-                    locationStatusText.classList.remove('text-red-500');
-                    locationStatusText.classList.add('text-gray-600');
-                    
-                    navigator.geolocation.getCurrentPosition(
-                        // Success callback
-                        function(position) {
-                            latitudeInput.value = position.coords.latitude.toFixed(6);
-                            longitudeInput.value = position.coords.longitude.toFixed(6);
-                            
-                            locationStatusText.textContent = "Location fetched successfully!";
-                            locationStatusText.classList.remove('text-gray-600');
-                            locationStatusText.classList.add('text-green-600');
-                            
-                            // Hide status after 3 seconds
-                            setTimeout(function() {
-                                locationStatus.classList.add('hidden');
-                            }, 3000);
-                        },
-                        // Error callback
-                        function(error) {
-                            let errorMessage = "Unable to retrieve your location.";
-                            
-                            switch(error.code) {
-                                case error.PERMISSION_DENIED:
-                                    errorMessage = "Location access denied. Please enter coordinates manually.";
-                                    break;
-                                case error.POSITION_UNAVAILABLE:
-                                    errorMessage = "Location information unavailable. Please enter coordinates manually.";
-                                    break;
-                                case error.TIMEOUT:
-                                    errorMessage = "Location request timed out. Please enter coordinates manually.";
-                                    break;
+
+                togglePasswordVisibility(fieldId, iconId) {
+                    const field = document.getElementById(fieldId);
+                    const icon = document.getElementById(iconId);
+
+                    if (field.type === 'password') {
+                        field.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        field.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                }
+
+                validateField(fieldName) {
+                    const field = document.getElementById(fieldName);
+                    const value = field.value.trim();
+                    let isValid = true;
+                    let errorMessage = '';
+
+                    switch (fieldName) {
+                        case 'email':
+                            if (!value) {
+                                errorMessage = 'Email address is required';
+                                isValid = false;
+                            } else if (!this.isValidEmail(value)) {
+                                errorMessage = 'Please enter a valid email address';
+                                isValid = false;
                             }
-                            
-                            locationStatusText.textContent = errorMessage;
-                            locationStatusText.classList.remove('text-gray-600');
-                            locationStatusText.classList.add('text-red-500');
+                            break;
+
+                        case 'name':
+                            if (!value) {
+                                errorMessage = 'Full name is required';
+                                isValid = false;
+                            } else if (value.length < 2) {
+                                errorMessage = 'Name must be at least 2 characters long';
+                                isValid = false;
+                            }
+                            break;
+
+                        case 'phone':
+                            if (!value) {
+                                errorMessage = 'Phone number is required';
+                                isValid = false;
+                            } else if (value.length !== 11) {
+                                errorMessage = 'Phone number must be exactly 11 digits';
+                                isValid = false;
+                            } else if (!/^\d{11}$/.test(value)) {
+                                errorMessage = 'Phone number must contain only digits';
+                                isValid = false;
+                            }
+                            break;
+
+                        case 'shop_name':
+                            if (!value) {
+                                errorMessage = 'Salon name is required';
+                                isValid = false;
+                            } else if (value.length < 2) {
+                                errorMessage = 'Salon name must be at least 2 characters long';
+                                isValid = false;
+                            }
+                            break;
+
+                        case 'address':
+                            if (!value) {
+                                errorMessage = 'Salon address is required';
+                                isValid = false;
+                            } else if (value.length < 10) {
+                                errorMessage = 'Please provide a complete address';
+                                isValid = false;
+                            }
+                            break;
+
+                        case 'password':
+                            if (!value) {
+                                errorMessage = 'Password is required';
+                                isValid = false;
+                            } else if (value.length < 8) {
+                                errorMessage = 'Password must be at least 8 characters long';
+                                isValid = false;
+                            } else if (!this.isStrongPassword(value)) {
+                                errorMessage = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+                                isValid = false;
+                            }
+                            break;
+
+                        case 'confirmPassword':
+                            const password = document.getElementById('password').value;
+                            if (!value) {
+                                errorMessage = 'Please confirm your password';
+                                isValid = false;
+                            } else if (value !== password) {
+                                errorMessage = 'Passwords do not match';
+                                isValid = false;
+                            }
+                            break;
+                    }
+
+                    if (!isValid) {
+                        this.showError(fieldName, errorMessage);
+                    } else {
+                        this.clearError(fieldName);
+                    }
+
+                    return isValid;
+                }
+
+                isValidEmail(email) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return emailRegex.test(email);
+                }
+
+                isStrongPassword(password) {
+                    const hasUppercase = /[A-Z]/.test(password);
+                    const hasLowercase = /[a-z]/.test(password);
+                    const hasNumber = /\d/.test(password);
+                    return hasUppercase && hasLowercase && hasNumber;
+                }
+
+                showError(fieldName, message) {
+                    const field = document.getElementById(fieldName);
+                    const errorElement = document.getElementById(fieldName + 'Error');
+
+                    field.classList.add('border-red-400', 'error-shake');
+                    field.classList.remove('border-gray-200');
+
+                    errorElement.querySelector('.error-text').textContent = message;
+                    errorElement.classList.remove('hidden');
+
+                    setTimeout(() => {
+                        field.classList.remove('error-shake');
+                    }, 500);
+                }
+
+                clearError(fieldName) {
+                    const field = document.getElementById(fieldName);
+                    const errorElement = document.getElementById(fieldName + 'Error');
+
+                    field.classList.remove('border-red-400');
+                    field.classList.add('border-gray-200');
+                    errorElement.classList.add('hidden');
+                }
+
+                validateAllFields() {
+                    const fields = ['email', 'name', 'phone', 'shop_name', 'address', 'password', 'confirmPassword'];
+                    let allValid = true;
+
+                    fields.forEach(field => {
+                        if (!this.validateField(field)) {
+                            allValid = false;
                         }
-                    );
-                } else {
-                    locationStatus.classList.remove('hidden');
-                    locationStatusText.textContent = "Geolocation is not supported by your browser. Please enter coordinates manually.";
-                    locationStatusText.classList.remove('text-gray-600');
-                    locationStatusText.classList.add('text-red-500');
+                    });
+
+                    return allValid;
+                }
+
+                handleSubmit(e) {
+                    if (!this.validateAllFields()) {
+                        e.preventDefault(); // Stop form submission only if validation fails
+                    }
                 }
             }
-            
-            // Form validation for latitude and longitude
-            function validateCoordinates() {
-                const latitude = latitudeInput.value.trim();
-                const longitude = longitudeInput.value.trim();
-                
-                // Regex for decimal coordinates
-                const coordRegex = /^-?\d+(\.\d+)?$/;
-                
-                if (!latitude || !longitude) {
-                    alert("Shop location is required. Please provide both latitude and longitude.");
-                    return false;
-                }
-                
-                if (!coordRegex.test(latitude) || !coordRegex.test(longitude)) {
-                    alert("Please enter valid coordinates. Latitude and longitude must be decimal numbers.");
-                    return false;
-                }
-                
-                const latNum = parseFloat(latitude);
-                const lngNum = parseFloat(longitude);
-                
-                // Validate latitude range (-90 to 90)
-                if (latNum < -90 || latNum > 90) {
-                    alert("Latitude must be between -90 and 90 degrees.");
-                    return false;
-                }
-                
-                // Validate longitude range (-180 to 180)
-                if (lngNum < -180 || lngNum > 180) {
-                    alert("Longitude must be between -180 and 180 degrees.");
-                    return false;
-                }
-                
-                return true;
-            }
-            
-            // Form submission validation
-            signupForm.addEventListener('submit', function(e) {
-                if (!validateCoordinates()) {
-                    e.preventDefault();
-                }
+
+            // Initialize validator on page load
+            document.addEventListener('DOMContentLoaded', () => {
+                new SalonSignupValidator();
             });
-            
-            // Coordinate input validation
-            latitudeInput.addEventListener('input', function() {
-                this.value = this.value.replace(/[^\d.-]/g, '');
-            });
-            
-            longitudeInput.addEventListener('input', function() {
-                this.value = this.value.replace(/[^\d.-]/g, '');
-            });
-        });
-    </script>
-</body>
-</html>
+        </script>
+
+    </section>
+{% endblock %}

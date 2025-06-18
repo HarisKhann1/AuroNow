@@ -24,7 +24,7 @@ from django.db.models import Count
 from django.db.models.functions import ExtractMonth
 from django.contrib.auth import login
 from shops.backends import ShopOwnerBackend
-
+from requests import get
 
 # -------------- authentication start --------------------------------------
 # Importing environment variables
@@ -33,26 +33,55 @@ environ.Env.read_env()
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 
 def dashboard_signup_view(request):
+
     if request.method == 'POST':
-        form = ShopOwnerSignUpForm(request.POST)
-        if form.is_valid():
-            shop_owner = form.save(commit=False)
-            password = form.cleaned_data.get('password1')
-            shop_owner.set_password(password)
-            shop_owner.save()
+        city = None
+        latitude = None
+        longitude = None
+        # Get the user's location using an external API
+        try:
+            loc = get('http://ip-api.com/json/')
+            city = loc.json().get('city', 'N/A')
+            latitude = loc.json().get('lat', 'N/A')
+            longitude = loc.json().get('lon', 'N/A')
+        except Exception as e:
+            messages.error(request, 'Could not determine location. Please try again later.')
+            return redirect('dashboard_signup')
+        # form fileds
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        shop_name = request.POST.get('shop_name')
+        address = request.POST.get('address')
+        password = request.POST.get('password')
 
-            # Authenticate and login
-            user_login = authenticate(request, email=shop_owner.email, password=password)
+        print(f"Email: {email}\nPassword: {password}")
+        # validation if the email already exists
+        if ShopOwner.objects.filter(email=email).exists():
+            messages.error(request, 'Email already exists!')
+            return redirect('dashboard_signup')
+        
+        # save the shop owner data in db
+        shop_owner = ShopOwner(
+            email=email,
+            name=name,
+            phone=phone,
+            shop_name=shop_name,
+            address=address,
+            latitude=latitude,
+            longitude=longitude,
+            city=city.lower(),
+        )
+        shop_owner.set_password(password)
+        shop_owner.save()
 
-            if user_login:
-                login(request, user_login)
-                messages.success(request, 'Account created successfully!')
-                return redirect('dashboard_home')
-
-    else:
-        form = ShopOwnerSignUpForm()
+        backend = ShopOwnerBackend()
+        user = backend.authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user, backend='shops.backends.ShopOwnerBackend')
+            return redirect('dashboard_home')  # Redirect after successful login
    
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'signup.html')
 
 def dashboard_login_view(request):
     if request.method == 'POST':

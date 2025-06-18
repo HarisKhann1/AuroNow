@@ -1,17 +1,15 @@
 <!-- templates/login.html -->
+{% extends 'base_auroUser.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuroNow - Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="">
-    
-    <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-        <div class="bg-[#ebf1f4] shadow-lg rounded-3xl overflow-hidden">
+
+{% block title %}
+  AuroNow - Login
+{% endblock title %}
+
+{% block main %}
+<section class="bg-[#aab5b7]">
+    <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-28">
+        <div class="bg-number-bg shadow-lg rounded-3xl overflow-hidden">
             <div class="md:flex">
                 <!-- Left Side - Login Form -->
                 <div class="md:w-1/2 p-8 md:p-12">
@@ -36,17 +34,17 @@
                     <form method="POST" action="">
                         {% csrf_token %}
                         <div class="mb-6">
-                            <label for="email" class="block text-gray-700 mb-2">Email:</label>
+                            <label for="email" class="font-semibold block text-gray-700 mb-2">Email</label>
                             <input type="email" id="email" name="email" required 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#233038]"
+                                   class="w-full px-3 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#233038]"
                                    placeholder="Enter your email">
                         </div>
                         
                         <div class="mb-6">
-                            <label for="password" class="block text-gray-700 mb-2">Enter your password:</label>
+                            <label for="password" class="font-semibold block text-gray-700 mb-2">Password</label>
                             <div class="relative">
                                 <input type="password" id="password" name="password" required 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#233038]"
+                                       class="w-full px-3 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#233038]"
                                        placeholder="Enter your password">
                                 <button type="button" onclick="togglePasswordVisibility()" 
                                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500">
@@ -65,7 +63,7 @@
                             <a href="{% url "forgot_password" %}" class="text-sm text-[#233038] font-medium hover:text-[#0b0f12]">Forgot password?</a>
                         </div>
                         
-                        <button type="submit" class="w-full bg-[#233038] text-white py-2 px-4 rounded hover:bg-[#0b0f12] focus:outline-none">
+                        <button type="submit" class="w-full bg-[#233038] text-white py-3 px-4 rounded hover:bg-[#0b0f12] focus:outline-none">
                             Login
                         </button>
                     </form>
@@ -81,8 +79,6 @@
             </div>
         </div>
     </div>
-
-<script src={% static "js/dashboard/dashboardLogin.js" %}></script>
-
-</body>
-</html>
+    <script src={% static "js/dashboard/dashboardLogin.js" %}></script>
+</section>
+{% endblock %}
