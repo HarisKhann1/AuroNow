@@ -132,3 +132,30 @@
             </div>
          </aside>
         <!-- sidebar end -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sidebarItems = document.querySelectorAll(".sidebar-item");
+
+    // Apply active class based on localStorage
+    const activePage = localStorage.getItem("activeSidebarItem");
+    if (activePage) {
+      sidebarItems.forEach((item) => {
+        if (item.dataset.page === activePage) {
+          item.classList.add("bg-[#EEEEEE]");
+        } else {
+          item.classList.remove("bg-[#EEEEEE]");
+        }
+      });
+    }
+
+    // Listen for click events
+    sidebarItems.forEach((item) => {
+      item.addEventListener("click", function () {
+        // Save the clicked item's data-page
+        localStorage.setItem("activeSidebarItem", this.dataset.page);
+      });
+    });
+  });
+</script>
+

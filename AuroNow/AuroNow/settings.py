@@ -172,8 +172,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
-
-
 # URL to use when referring to static files located in STATICFILES_DIRS
 STATIC_URL = '/static/'
 # If you want to specify additional directories to look for static files
