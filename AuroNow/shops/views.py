@@ -55,7 +55,6 @@ def dashboard_signup_view(request):
         address = request.POST.get('address')
         password = request.POST.get('password')
 
-        print(f"Email: {email}\nPassword: {password}")
         # validation if the email already exists
         if ShopOwner.objects.filter(email=email).exists():
             messages.error(request, 'Email already exists!')

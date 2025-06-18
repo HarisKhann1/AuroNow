@@ -76,39 +76,42 @@
                 <!-- Latitdue and Longitude -->
                 <div class='border border-primary rounded-lg p-4 mb-4'>
 
-                    <div class="flex justify-between items-center mb-2">
-                        <button type="button" id="getLocationBtn" class="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none flex items-center">
+                    <div class="mb-2">
+                        <button type="button" id="getLocationBtn" class="border-b pb-1 border-secondary-color font-medium text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 2c4.418 0 8 3.582 8 8 0 5.25-8 12-8 12s-8-6.75-8-12c0-4.418 3.582-8 8-8z" />
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
-                            Get Current Co-ordinates
+                            Get Current Co-ordinates & City
                         </button>
                     </div>
 
-                    <div class='flex flex-row gap-4'>
+                    <div class='flex flex-col md:flex-row gap-4'>
                         <div class='flex flex-col gap-1 w-full'>
                             <label for='longitude' class='text-gray-700 md:font-medium'>Longitude</label>
                             <input required type='text' value='{{ shop_owner_longitude }}' id='longitude' name='longitude' 
                             class='w-full text-gray-700 text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                            disabled
                             >
                         </div>
                         <div class='flex flex-col gap-1 w-full'>
                             <label for='latitdue' class='text-gray-700 md:font-medium'>Latitude</label>
                             <input type:'text' value='{{ shop_owner_latitude }}' id='latitdue' name='latitdue'
                             class='w-full text-gray-700 text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                            disabled
+                            >
+                        </div>
+                        <div class='flex flex-col gap-1 w-full'>
+                            <label for='city' class='text-gray-700 md:font-medium'>City</label>
+                            <input required type='text' value='{{ city }}' id='city' name='city' placeholder='Enter Your City' 
+                            class='w-full text-gray-700 text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+                            disabled
                             >
                         </div>
                     </div>
                 </div>
                 <!-- Address -->
                 <div class='flex flex-col gap-4 -mt-4'>
-                    <div class='flex flex-col gap-1 w-full'>
-                        <label for='city' class='text-gray-700 md:font-medium'>City</label>
-                        <input required type='text' value='{{ city }}' id='city' name='city' placeholder='Enter Your City' 
-                        class='w-full text-gray-700 text-sm sm:text-base p-2 rounded-lg border border-gray-300 bg-off-white-google focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-                        >
-                    </div>
                     <div class='flex flex-col gap-1 w-full'>
                         <label for='address' class='text-gray-700 md:font-medium'>Address</label>
                         <textarea name="address" id="address"
@@ -256,41 +259,19 @@
     {% comment %} edit form alert end {% endcomment %}
     </section>
     <script>
-    document.getElementById('getLocationBtn').addEventListener('click', function() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    // Get coordinates
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
     
-                    // Update input fields
-                    document.getElementById('latitdue').value = latitude.toFixed(6);
-                    document.getElementById('longitude').value = longitude.toFixed(6);
-                },
-                function(error) {
-                    // Handle errors
-                    let errorMessage;
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMessage = "User denied the request for Geolocation.";
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMessage = "Location information is unavailable.";
-                            break;
-                        case error.TIMEOUT:
-                            errorMessage = "The request to get user location timed out.";
-                            break;
-                        default:
-                            errorMessage = "An unknown error occurred.";
-                            break;
-                    }
-                    console.log(errorMessage);
-                }
-            );
-        } else {
-            console.log("Geolocation is not supported by this browser.");
-        }
+    document.getElementById('getLocationBtn').addEventListener('click', function() {
+        // Fetch public IP address
+        fetch("http://ip-api.com/json/")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('longitude').value = data.lon; // Set longitude
+                document.getElementById('latitdue').value = data.lat; // Set latitude
+                document.getElementById('city').value = data.city; // Set city
+            })
+            .catch(error => {
+                console.error("Error fetching IP address:", error);
+            });
     });        
 
     setTimeout(function() {
