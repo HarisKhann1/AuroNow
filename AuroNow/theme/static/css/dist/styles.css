@@ -2090,6 +2090,11 @@ select {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 
+.bg-slate-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(226 232 240 / var(--tw-bg-opacity, 1));
+}
+
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5;
 }
@@ -2322,6 +2327,10 @@ select {
 
 .pt-8 {
   padding-top: 2rem;
+}
+
+.pt-24 {
+  padding-top: 6rem;
 }
 
 .text-left {
@@ -3132,6 +3141,10 @@ input:-webkit-autofill:focus {
   .sm\:py-1 {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+  }
+
+  .sm\:pt-28 {
+    padding-top: 7rem;
   }
 
   .sm\:text-2xl {

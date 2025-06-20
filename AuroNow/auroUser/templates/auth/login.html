@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block main %}
-    <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 mt-20">
+<section class="bg-[#aab5b7]">
+    <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-28">
         <div class="bg-[#ebf1f4] shadow-lg rounded-3xl overflow-hidden">
             <div class="md:flex">
                 <!-- Left Side - Login Form -->
@@ -67,7 +68,7 @@
                     </form>
                     
                     <div class="mt-6 text-center">
-                        <p class="text-gray-600">Don't have an account? <a href="{% url "user_signup" %}" class="text-indigo-600 font-semibold  hover:underline">Signup</a></p>
+                        <p class="text-gray-600">Don't have an account? <a href="{% url "user_signup" %}" class="text-gray-600 font-semibold  hover:underline">Signup</a></p>
                     </div>
                 </div>
                 
@@ -79,5 +80,5 @@
     </div>
 
     <script src={% static "js/dashboard/dashboardLogin.js" %}></script>
-
+</section>
 {% endblock%}

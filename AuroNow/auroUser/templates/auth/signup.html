@@ -6,8 +6,8 @@
 {% endblock %}
 
 {% block main %}
-    <section>
-        <div class="flex flex-col justify-center p-4 mt-20 sm:mt-28">
+    <section class="bg-[#aab5b7]">
+        <div class="flex flex-col justify-center p-4 pt-20 sm:pt-28 py-12">
         <div class="max-w-md w-full mx-auto border border-slate-300 rounded-2xl p-8 bg-off-white-google shadow-md">
             <div class="text-center mb-10">
                 <h1 class="font-bold underline text-secondary-color text-lg sm:text-2xl">SignUp</h1> 
@@ -69,7 +69,7 @@
                     </button>
                 </div>
                 <!-- Already have an account -->
-                <p class="text-slate-800 text-sm mt-6 text-center">Already have an account? <a href="{% url "user_login" %}" class="text-indigo-600 font-semibold hover:underline ml-1">Login here</a></p>
+                <p class="text-slate-800 text-sm mt-6 text-center">Already have an account? <a href="{% url "user_login" %}" class="text-gray-600 font-semibold hover:underline ml-1">Login</a></p>
             </form>
         </div>
         </div>
