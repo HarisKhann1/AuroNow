@@ -69,7 +69,7 @@ def dashboard_signup_view(request):
             address=address,
             latitude=latitude,
             longitude=longitude,
-            city=city.lower(),
+            city=city.capitalize(),
         )
         shop_owner.set_password(password)
         shop_owner.save()

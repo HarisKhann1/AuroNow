@@ -91,15 +91,15 @@
       {% for shop in results %}
       <a
         href="{% if shop.id %}{% url 'shop_detail' shop.id %}{% else %}#{% endif %}"
-        class="bg-white shadow-lg rounded-lg w-full max-w-xs duration-300 hover:scale-105"
+        class="border border-gray-300 bg-white rounded-lg w-full max-w-xs duration-300 hover:scale-105"
       >
         <!-- Show Images Inside Each Shop Block -->
         {% if shop.images %}
          
-        <img src="{{ shop.images.0 }}" alt="shop image" class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-lg" />
+        <img src="{{ shop.images.0 }}" alt="shop image" class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-t-lg" />
         {% else %}
         <!-- default shop image -->
-        <img class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-lg" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
+        <img class="w-full h-28 md:h-40 lg:h-44 object-cover rounded-t-lg" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
          {% endif %}
 
         <div class="px-2 pb-2 md:px-4 md:pb-4 text-xs md:text-lg flex flex-col">
@@ -115,13 +115,9 @@
             </div>
           </div>
           {% comment %} Show Shop Address {% endcomment %}
-          <span class="text-gray-500">{{ shop.address }}</span>
-          {% comment %} Show Shop Categories {% endcomment %}
-          <div class="flex flex-wrap gap-1 overflow-hidden">
-            {% for category in shop.categories %}
-              <p class="rounded-full text-cyan-700 bg-gray-100 inline-block px-2 truncate" title="{{ category }}">{{ category }}</p>
-            {% endfor %}
-          </div>          
+          <span class="text-gray-500 sm:hidden text-[10px]">{{ shop.address|truncatechars:40 }}</span>
+          <span class="hidden sm:block text-gray-500 md:text-base">{{ shop.address|truncatechars:40 }}</span>
+          {% comment %} Show Shop Categories {% endcomment %}     
           
           
           <div class="flex justify-between mt-0 text-gray-600">

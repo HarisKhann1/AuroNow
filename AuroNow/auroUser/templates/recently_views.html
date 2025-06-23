@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!shop.id) return;
     const card = document.createElement("a");
     card.href = `/shop/${shop.id}`;
-    card.className = `shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
+    card.className = `border border-gray-300 mb-2 shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
       bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-md opacity-0 animate-fade-in`;
 
     const categoriesHTML = shop.categories?.length

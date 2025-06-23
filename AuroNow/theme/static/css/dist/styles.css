@@ -2440,6 +2440,10 @@ select {
   line-height: 2.5rem;
 }
 
+.text-\[9px\] {
+  font-size: 9px;
+}
+
 .font-bold {
   font-weight: 700;
 }
