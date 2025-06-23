@@ -20,46 +20,48 @@
     </button>
 
     <!-- Carousel Container -->
-    <div id="carousel" class="carousel-container flex gap-6 py-2 pr-4 pl-2 scroll-smooth" style="overflow-x: auto; scrollbar-width: none;">
-      {% for shop in shops %}
-        <a href="{% url 'shop_detail' shop.shop_id %}"
-          class="border border-gray-200 shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
-          bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 md:hover:scale-105 md:hover:shadow-md animate-fade-in"
-          >
-          <div class="relative">
-            {% if shop.shop_image %}
-              <img id="shop_image" src="{{ shop.shop_image }}" alt="{{ shop.name }}" class="w-full h-40 object-cover" loading="lazy">
-            {% else %}
-            <!-- default shop image -->
-          <img class="w-full h-40 object-cover" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
-            {% endif %}
-          </div>
-          <!-- Show Shop Name amd Rating -->
-          <div class="p-3">
-            <div class="flex justify-between items-start">
-              <span class="text-md font-semibold line-clamp-1">{{ shop.name }}</span>
-              <div class="flex items-center bg-gray-100 px-1 rounded">
-                <span class="text-xs font-bold text-gray-800">{{ shop.user_friendly_rating }}</span>
-                <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
-              </div>
+    {% if shops|length > 0 %}
+      <div id="carousel" class="carousel-container flex gap-6 py-2 pr-4 pl-2 scroll-smooth" style="overflow-x: auto; scrollbar-width: none;">
+        {% for shop in shops %}
+          <a href="{% url 'shop_detail' shop.shop_id %}"
+            class="border border-gray-200 shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
+            bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 md:hover:scale-105 md:hover:shadow-md animate-fade-in"
+            >
+            <div class="relative">
+              {% if shop.shop_image %}
+                <img id="shop_image" src="{{ shop.shop_image }}" alt="{{ shop.name }}" class="w-full h-40 object-cover" loading="lazy">
+              {% else %}
+              <!-- default shop image -->
+            <img class="w-full h-40 object-cover" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
+              {% endif %}
             </div>
+            <!-- Show Shop Name amd Rating -->
+            <div class="p-3">
+              <div class="flex justify-between items-start">
+                <span class="text-md font-semibold line-clamp-1">{{ shop.name }}</span>
+                <div class="flex items-center bg-gray-100 px-1 rounded">
+                  <span class="text-xs font-bold text-gray-800">{{ shop.user_friendly_rating }}</span>
+                  <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
+                </div>
+              </div>
 
-            <!-- Show Shop Address -->
-            <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
-            <!-- Show Shop Categories -->
-            {% for category in shop.top_3_service_categories %} 
-              <div class="mt-2 inline-block">
-              {% comment %} <p>debug: {{category.0}}</p> {% endcomment %}
-                <span class="text-xs px-2 py-1  text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
+              <!-- Show Shop Address -->
+              <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
+              <!-- Show Shop Categories -->
+              {% for category in shop.top_3_service_categories %} 
+                <div class="mt-2 inline-block">
+                {% comment %} <p>debug: {{category.0}}</p> {% endcomment %}
+                  <span class="text-xs px-2 py-1  text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
+                </div>
+              {% endfor %}
+              <div class="flex justify-between mt-2 text-xs text-gray-600">
+                <span>{{ shop.total_reviews_count }} reviews</span>
               </div>
-            {% endfor %}
-            <div class="flex justify-between mt-2 text-xs text-gray-600">
-              <span>{{ shop.total_reviews_count }} reviews</span>
             </div>
-          </div>
-        </a>
-      {% endfor %}
-    </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
 </div>
 

@@ -22,10 +22,9 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER', default=None)
 
 
 # Helper function to get random shops data
-def get_shop_data(limit=5):
+def get_shop_data():
     recommanded_shops = get_top_rated_shops_by_city('karachi', limit=8)
-    print("DEBUG: Recommended shops:", recommanded_shops)
-
+    
     return recommanded_shops
 
 # ----------------------------

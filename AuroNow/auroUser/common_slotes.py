@@ -143,34 +143,3 @@ def find_common_continuous_slots(barber_slots: Dict[int, List[Tuple[str, str]]])
     return available_slots
 
 
-# # Example usage and test
-# if __name__ == "__main__":
-#     # Test with your example data
-#     test_data = {
-#         3: [('09:00', '10:30'), ('09:30', '11:00'), ('10:00', '11:30'), ('10:30', '12:00'), 
-#             ('11:00', '12:30'), ('11:30', '13:00'), ('12:00', '13:30'), ('12:30', '14:00'), 
-#             ('13:00', '14:30'), ('13:30', '15:00'), ('14:00', '15:30'), ('14:30', '16:00'), 
-#             ('15:00', '16:30'), ('15:30', '17:00')],
-#         4: [('09:00', '10:00'), ('09:30', '10:30'), ('10:00', '11:00'), ('10:30', '11:30'), 
-#             ('11:00', '12:00'), ('11:30', '12:30'), ('12:00', '13:00'), ('12:30', '13:30'), 
-#             ('13:00', '14:00'), ('13:30', '14:30'), ('14:00', '15:00'), ('14:30', '15:30'), 
-#             ('15:00', '16:00'), ('15:30', '16:30'), ('16:00', '17:00')]
-#     }
-    
-#     result = find_common_continuous_slots(test_data)
-#     print("\nAvailable slots for combined service:")
-#     for slot in result:
-#         start_mins = time_to_minutes(slot[0])
-#         end_mins = time_to_minutes(slot[1])
-#         duration = end_mins - start_mins
-#         hours = duration // 60
-#         minutes = duration % 60
-#         print(f"{slot[0]} - {slot[1]} (Duration: {hours}h {minutes}m)")
-    
-#     print(f"\nTotal slots found: {len(result)}")
-
-
-# def time_to_minutes(time_str: str) -> int:
-#     """Helper function for testing"""
-#     hours, minutes = map(int, time_str.split(':'))
-#     return hours * 60 + minutes
