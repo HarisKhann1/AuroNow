@@ -1208,6 +1208,10 @@ select {
   margin-top: 70px;
 }
 
+.mb-12 {
+  margin-bottom: 3rem;
+}
+
 .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;
