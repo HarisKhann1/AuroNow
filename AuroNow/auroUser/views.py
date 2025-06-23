@@ -12,7 +12,7 @@ from django.conf import settings
 import h3
 from geopy.distance import geodesic
 from requests import get
-
+from auroUser.recommended_shop import get_top_rated_shops_by_city
 
  
 # Importing environment variables
@@ -23,41 +23,16 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER', default=None)
 
 # Helper function to get random shops data
 def get_shop_data(limit=5):
-    shops = ShopOwner.objects.all()[:limit]
-    shops_data = []
+    recommanded_shops = get_top_rated_shops_by_city('karachi', limit=8)
+    print("DEBUG: Recommended shops:", recommanded_shops)
 
-    for shop in shops:
-        # Fetch related shop images
-        shop_images = ShopImage.objects.filter(shop=shop)
-        image_urls = [image.shop_image.url for image in shop_images if image.shop_image]
-
-        # Fetch distinct service categories
-        categories = ServiceCategory.objects.filter(services__shop=shop).values_list('name', flat=True).distinct()
-
-        # Fetch reviews and calculate average rating
-        customer_rating_list = RatingAndReviews.objects.filter(shop=shop)
-        customer_rating_count = customer_rating_list.count()
-        avg_rating = customer_rating_list.aggregate(Avg('rating'))
-        avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
-
-        # Append to shop data list
-        shops_data.append({
-            'id': shop.id,
-            'email': shop.email,
-            'name': shop.shop_name,
-            'address': shop.address,
-            'images': image_urls,
-            'categories': categories if categories else ["General"],
-            'reviews': customer_rating_count,
-            'rating': avg_rating_of_shop,
-        })
-
-    return shops_data
+    return recommanded_shops
 
 # ----------------------------
 # View: Base Layout with Filters and Recommended Shops
 # ----------------------------
 def base_layout(request):
+   
     results = {
         'shops': get_shop_data(),
         'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),

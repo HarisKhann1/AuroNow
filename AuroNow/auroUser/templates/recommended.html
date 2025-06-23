@@ -2,7 +2,7 @@
 {% if shops %}
 <!-- main div-->
 <div class="min-w-full container mx-auto px-2 py-4">
-  <h1 class="text-left font-bold text-2xl mb-4 px-2 sm:px-6 md:px-10">New to AuroNow</h1>
+  <h1 class="text-left font-bold text-xl md:text-2xl lg:text-3xl xl:4xl mb-2 md:mb-4 px-2 pl-6 sm:px-10 md:px-10">Top Rated Salons in Karachi</h1>
 
   <div class="relative overflow-hidden px-4 sm:px-8 group">
     <!-- Previous Button -->
@@ -22,13 +22,13 @@
     <!-- Carousel Container -->
     <div id="carousel" class="carousel-container flex gap-6 py-2 pr-4 pl-2 scroll-smooth" style="overflow-x: auto; scrollbar-width: none;">
       {% for shop in shops %}
-        <a href="{% if shop.email %}{% url 'shop_detail' shop.id %}{% else %}#{% endif %}"
-          class="shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
+        <a href="{% url 'shop_detail' shop.shop_id %}"
+          class="border border-gray-200 shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
           bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 md:hover:scale-105 md:hover:shadow-md animate-fade-in"
           >
           <div class="relative">
-            {% if shop.images %}
-              <img id="shop_image" src="{{ shop.images.0 }}" alt="shop image" class="w-full h-40 object-cover">
+            {% if shop.shop_image %}
+              <img id="shop_image" src="{{ shop.shop_image }}" alt="{{ shop.name }}" class="w-full h-40 object-cover" loading="lazy">
             {% else %}
             <!-- default shop image -->
           <img class="w-full h-40 object-cover" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
@@ -39,21 +39,22 @@
             <div class="flex justify-between items-start">
               <span class="text-md font-semibold line-clamp-1">{{ shop.name }}</span>
               <div class="flex items-center bg-gray-100 px-1 rounded">
-                <span class="text-xs font-bold text-gray-800">{{ shop.rating|default:"5.0" }}</span>
+                <span class="text-xs font-bold text-gray-800">{{ shop.user_friendly_rating }}</span>
                 <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
               </div>
             </div>
+
             <!-- Show Shop Address -->
             <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
             <!-- Show Shop Categories -->
-            {% for category in shop.categories %} 
+            {% for category in shop.top_3_service_categories %} 
               <div class="mt-2 inline-block">
               {% comment %} <p>debug: {{category.0}}</p> {% endcomment %}
                 <span class="text-xs px-2 py-1  text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
               </div>
             {% endfor %}
             <div class="flex justify-between mt-2 text-xs text-gray-600">
-              <span>{{ shop.reviews|default:"0" }} reviews</span>
+              <span>{{ shop.total_reviews_count }} reviews</span>
             </div>
           </div>
         </a>

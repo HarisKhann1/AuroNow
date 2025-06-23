@@ -2342,6 +2342,10 @@ select {
   padding-top: 2rem;
 }
 
+.pl-6 {
+  padding-left: 1.5rem;
+}
+
 .text-left {
   text-align: left;
 }
@@ -2416,6 +2420,11 @@ select {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
 }
 
 .font-bold {
@@ -3158,8 +3167,26 @@ input:-webkit-autofill:focus {
     padding-bottom: 0.25rem;
   }
 
+  .sm\:px-12 {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  .sm\:px-10 {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
   .sm\:pt-28 {
     padding-top: 7rem;
+  }
+
+  .sm\:pr-6 {
+    padding-right: 1.5rem;
+  }
+
+  .sm\:pl-6 {
+    padding-left: 1.5rem;
   }
 
   .sm\:text-2xl {
@@ -3226,6 +3253,10 @@ input:-webkit-autofill:focus {
 
   .md\:mt-4 {
     margin-top: 1rem;
+  }
+
+  .md\:mb-4 {
+    margin-bottom: 1rem;
   }
 
   .md\:block {
@@ -3402,6 +3433,18 @@ input:-webkit-autofill:focus {
 
   .md\:pb-4 {
     padding-bottom: 1rem;
+  }
+
+  .md\:pl-10 {
+    padding-left: 2.5rem;
+  }
+
+  .md\:pl-14 {
+    padding-left: 3.5rem;
+  }
+
+  .md\:pl-20 {
+    padding-left: 5rem;
   }
 
   .md\:text-left {
