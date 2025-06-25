@@ -30,7 +30,7 @@
 {% endif %}
 
 <!-- Background Container -->
-<div class="relative min-h-screen">
+<div class="relative xl:h-screen 2xl:h-[calc(100vh-300px)]">
   <!-- Responsive Background Image -->
     <div class="absolute inset-0 -z-10 mt-[70px]">
       <img src="{% static 'images/hero.png' %}" 
@@ -39,19 +39,15 @@
            class="w-full h-full object-top object-cover" />
     </div>
     <!-- Content Area -->
-    <div class="relative pt-32 flex-1 overflow-y-auto">
-      <div class="container mt-28 mx-auto px-6 py-8 flex flex-col gap-24 ">
-        <!--  Main Heading -->
-        <h1 class="text-2xl font-bold text-center text-blue-400 drop-shadow-[0_0_10px_rgba(212,175,55,01)]">
-          {% comment %} Your Perfect Salon Experience is just a Click Away {% endcomment %}
-        </h1>
-      <!-- search bar blocks -->
-      <div class="px-4 md:mt-20">
-        {% include 'search_bar.html' %}
+    <div class="pt-32 xl:pt-72 2xl:pt-96">
+      <div class="container mt-28 mx-auto px-6 py-8 flex flex-col items-center justify-end gap-24 ">
+        <!-- search bar blocks -->
+        <div class="px-4">
+          {% include 'search_bar.html' %}
+        </div>
       </div>
     </div>
-  </div>
-  </div>
+</div>
   
   <div class="mt-8">
     {% include 'recently_views.html' %}
