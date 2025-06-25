@@ -32,5 +32,8 @@ urlpatterns = [
     path('profile/edit/', views.user_profile, name='edit_profile'),  # URL for editing user profile
     path('update/profile/', views.update_user_profile, name='update_user_profile'),  # URL for updating user profile
     path('user/change-password/', views.change_user_password, name='user_change_password'),  # URL for changing user password
+
+    # user review
+    path('shop/<int:shop_id>/review/', views.review, name="review")
 ]
     

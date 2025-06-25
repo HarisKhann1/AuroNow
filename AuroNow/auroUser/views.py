@@ -869,3 +869,29 @@ def change_user_password(request):
 
         messages.success(request, 'Password changed successfully!')
         return redirect('edit_profile')
+    
+
+# --------------------------- User review and rating start -------------------------------------
+
+def review(request, shop_id):
+    if request.method == 'POST':
+        user_id = request.user
+        user_rating = request.POST.get('rating')
+        review_text = request.POST.get('review')
+        
+        shop_instance = ShopOwner.objects.get(id=shop_id)
+        response = RatingAndReviews.objects.create(
+            user = user_id,
+            shop = shop_instance,
+            rating = user_rating,
+            review = review_text
+        )
+
+        print(response)
+        if (response):
+            messages.success(request, 'Thank You for your feedback!')
+      
+        return redirect('shop_detail', shop_id)
+
+
+# --------------------------- User review and rating end ---------------------------------------

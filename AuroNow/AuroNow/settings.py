@@ -100,16 +100,24 @@ WSGI_APPLICATION = 'AuroNow.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'auronow',          # Database name
+#         'USER': 'root',            # MySQL username
+#         'PASSWORD': 'admin',        # MySQL password
+#         'HOST': 'localhost',        # Change this to 'localhost' instead of '127.0.0.2'
+#         'PORT': '3306',             # Default MySQL port
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'auronow',          # Database name
-        'USER': 'root',            # MySQL username
-        'PASSWORD': 'admin',        # MySQL password
-        'HOST': 'localhost',        # Change this to 'localhost' instead of '127.0.0.2'
-        'PORT': '3306',             # Default MySQL port
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 # Manually load the .env file

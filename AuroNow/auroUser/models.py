@@ -103,6 +103,7 @@ class RatingAndReviews(models.Model):
     shop = models.ForeignKey(ShopOwner, on_delete=models.CASCADE, related_name="reviews")
     rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
     review = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
 
 # Queries from Users
 class Queries(models.Model):
