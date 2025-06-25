@@ -872,7 +872,7 @@ def change_user_password(request):
     
 
 # --------------------------- User review and rating start -------------------------------------
-
+@login_required(login_url='user_login')
 def review(request, shop_id):
     if request.method == 'POST':
         user_id = request.user
@@ -887,7 +887,6 @@ def review(request, shop_id):
             review = review_text
         )
 
-        print(response)
         if (response):
             messages.success(request, 'Thank You for your feedback!')
       
