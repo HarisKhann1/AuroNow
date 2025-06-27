@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5(azb_wl5dcp4khcbrjywyz-6!a)4i6b6qi5z)eto$+p2x%7w$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -102,23 +102,23 @@ WSGI_APPLICATION = 'AuroNow.wsgi.application'
 # }
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'auronow',          # Database name
-        'USER': 'root',            # MySQL username
-        'PASSWORD': 'admin',        # MySQL password
-        'HOST': 'localhost',        # Change this to 'localhost' instead of '127.0.0.2'
-        'PORT': '3306',             # Default MySQL port
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'auronow',          # Database name
+#         'USER': 'root',            # MySQL username
+#         'PASSWORD': 'admin',        # MySQL password
+#         'HOST': 'localhost',        # Change this to 'localhost' instead of '127.0.0.2'
+#         'PORT': '3306',             # Default MySQL port
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 
