@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["python310", "nodejs_18", "nodePackages.npm"]
+nixPkgs = ["python310", "gcc", "pkg-config", "libmysqlclient", "mysql80"]
 
 [phases.install]
 cmds = ["pip install -r requirements.txt"]
