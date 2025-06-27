@@ -1,0 +1,1 @@
+web: gunicorn AuroNow.wsgi --log-file -
