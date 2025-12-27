@@ -5,7 +5,7 @@ from auroUser.models import  RatingAndReviews, User, UserPasswordResetToken, Boo
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-from shops.models import ShopOwner, ServiceCategory, ShopImage,Service, Staff
+from shops.models import ShopOwner, ServiceCategory, ShopImage,Service, Staff, FAQ
 from django.core.mail import send_mail
 import environ
 from django.conf import settings
@@ -14,24 +14,24 @@ from geopy.distance import geodesic
 from requests import get
 from auroUser.recommended_shop import get_top_rated_shops_by_city
 
- 
+
 # Importing environment variables
-env = environ.Env()
-environ.Env.read_env()
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default=None)
+# env = environ.Env()
+# environ.Env.read_env()
+# EMAIL_HOST_USER = env('EMAIL_HOST_USER', default=None)
 
 
 # Helper function to get random shops data
 def get_shop_data():
-    recommanded_shops = get_top_rated_shops_by_city('karachi', limit=8)
-    
+    recommanded_shops = get_top_rated_shops_by_city('Karachi', limit=8)
+
     return recommanded_shops
 
 # ----------------------------
 # View: Base Layout with Filters and Recommended Shops
 # ----------------------------
 def base_layout(request):
-   
+
     results = {
         'shops': get_shop_data(),
         'categories': ServiceCategory.objects.values_list('name', flat=True).distinct(),
@@ -178,7 +178,7 @@ def search_results(request):
         'city': request.GET.get('city', '').strip(),
         'price_range': request.GET.get('price', '').strip(),
     }
- 
+
     shops = ShopOwner.objects.all()
 
     # Apply filters
@@ -278,9 +278,12 @@ def shop_detail(request, shop_id):
     avg_rating = customer_rating_list.aggregate(Avg('rating'))
     avg_rating_of_shop = round(avg_rating['rating__avg'], 1) if avg_rating['rating__avg'] is not None else 0
 
-    
+    # 10 Recently added FAQs
+    faqs = FAQ.objects.filter(shop_id=shop_id).order_by('-id')[:10]
+
     # Prepare context
     results = {
+        'faqs': faqs,
         'shop_id': shop.id,
         'shop': shop,
         'images': image_urls,
@@ -295,7 +298,7 @@ def shop_detail(request, shop_id):
         "longitude" : shop.longitude,
         "latitude" : shop.latitude,
     }
-    
+
     return render(request, 'shop_detail.html', results)
 
 
@@ -354,52 +357,90 @@ def user_signup(request):
         if user is not None:
             login(request, user)
             # Redirect to the base layout after login
-            return redirect('base_layout')  
+            return redirect('base_layout')
         else:
             messages.error(request, 'Registration successful but login failed. Please try again.')
             return render(request, 'auth/signup.html')
-        
+
     return render(request, 'auth/signup.html')
 # ------------------------------Signup View End---------------------------------------------------
 
 # ------------------------------Forget Password Start---------------------------------------------
+# def forget_password(request):
+#     if request.method == 'POST':
+#         email = request.POST.get('email')
+#         user = User.objects.get(email=email)
+#         if user:
+#             # Generate a password reset token and send it to the user's email
+#             token = UserPasswordResetToken.objects.create(user=user)
+#             # Send email logic
+#             reset_link = f"{request.scheme}://{request.get_host()}/user/reset-password/{token.token}"
+#             send_mail(
+#                 'Password Reset', # Subject of the email
+#                 f'Click the link to reset your password: {reset_link}', # Body of the email
+#                 EMAIL_HOST_USER, # Sender's email
+#                 [email], # Recipient's email
+#                 fail_silently=False, # Set to True in production
+#             )
+#             messages.success(request, 'Password reset link has been sent to your email.')
+#             return redirect('user_login')  # Redirect to login page after sending email
+#         else:
+#             messages.error(request, 'Email not found.')
+
+#     return render(request, 'auth/forget_password.html')
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth import get_user_model
+
+from .models import UserPasswordResetToken  # Replace with your actual import
+
+User = get_user_model()
+
 def forget_password(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        user = User.objects.get(email=email)
+        user = User.objects.filter(email=email).first()
+
         if user:
             # Generate a password reset token and send it to the user's email
             token = UserPasswordResetToken.objects.create(user=user)
-            # Send email logic
+
+            # Construct reset link
             reset_link = f"{request.scheme}://{request.get_host()}/user/reset-password/{token.token}"
+
+            # Send the email
             send_mail(
-                'Password Reset', # Subject of the email
-                f'Click the link to reset your password: {reset_link}', # Body of the email
-                EMAIL_HOST_USER, # Sender's email
-                [email], # Recipient's email
-                fail_silently=False, # Set to True in production
+                subject='Password Reset',
+                message=f'Click the link to reset your password: {reset_link}',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[email],
+                fail_silently=False  # Consider setting to True in production
             )
+
             messages.success(request, 'Password reset link has been sent to your email.')
-            return redirect('user_login')  # Redirect to login page after sending email
+            return redirect('user_login')
         else:
             messages.error(request, 'Email not found.')
 
     return render(request, 'auth/forget_password.html')
+
 # ------------------------------Forget Password End-----------------------------------------------
 
 # ------------------------------Reset Password Start---------------------------------------------
 def user_reset_password(request, token):
     try:
         token_obj = UserPasswordResetToken.objects.get(token=token)
-        
+
         if not token_obj.is_valid():
             messages.error(request, 'Token expired')
             return redirect('user_login')
-        
+
         if request.method == 'POST':
             password = request.POST.get('password')
             confirm_password = request.POST.get('confirm_password')
-            
+
             if password != confirm_password:
                 messages.error(request, 'Passwords do not match')
             else:
@@ -409,7 +450,7 @@ def user_reset_password(request, token):
                 token_obj.delete()
                 messages.success(request, 'Password reset successful')
                 return redirect('user_login')
-        
+
         return render(request, 'auth/reset_password.html')
     except UserPasswordResetToken.DoesNotExist:
         messages.error(request, 'Invalid token')
@@ -420,23 +461,23 @@ def user_reset_password(request, token):
 
 def service_cart_details(request=None):
     user_selected_service_details = request.session.get('user_selected_service_details', [])
-    
+
     return user_selected_service_details
     # # calculate the total price and duration of the selected services
     # total_duration = 0
     # total_price = 0.0
-    
+
     # for service in user_selected_service_details:
     #     total_price += service['price']
     #     total_duration += service['duration']
-    
+
     # # transform the total duration from minutes to hours and minutes
     # total_hours = total_duration // 60 # integer division to get hours
     # total_minutes = total_duration % 60 # modulus to get remaining minutes
 
     # return user_selected_service_details
 
-    
+
 def bookingSystem(request, shop_id=None):
     # get the shop and service dettails from the shoping cart
     user_selected_service_details = service_cart_details(request)
@@ -453,7 +494,7 @@ def bookingSystem(request, shop_id=None):
         for service in user_selected_service_details:
             total_price += service['price']
             total_duration += service['duration']
-    
+
     # transform the total duration from minutes to hours and minutes
     total_hours = total_duration // 60 # integer division to get hours
     total_minutes = total_duration % 60 # modulus to get remaining minutes
@@ -473,7 +514,7 @@ def bookingSystem(request, shop_id=None):
                     'shop': service.shop.id,
                     'image': service.service_image.url if service.service_image else None,
                 })
-    
+
     context = {
         'shop_name': shop_name,
         'user_selected_service_details': user_selected_service_details if user_selected_service_details else [],
@@ -528,12 +569,12 @@ def add_service_to_cart(request, shop_id, service_id):
 # Remove a service from the cart
 def remove_service_from_cart(request, shop_id ,service_id):
     user_selected_service_details = request.session.get('user_selected_service_details', [])
-    
+
     # Filter out the service to be removed
     user_selected_service_details = [
         service for service in user_selected_service_details if service['id'] != service_id
     ]
-    
+
     # Update the session
     request.session['user_selected_service_details'] = user_selected_service_details
     request.session.modified = True  # Ensure session is saved
@@ -556,7 +597,7 @@ def mobile_remove_servies_cart(request):
         for service in user_selected_service_details:
             total_price += service['price']
             total_duration += service['duration']
-    
+
     # transform the total duration from minutes to hours and minutes
     total_hours = total_duration // 60 # integer division to get hours
     total_minutes = total_duration % 60 # modulus to get remaining minutes
@@ -580,11 +621,11 @@ def choose_staff(request):
     # calculate the total price and duration of the selected services
     total_duration = 0
     total_price = 0.0
-    
+
     for service in service_cart_list:
         total_price += service['price']
         total_duration += service['duration']
-    
+
     # transform the total duration from minutes to hours and minutes
     total_hours = total_duration // 60 # integer division to get hours
     total_minutes = total_duration % 60 # modulus to get remaining minutes
@@ -593,7 +634,7 @@ def choose_staff(request):
     print("DEBUG: Service cart list:", service_cart_list)
     if len(service_cart_list) == 0:
         return redirect('base_layout')
-    
+
     # Get the shop ID and fetch the staff members
     shop_id = service_cart_list[0]['shop']
     shop_staff = Staff.objects.filter(shop_id=shop_id, is_active=True).order_by('name')
@@ -640,11 +681,11 @@ def select_date_and_time(request):
         try:
             data = json.loads(request.body)
             # print("DEBUG: Received JSON data:", data)
-            
+
             # user selected appointment date
             appointment_date = data[-1]['date']
             request.session['appointment_date'] = appointment_date
-            
+
             """
             staff_service_dic = {}
             count = 1
@@ -693,7 +734,7 @@ def select_date_and_time(request):
         # ----------------------------------------------------------------------------------------------
 
             return HttpResponse('{"status": "success", "message": "Data received successfully!"}', content_type='application/json')
-        
+
         except Exception as error:
             print("DEBUG: Error parsing JSON data:", error)
             return HttpResponse('{"status": "error", "message": "Invalid data format"}', content_type='application/json', status=400)
@@ -770,7 +811,7 @@ def booking_confirmed(request):
             )
             appointment.save()
             print("DEBUG: Appointment created:", appointment)
-        
+
     # Clear the session data after booking
     request.session['user_selected_service_details'] = []
     request.session['appointment_date'] = None
@@ -815,7 +856,7 @@ def customer_appointment_history(request):
 def user_profile(request):
     user = request.user
     user_details = User.objects.filter(id=user.id).first()
-    
+
     name = user_details.name if user_details else "N/A"
     email = user_details.email if user_details else "N/A"
     phone = user_details.phone if user_details else "N/A"
@@ -837,7 +878,7 @@ def user_profile(request):
 def update_user_profile(request):
     loc = get('http://ip-api.com/json/')
     city = loc.json().get('city', 'N/A')
-    
+
     user = request.user
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -848,7 +889,7 @@ def update_user_profile(request):
         user.name = name
         user.email = email
         user.phone = phone
-        user.city = city.lower()  
+        user.city = city.lower()
         user.save()
 
         messages.success(request, 'Profile updated successfully!')
@@ -869,7 +910,7 @@ def change_user_password(request):
 
         messages.success(request, 'Password changed successfully!')
         return redirect('edit_profile')
-    
+
 
 # --------------------------- User review and rating start -------------------------------------
 @login_required(login_url='user_login')
@@ -878,7 +919,7 @@ def review(request, shop_id):
         user_id = request.user
         user_rating = request.POST.get('rating')
         review_text = request.POST.get('review')
-        
+
         shop_instance = ShopOwner.objects.get(id=shop_id)
         response = RatingAndReviews.objects.create(
             user = user_id,
@@ -889,7 +930,7 @@ def review(request, shop_id):
 
         if (response):
             messages.success(request, 'Thank You for your feedback!')
-      
+
         return redirect('shop_detail', shop_id)
 
 

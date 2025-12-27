@@ -1,8 +1,0 @@
-[phases.setup]
-nixPkgs = ["python310", "python310Packages.pip", "gcc", "pkg-config", "libmysqlclient"]
-
-[phases.install]
-cmds = ["python -m pip install --upgrade pip", "python -m pip install -r requirements.txt"]
-
-[start]
-cmd = "python manage.py runserver 0.0.0.0:$PORT"

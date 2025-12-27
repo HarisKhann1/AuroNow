@@ -3,7 +3,7 @@ from datetime import date, timezone
 import os
 from django.http import HttpResponse
 from django.template import TemplateDoesNotExist
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import login
@@ -28,9 +28,9 @@ from requests import get
 
 # -------------- authentication start --------------------------------------
 # Importing environment variables
-env = environ.Env()
-environ.Env.read_env()
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+# env = environ.Env()
+# environ.Env.read_env()
+# EMAIL_HOST_USER='smiuian007@gmail.com'
 
 def dashboard_signup_view(request):
 
@@ -59,7 +59,7 @@ def dashboard_signup_view(request):
         if ShopOwner.objects.filter(email=email).exists():
             messages.error(request, 'Email already exists!')
             return redirect('dashboard_signup')
-        
+
         # save the shop owner data in db
         shop_owner = ShopOwner(
             email=email,
@@ -79,7 +79,7 @@ def dashboard_signup_view(request):
         if user is not None:
             login(request, user, backend='shops.backends.ShopOwnerBackend')
             return redirect('dashboard_home')  # Redirect after successful login
-   
+
     return render(request, 'signup.html')
 
 def dashboard_login_view(request):
@@ -98,42 +98,77 @@ def dashboard_login_view(request):
             return redirect('dashboard_login')  # Redirect back to login page
     return render(request, 'login.html')
 
-def forgot_password(request):
+# def forgot_password(request):
 
+#     if request.method == 'POST':
+#         email = request.POST.get('email')
+
+#         try:
+#             user = ShopOwner.objects.get(email=email)
+#             token = PasswordResetToken.objects.create(user=user)
+
+#             reset_link = f"{request.scheme}://{request.get_host()}/dashboard/reset-password/{token.token}"
+#             send_mail(
+#                 'Password Reset',
+#                 f'Click the link to reset your password: {reset_link}',
+#                 EMAIL_HOST_USER,
+#                 [email],
+#                 fail_silently=False,
+#             )
+#             messages.success(request, 'Password reset link sent to your email')
+#             return redirect('dashboard_login')
+#         except ShopOwner.DoesNotExist:
+#             messages.error(request, 'Email not found')
+
+#     return render(request, 'forgot_password.html')
+
+def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        
+
+        if not email:
+            messages.error(request, 'Please enter your email address.')
+            return redirect('forgot_password')
+
         try:
             user = ShopOwner.objects.get(email=email)
-            token = PasswordResetToken.objects.create(user=user)
-            
-            reset_link = f"{request.scheme}://{request.get_host()}/dashboard/reset-password/{token.token}"
+        except ShopOwner.DoesNotExist:
+            messages.error(request, 'No user with that email was found.')
+            return redirect('forgot_password')
+
+        # Create password reset token
+        token = PasswordResetToken.objects.create(user=user)
+
+        # Build reset link
+        reset_link = f"{request.scheme}://{request.get_host()}/dashboard/reset-password/{token.token}"
+
+        try:
             send_mail(
                 'Password Reset',
-                f'Click the link to reset your password: {reset_link}',
-                EMAIL_HOST_USER,
+                f'Hello {user.name},\n\nClick the link below to reset your password:\n\n{reset_link}\n\nIf you did not request this, please ignore it.',
+                settings.EMAIL_HOST_USER,  # Use from settings (from .env)
                 [email],
                 fail_silently=False,
             )
-            messages.success(request, 'Password reset link sent to your email')
+            messages.success(request, 'Password reset link sent to your email.')
             return redirect('dashboard_login')
-        except ShopOwner.DoesNotExist:
-            messages.error(request, 'Email not found')
-    
-    return render(request, 'forgot_password.html')
+        except Exception as e:
+            messages.error(request, f"Email could not be sent: {e}")
+            return redirect('forgot_password')
 
+    return render(request, 'forgot_password.html')
 def reset_password(request, token):
     try:
         token_obj = PasswordResetToken.objects.get(token=token)
-        
+
         if not token_obj.is_valid():
             messages.error(request, 'Token expired')
             return redirect('dashboard_login')
-        
+
         if request.method == 'POST':
             password = request.POST.get('password')
             confirm_password = request.POST.get('confirm_password')
-            
+
             if password != confirm_password:
                 messages.error(request, 'Passwords do not match')
             else:
@@ -143,7 +178,7 @@ def reset_password(request, token):
                 token_obj.delete()
                 messages.success(request, 'Password reset successful')
                 return redirect('dashboard_login')
-        
+
         return render(request, 'resetPass.html')
     except PasswordResetToken.DoesNotExist:
         messages.error(request, 'Invalid token')
@@ -218,7 +253,7 @@ def get_yearly_appointments_status(user):
 
     appointment_labels = appointments_per_month.keys()
     appointment_data = appointments_per_month.values()
-    
+
     # previous year
     previous_year_appointments_by_month = (
     BookAppointment.objects
@@ -242,14 +277,14 @@ def get_yearly_appointments_status(user):
     previous_year_appointment_data = previous_year_appointments_per_month.values()
 
     return appointment_labels, appointment_data, previous_year_appointment_labels, previous_year_appointment_data
-    
+
 @login_required(login_url='dashboard_login')
 def dashboard_home(request):
     try:
         user = request.user
         appoitment_labels, appoitment_data, previous_year_appointment_labels, previous_year_appointment_data = get_yearly_appointments_status(user) # Get yearly appointments status
         labels, data, monthly_revenue = get_monthly_revenue(user) # Get monthly revenue data
-        
+
         todays_appointments = BookAppointment.objects.filter(shop=user, appointment_date=datetime.now().date()).count()
         total_services = Service.objects.filter(shop=user).count()
         customer_rating_count = RatingAndReviews.objects.filter(shop=user).count()
@@ -263,7 +298,7 @@ def dashboard_home(request):
             avg_rating_of_shop = total_rating_for_shop / customer_rating_count
         else:
             avg_rating_of_shop = 0
-        
+
         context = {
             'todays_appointments': todays_appointments,
             'monthly_revenue': monthly_revenue,
@@ -280,7 +315,7 @@ def dashboard_home(request):
         return render(request, 'dashboard/home.html', context)
     except TemplateDoesNotExist:
         return HttpResponse("Page not found", status=404)
-    
+
 # -------------- add service page start --------------------------------------
 # services page view
 def dashboard_service_view(request):
@@ -288,7 +323,7 @@ def dashboard_service_view(request):
 
     # get categories for pagination
     shop_timing = ShopTiming.objects.filter(shop=user).order_by('id').reverse()
-    
+
     # get services for pagination
     services = Service.objects.filter(shop=user).order_by('id').reverse()
     service_pagination = Paginator(services, 5)  # Show 5 services per page
@@ -299,13 +334,13 @@ def dashboard_service_view(request):
             shop_time_search_term = request.GET.get('shopTimeSearch')
             if shop_time_search_term:
                 shop_timing = ShopTiming.objects.filter(shop=user, day__icontains=shop_time_search_term).order_by('id').reverse()
-            
+
             # search and pagination for services
             service_search_term = request.GET.get('serviceSearch')
             if service_search_term:
                 services = Service.objects.filter(shop=user, name__icontains=service_search_term).order_by('id').reverse()
                 service_pagination = Paginator(services, 5)
-            
+
             service_page_number = request.GET.get('service-page', 1)  # Default to page 1 if not provided
             service_page_obj = service_pagination.get_page(service_page_number)
             service_total_page = service_page_obj.paginator.num_pages
@@ -360,7 +395,7 @@ def edit_service_view(request, id):
 
         # handling new and existing image
         image_instance = Service.objects.get(shop=user, id=int(id))
-        
+
         # Check if staff picture is provided, if not, keep the old one
         if not service_image:
             service_image = image_instance.service_image
@@ -369,13 +404,13 @@ def edit_service_view(request, id):
             old_picture_path = image_instance.service_image.path  # Full path to old file
             if os.path.exists(old_picture_path):
                 os.remove(old_picture_path)  # Delete the old file from media folder
-        
+
         if service_name and service_category and service_price and service_duration and service_description:
             try:
                 category_instance = ServiceCategory.objects.get(id=int(service_category))
                 image_instance.name = service_name
                 image_instance.category = category_instance
-                image_instance.price = float(service_price) 
+                image_instance.price = float(service_price)
                 image_instance.duration = int(service_duration)
                 image_instance.description = service_description
                 image_instance.service_image = service_image
@@ -409,7 +444,7 @@ def add_shop_timing(request):
         if is_timing_exists:
             messages.error(request, f'Shop timing for {day.upper()} already exists!', extra_tags='shop-timing-form')
             return redirect('dashboard_service')
-        
+
         if shop_opening_time and shop_closing_time and day:
                 ShopTiming.objects.create(
                     shop=user,
@@ -431,7 +466,7 @@ def add_shop_timing(request):
         else:
             messages.error(request, 'Please fill all the fields', extra_tags='shop-timing-form')
             return redirect('dashboard_service')
-        
+
     return redirect('dashboard_service')  # Redirect to services page
 
 def edit_shop_timing(request, id):
@@ -455,7 +490,7 @@ def edit_shop_timing(request, id):
             except IntegrityError:
                messages.error(request, f'Shop timing for {day.upper()} already exists!', extra_tags='shop-timing-form')
                return redirect('dashboard_service')
-            
+
     return redirect('dashboard_service')  # Redirect to services page
 
 def delete_shop_timing(request, id):
@@ -474,11 +509,11 @@ def delete_shop_timing(request, id):
 def dashboard_images_upload_view(request):
     user = request.user
     MAX_ALLOWED_IMAGES = 3
-    
+
     # Get current image count
     images_count = ShopImage.objects.filter(shop=user).count()
     shop_images = ShopImage.objects.filter(shop=user)
-        
+
     if request.method == 'POST':
         images = request.FILES.getlist('shop-images')
 
@@ -515,7 +550,7 @@ def edit_shop_image_view(request, id):
         old_picture_path = image_instance.shop_image.path  # Full path to old file
         if os.path.exists(old_picture_path):
             os.remove(old_picture_path)  # Delete the old file from media folder
-        
+
         if new_image:
             image_instance.shop_image = new_image
             image_instance.save()
@@ -531,7 +566,7 @@ def dashboard_add_staff_view(request):
     staff_count = Staff.objects.filter(shop=user).count()
 
     # search and pagination
-    pagination = Paginator(staff_list, 5)  # Show 5 categories per page 
+    pagination = Paginator(staff_list, 5)  # Show 5 categories per page
 
     # search for staff, with pagination
     if request.method == 'GET':
@@ -561,7 +596,7 @@ def dashboard_add_staff_view(request):
         except IntegrityError:
             messages.error(request, 'A staff member with this information already exists')
             return redirect('dashboard_staff')
-        
+
     context = {
         'staff_count': staff_count,
         'page_obj': page_obj, #this variable hold data according to the page number
@@ -580,7 +615,7 @@ def dashboard_edit_staff_view(request, id):
         staff_duty_end_time = request.POST.get('staff-duty-end-time')
         new_staff_picture = request.FILES.get('staff-picture')
         is_active_bool = request.POST.get('is-active')
-        
+
         try:
             staff_instance = Staff.objects.get(shop=user, id=int(id))
 
@@ -592,7 +627,7 @@ def dashboard_edit_staff_view(request, id):
                 old_picture_path = staff_instance.staff_picture.path  # Full path to old file
                 if os.path.exists(old_picture_path):
                     os.remove(old_picture_path)  # Delete the old file from media folder
-                
+
             staff_instance.phone = staff_phone
             staff_instance.shop = user
             staff_instance.name = staff_name
@@ -609,7 +644,7 @@ def dashboard_edit_staff_view(request, id):
             return redirect('dashboard_staff')
     else:
         return redirect('dashboard_staff')
-    
+
 def dashboard_delete_staff_view(request, id):
     user = request.user
 
@@ -629,7 +664,7 @@ def dashboard_faqs_view(request):
     faqs_count = FAQ.objects.filter(shop=user).count()
 
     # search and pagination
-    pagination = Paginator(faqs, 5)  # Show 5 categories per page 
+    pagination = Paginator(faqs, 5)  # Show 5 categories per page
 
     # search for faqs, with pagination
     if request.method == 'GET':
@@ -654,7 +689,7 @@ def dashboard_faqs_view(request):
         except IntegrityError:
             messages.error(request, 'FAQ cannot be added')
             return redirect('dashboard_faq')
-    
+
     context = {
         'faqs_count': faqs_count,
         'page_obj': page_obj, #this variable hold data according to the page number
@@ -669,7 +704,7 @@ def dashboard_edit_faq_view(request, id):
     if request.method == 'POST':
         faq_question = request.POST.get('faq-question')
         faq_answer = request.POST.get('faq-answer')
-        
+
         try:
             if faq_question and faq_answer:
                 faq_instance = FAQ.objects.get(shop=user, id=int(id))
@@ -682,7 +717,7 @@ def dashboard_edit_faq_view(request, id):
             return redirect('dashboard_faq')
     else:
         return redirect('dashboard_faq')
-    
+
 # dashboard delete faq view
 def dashboard_delete_faq_view(request, id):
     user = request.user
@@ -703,7 +738,7 @@ def dashboard_queries_view(request):
     queries_count = Queries.objects.filter(shop=user, response='').count()
 
     # search and pagination
-    pagination = Paginator(queries, 10)  # Show 10 categories per page 
+    pagination = Paginator(queries, 10)  # Show 10 categories per page
 
     # search for queries, with pagination
     if request.method == 'GET':
@@ -715,7 +750,7 @@ def dashboard_queries_view(request):
             page_number = request.GET.get('query-table-page', 10)  # Default to page 1 if not provided
             page_obj = pagination.get_page(page_number) #this variable hold data according to the page number
             total_page = page_obj.paginator.num_pages
-     
+
     context = {
         'queries_count': queries_count,
         'page_obj': page_obj, #this variable hold data according to the page number
@@ -736,7 +771,7 @@ def dahboard_answer_queries_view(request, id):
             query_instance.save()
             messages.success(request, 'Response added successfully!')
             return redirect('dashboard_queries')
-        
+
 # dashboard delete query view
 def dashboard_delete_query_view(request, id):
     user = request.user
@@ -768,7 +803,7 @@ def dashboard_appointments_view(request):
             page_number = request.GET.get('appointment-table-page', 10) # Default to page 10 if not provided
             page_obj = pagination.get_page(page_number) #this variable hold data according to the page number
             total_page = page_obj.paginator.num_pages
-            
+
     context = {
         'appointments_today_count': appointments_today_count,
         'appointments_this_month_count': appointments_this_month_count,
@@ -777,20 +812,46 @@ def dashboard_appointments_view(request):
     }
     return render(request, 'dashboard/appointments.html', context)
 
+# def dashboard_appointment_edit_view(request, id):
+#     user = request.user
+
+#     if request.method == 'POST':
+#         appointment_status = request.POST.get('appointment-status')
+#         appointment_cacellation_reason = request.POST.get('cacellation-reason')
+#         customer_email = request.POST.get('customer-email');
+
+#         # sending email if the raason is provided
+#         if(appointment_cacellation_reason):
+#             send_mail(
+#                 'AuroNow - Appointment Cancellation Notification',
+#                 f'Dear Customer,\n\nWe regret to inform you that your appointment has been canceled by {user.shop_name}.\n\nReason for Cancellation:\n{appointment_cacellation_reason}\n\nThank you for understanding.\n\nBest regards,\nAuroNow Team',
+#                 EMAIL_HOST_USER,
+#                 [customer_email],
+#                 fail_silently=False,
+#             )
+
+#         appointment_instance = BookAppointment.objects.get(shop=user, id=int(id))
+#         appointment_instance.status = appointment_status
+#         appointment_instance.save()
+#         messages.success(request, 'Appointment status updated successfully!')
+#         return redirect('dashboard_appointments')
+#     return redirect('dashboard_appointments')  # Redirect to appointments page
 def dashboard_appointment_edit_view(request, id):
     user = request.user
-    
+
     if request.method == 'POST':
         appointment_status = request.POST.get('appointment-status')
         appointment_cacellation_reason = request.POST.get('cacellation-reason')
         customer_email = request.POST.get('customer-email');
 
         # sending email if the raason is provided
-        if(appointment_cacellation_reason):
+        if appointment_cacellation_reason:
             send_mail(
                 'AuroNow - Appointment Cancellation Notification',
-                f'Dear Customer,\n\nWe regret to inform you that your appointment has been canceled by {user.shop_name}.\n\nReason for Cancellation:\n{appointment_cacellation_reason}\n\nThank you for understanding.\n\nBest regards,\nAuroNow Team',
-                EMAIL_HOST_USER,
+                f'Dear Customer,\n\nWe regret to inform you that your appointment has been canceled by {user.shop_name}.\n\n'
+                f'Reason for Cancellation:\n{appointment_cacellation_reason}\n\n'
+                'Thank you for understanding.\n\nBest regards,\nAuroNow Team',
+                settings.EMAIL_HOST_USER,
                 [customer_email],
                 fail_silently=False,
             )
@@ -801,6 +862,7 @@ def dashboard_appointment_edit_view(request, id):
         messages.success(request, 'Appointment status updated successfully!')
         return redirect('dashboard_appointments')
     return redirect('dashboard_appointments')  # Redirect to appointments page
+
 # -------------- dashboard appointments end --------------------------------------
 
 # -------------- dashboard Profile start -----------------------------------------
@@ -808,7 +870,7 @@ def dashboard_profile(request):
     # get owner profile data
     user = request.user.id
     shop_owner_instance = ShopOwner.objects.get(id=user) # Get the shop owner data using the user ID
-    
+
     # get the first image of the shop
     shop_image = ShopImage.objects.filter(shop=shop_owner_instance).first()
     if shop_image:

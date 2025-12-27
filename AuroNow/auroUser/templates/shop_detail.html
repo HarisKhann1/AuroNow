@@ -1,4 +1,4 @@
-{% extends 'base_auroUser.html' %} 
+{% extends 'base_auroUser.html' %}
 {% block main %}
 {% load static %}
 
@@ -88,10 +88,10 @@
               {% endif %}
             {% endfor %}
           {% endwith %}
-              
+
           <!-- Address -->
           <p class="text-gray-600">{{ shop.address }}</p>
-         
+
           <!-- Get Directions -->
           <div class="pl-2">
             <a href="https://www.google.com/maps/search/?api=1&query={{ shop.latitude }},{{ shop.longitude }}" target="_blank" class="text-indigo-500 hover:text-indigo-600 font-semibold" >
@@ -99,7 +99,7 @@
             </a>
           </div>
         </div>
-      </div>     
+      </div>
   </section>
 
   <!-- Image Grid Section - Desktop -->
@@ -116,7 +116,7 @@
       </div>
       {% endif %}
     </div>
-    
+
     <!-- Second image or fallback -->
     <div class="col-span-1 rounded-lg overflow-hidden">
       {% if images and images|length > 1 %}
@@ -137,13 +137,13 @@
       <div class="w-full h-full bg-gray-100 flex items-center justify-center">
         <!-- default shop Image -->
           <img class="w-full h-full object-cover" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
-        </div> 
+        </div>
       {% endif %}
     </div>
    </div>
   </section>
 
-  
+
  <!-- Image Gallery Section - Mobile (Carousel) -->
  <section class="block md:hidden mt-4">
   <div id="indicators-carousel" class="relative w-full" data-carousel="static">
@@ -170,7 +170,7 @@
       </div>
       {% endfor %}
     </div>
-    
+
     <!-- Slider indicators -->
     <div class="absolute z-30 flex -translate-x-1/2 space-x-3 rtl:space-x-reverse bottom-5 left-1/2">
       {% for image in images %}
@@ -190,12 +190,12 @@
         {% for service in shop.services.all|slice:":6" %}
         <div class='flex flex-row w-full gap-4 border border-secondary-color rounded-lg shadow-sm hover:shadow-md transition'>
           <div class='rounded-l-lg'>
-            
+
             {% if service.service_image %}
             <img src="{{service.service_image.url}}" alt="service Image"  class="w-32 h-full object-fill rounded-l-lg">
-            {% else %} 
+            {% else %}
             <img src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  class="w-full h-full object-cover rounded-l-lg" >
-             {% endif %} 
+             {% endif %}
           </div>
           <div class="w-full py-3 flex flex-col">
             <div class='flex md:justify-between flex-col-reverse md:flex-row gap-2'>
@@ -207,10 +207,10 @@
             <p class="sm:hidden text-gray-600 text-sm mt-1">{{ service.description|truncatechars:32 }}</p>
             <p class="hidden sm:block text-gray-600 text-sm mt-1">{{ service.description }}</p>
             {% endif %}
-            <a   
+            <a
               href="{% url 'add_service_to_cart' shop_id=service.shop.id service_id=service.id %}"
               class="mt-2 md:mt-3 w-24 sm:w-28 border border-secondary-color
-                   text-black px-2 text-center sm:px-4 py-[1px] sm:py-1 rounded-full 
+                   text-black px-2 text-center sm:px-4 py-[1px] sm:py-1 rounded-full
                     hover:bg-secondary-color hover:text-primary-color
                     hover:font-semibold transition duration-300"
                   >
@@ -220,7 +220,7 @@
         </div>
         {% endfor %}
       </div>
-      
+
       {% if shop.services.all.count > 6 %}
       <div class="text-end mt-6">
         <a href="#" class="bg-secondary-color text-white px-4 py-2 rounded-lg hover:bg-secondary-hover-color transition duration-500 ">
@@ -284,7 +284,7 @@
       {% endfor %}
     </ul>
   </div>
- </section>  
+ </section>
 
  <!-- Location of Shop -->
 <section class=" mt-6 md:px-10 px-4 mb-12">
@@ -338,12 +338,12 @@
 
                                 <!-- Hidden Input Field for Rating -->
                                 <input type="hidden" name="rating" id="rating-input" value="0" />
-                                
+
                                 <div>
                                     <label for="review" class="block mb-2 text-sm font-medium text-gray-900">Review</label>
                                     <textarea name="review" id="review" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-secondary-color focus:border-secondary-color block w-full p-2.5" placeholder="Write your review here..." required></textarea>
                                 </div>
-                                
+
                                 <button type="submit" id="review_submit_button" class="w-full text-gray-200 bg-secondary-color hover:bg-secondary-hover-color focus:ring-2 focus:outline-none focus:bg-primary-color font-medium rounded-lg text-sm px-5 py-2.5 text-center">Submit</button>
                             </form>
                         </div>
@@ -400,17 +400,17 @@ document.addEventListener("DOMContentLoaded", function () {
       button.setAttribute('type', 'button');
       button.className = 'text-gray-400 hover:text-indigo-400 focus:outline-none';
       button.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" 
-             class="w-6 h-6 fill-current" 
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-6 h-6 fill-current"
              viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.956a1 
-                   1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 
-                   2.448a1 1 0 00-.364 1.118l1.287 
-                   3.956c.3.922-.755 1.688-1.54 
-                   1.118l-3.371-2.448a1 1 0 
-                   00-1.175 0l-3.371 2.448c-.784.57-1.838-.196-1.539-1.118l1.287-3.956a1 
-                   1 0 00-.364-1.118L2.075 
-                   9.383c-.783-.57-.38-1.81.588-1.81h4.162a1 
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.956a1
+                   1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37
+                   2.448a1 1 0 00-.364 1.118l1.287
+                   3.956c.3.922-.755 1.688-1.54
+                   1.118l-3.371-2.448a1 1 0
+                   00-1.175 0l-3.371 2.448c-.784.57-1.838-.196-1.539-1.118l1.287-3.956a1
+                   1 0 00-.364-1.118L2.075
+                   9.383c-.783-.57-.38-1.81.588-1.81h4.162a1
                    1 0 00.95-.69l1.286-3.956z" />
         </svg>
       `;
@@ -440,8 +440,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // Get the latitude and longitude of the shop from the Django context
-  const shopLat = {{ latitude }};  
-  const shopLng = {{ longitude }}; 
+  const shopLat = {{ latitude }};
+  const shopLng = {{ longitude }};
 
   // Initialize the Leaflet map and center it on the shop location with zoom level 15
   const map = L.map(
@@ -467,10 +467,10 @@ document.addEventListener("DOMContentLoaded", function () {
     .openPopup();  // Open the popup by default when the page loads
 
 
-  
+
 });
 
-  //Recently Viewed Script 
+  //Recently Viewed Script
   document.addEventListener('DOMContentLoaded', function () {
     const defaultShopImage = "{% static 'shopImage/default_shop_image.jpg' %}";
     const shop = {
@@ -504,7 +504,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const allServices = document.getElementById('all-services');
         allServices.classList.toggle('hidden');
         this.textContent = allServices.classList.contains('hidden') ? 'Show All Services' : 'Show Less';
-        
+
         // Scroll to the bottom of the services section if showing all
         if (!allServices.classList.contains('hidden')) {
           allServices.scrollIntoView({ behavior: 'smooth' });

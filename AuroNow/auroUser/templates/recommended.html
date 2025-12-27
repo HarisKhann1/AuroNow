@@ -1,8 +1,10 @@
- {% load static %}
-{% if shops %}
-<!-- main div-->
+{% load static %}
+
+<!-- Main container -->
 <div class="min-w-full container mx-auto px-2 py-4">
-  <h1 class="text-left font-bold text-xl md:text-2xl lg:text-3xl xl:4xl mb-2 md:mb-4 px-2 pl-6 sm:px-10 md:px-10">Top Rated Salons in Karachi</h1>
+  <h1 class="text-left font-bold text-xl md:text-2xl lg:text-3xl xl:4xl mb-2 md:mb-4 px-2 pl-6 sm:px-10 md:px-10">
+    Top Rated Salons in Karachi
+  </h1>
 
   <div class="relative overflow-hidden px-4 sm:px-8 group">
     <!-- Previous Button -->
@@ -18,59 +20,56 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
       </svg>
     </button>
-
+    
     <!-- Carousel Container -->
-    {% if shops|length > 0 %}
-      <div id="carousel" class="carousel-container flex gap-6 py-2 pr-4 pl-2 scroll-smooth" style="overflow-x: auto; scrollbar-width: none;">
-        {% for shop in shops %}
-          <a href="{% url 'shop_detail' shop.shop_id %}"
-            class="border border-gray-200 shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
-            bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 md:hover:scale-105 md:hover:shadow-md animate-fade-in"
-            >
-            <div class="relative">
-              {% if shop.shop_image %}
-                <img id="shop_image" src="{{ shop.shop_image }}" alt="{{ shop.name }}" class="w-full h-40 object-cover" loading="lazy">
-              {% else %}
-              <!-- default shop image -->
-            <img class="w-full h-40 object-cover" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image"  >
-              {% endif %}
-            </div>
-            <!-- Show Shop Name amd Rating -->
-            <div class="p-3">
-              <div class="flex justify-between items-start">
-                <span class="text-md font-semibold line-clamp-1">{{ shop.name }}</span>
-                <div class="flex items-center bg-gray-100 px-1 rounded">
-                  <span class="text-xs font-bold text-gray-800">{{ shop.user_friendly_rating }}</span>
-                  <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
-                </div>
-              </div>
+    <div id="carousel" class="carousel-container flex gap-6 py-2 pr-4 pl-2 scroll-smooth" style="overflow-x: auto; scrollbar-width: none;">
+      {% for shop in shops %}
+        <a href="{% url 'shop_detail' shop.shop_id %}"
+          class="border border-gray-200 shop-card flex-none w-[calc(100%-24px)] sm:w-[calc(50%-24px)] md:w-[calc(33.33%-24px)] lg:w-[calc(25%-24px)]
+          bg-white rounded-lg overflow-hidden shadow-sm transition-transform duration-300 md:hover:scale-105 md:hover:shadow-md animate-fade-in">
+          
+          <div class="relative">
+            {% if shop.shop_image %}
+              <img id="shop_image" src="{{ shop.shop_image }}" alt="{{ shop.name }}" class="w-full h-40 object-cover" loading="lazy">
+            {% else %}
+              <!-- Default shop image -->
+              <img class="w-full h-40 object-cover" src="{% static 'shopImage/default_shop_image.jpg' %}" alt="default shop image">
+            {% endif %}
+          </div>
 
-              <!-- Show Shop Address -->
-              <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
-              <!-- Show Shop Categories -->
-              {% for category in shop.top_3_service_categories %} 
-                <div class="mt-2 inline-block">
-                {% comment %} <p>debug: {{category.0}}</p> {% endcomment %}
-                  <span class="text-xs px-2 py-1  text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
-                </div>
-              {% endfor %}
-              <div class="flex justify-between mt-2 text-xs text-gray-600">
-                <span>{{ shop.total_reviews_count }} reviews</span>
+          <div class="p-3">
+            <div class="flex justify-between items-start">
+              <span class="text-md font-semibold line-clamp-1">{{ shop.name }}</span>
+              <div class="flex items-center bg-gray-100 px-1 rounded">
+                <span class="text-xs font-bold text-gray-800">{{ shop.user_friendly_rating }}</span>
+                <i class="bx bxs-star text-yellow-400 text-xs ml-0.5"></i>
               </div>
             </div>
-          </a>
-        {% endfor %}
-      </div>
-    {% endif %}
+
+            <p class="text-xs text-gray-500 mt-1">{{ shop.address }}</p>
+
+            {% for category in shop.top_3_service_categories %}
+              <div class="mt-2 inline-block">
+                <span class="text-xs px-2 py-1 text-cyan-700 bg-gray-100 rounded-full">{{ category }}</span>
+              </div>
+            {% endfor %}
+
+            <div class="flex justify-between mt-2 text-xs text-gray-600">
+              <span>{{ shop.total_reviews_count }} reviews</span>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
   </div>
 </div>
 
-<!-- Add Tailwind custom animation -->
+<!-- Tailwind CSS custom animation -->
 <style>
 @layer utilities {
   @keyframes fade-in {
-    from { opacity: 0 }
-    to { opacity: 1 }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
   .animate-fade-in {
     animation: fade-in 0.5s ease forwards;
@@ -78,76 +77,73 @@
 }
 </style>
 
+<!-- Carousel JS -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const carousel = document.getElementById('carousel');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const container = carousel.parentElement;
-  
-    let cardWidth = 0;
-    let visibleCards = 0;
-    let hasInteracted = false;
-  
-    function initCarousel() {
-      const firstCard = document.querySelector('.shop-card');
-      if (!firstCard) return;
-  
-      cardWidth = firstCard.offsetWidth + 24;
-  
-      if (window.innerWidth >= 1024) {
-        visibleCards = 4;
-      } else if (window.innerWidth >= 768) {
-        visibleCards = 2;
-      } else {
-        visibleCards = 1;
-      }
-  
-      // Don't call updateButtonVisibility() here to prevent initial display
+document.addEventListener('DOMContentLoaded', function () {
+  const carousel = document.getElementById('carousel');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const container = carousel?.parentElement;
+
+  if (!carousel) return;
+
+  let cardWidth = 0;
+  let visibleCards = 0;
+  let hasInteracted = false;
+
+  function initCarousel() {
+    const firstCard = document.querySelector('.shop-card');
+    if (!firstCard) return;
+
+    cardWidth = firstCard.offsetWidth + 24;
+
+    if (window.innerWidth >= 1024) {
+      visibleCards = 4;
+    } else if (window.innerWidth >= 768) {
+      visibleCards = 2;
+    } else {
+      visibleCards = 1;
     }
-  
-    function slide(direction) {
-      const scrollAmount = direction * visibleCards * cardWidth;
-      carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  
-    function updateButtonVisibility() {
-      if (!hasInteracted) return;
-  
-      const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-  
-      if (carousel.scrollLeft <= 0) {
-        prevBtn.classList.add('opacity-0', 'pointer-events-none');
-      } else {
-        prevBtn.classList.remove('opacity-0', 'pointer-events-none');
-      }
-  
-      if (carousel.scrollLeft >= maxScroll - 5) {
-        nextBtn.classList.add('opacity-0', 'pointer-events-none');
-      } else {
-        nextBtn.classList.remove('opacity-0', 'pointer-events-none');
-      }
-    }
-  
-    // Hover behavior
-    container.addEventListener('mouseenter', function () {
-      hasInteracted = true;
-      updateButtonVisibility(); // only now we show/hide properly
-    });
-  
-    container.addEventListener('mouseleave', function () {
+  }
+
+  function slide(direction) {
+    const scrollAmount = direction * visibleCards * cardWidth;
+    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+
+  function updateButtonVisibility() {
+    if (!hasInteracted) return;
+
+    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+
+    if (carousel.scrollLeft <= 0) {
       prevBtn.classList.add('opacity-0', 'pointer-events-none');
+    } else {
+      prevBtn.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    if (carousel.scrollLeft >= maxScroll - 5) {
       nextBtn.classList.add('opacity-0', 'pointer-events-none');
-    });
-  
-    prevBtn.addEventListener('click', () => slide(-1));
-    nextBtn.addEventListener('click', () => slide(1));
-  
-    carousel.addEventListener('scroll', updateButtonVisibility);
-    window.addEventListener('resize', initCarousel);
-  
-    initCarousel();
+    } else {
+      nextBtn.classList.remove('opacity-0', 'pointer-events-none');
+    }
+  }
+
+  container.addEventListener('mouseenter', function () {
+    hasInteracted = true;
+    updateButtonVisibility();
   });
-  </script>
-  
-{% endif %}
+
+  container.addEventListener('mouseleave', function () {
+    prevBtn.classList.add('opacity-0', 'pointer-events-none');
+    nextBtn.classList.add('opacity-0', 'pointer-events-none');
+  });
+
+  prevBtn.addEventListener('click', () => slide(-1));
+  nextBtn.addEventListener('click', () => slide(1));
+  carousel.addEventListener('scroll', updateButtonVisibility);
+  window.addEventListener('resize', initCarousel);
+
+  initCarousel();
+});
+</script>
